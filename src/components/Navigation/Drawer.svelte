@@ -10,21 +10,21 @@
 	<MenuBar
 		title="General"
 		menus={[
-			{ href: '/', label: 'Canvas', iconClass: 'ic-canvas' },
-			{ href: '/', label: 'Dashboard', iconClass: 'ic-dashboard' }
+			{ href: '/', label: 'Arena', iconClass: 'ic-arena' },
+			{ href: '/', label: 'Explore', iconClass: 'ic-dashboard' }
 		]}
-		activeMenu="Canvas"
+		activeMenu="Arena"
 	/>
 	<MenuBar
-		title="Automation"
+		title="Your Work"
 		menus={[
 			{ href: '/', label: 'Integrations', iconClass: 'ic-integrations' },
-			{ href: '/', label: 'Repository', iconClass: 'ic-repository' },
+			{ href: '/', label: 'Saved Arenas', iconClass: 'ic-saved-arenas' },
 			{ href: '/', label: 'Analytics', iconClass: 'ic-analytics' }
 		]}
 	/>
 	<MenuBar
-		title="Resources"
+		title="Dashboard"
 		menus={[
 			{ href: '/', label: 'Members', iconClass: 'ic-members' },
 			{ href: '/', label: 'Notifications', iconClass: 'ic-notifications' }
@@ -33,8 +33,8 @@
 	<MenuBar
 		className="mt-auto"
 		menus={[
-			{ href: '/', label: 'Settings', iconClass: 'ic-settings' },
-			{ href: '/', label: 'Help & Support', iconClass: 'ic-help' }
+			{ href: '/', label: 'Settings', iconClass: 'ic-settings' }
+			// { href: '/', label: 'Help / Support', iconClass: 'ic-help' }
 		]}
 	/>
 </section>
@@ -54,7 +54,7 @@
 		mask-size: 100% 100%;
 	}
 
-	:global(.ic-canvas) {
+	:global(.ic-arena) {
 		display: inline-block;
 		width: 24px;
 		height: 24px;
@@ -110,7 +110,7 @@
 		mask-size: 100% 100%;
 	}
 
-	:global(.ic-repository) {
+	:global(.ic-saved-arenas) {
 		display: inline-block;
 		width: 24px;
 		height: 24px;
