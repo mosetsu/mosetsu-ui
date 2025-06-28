@@ -1,3 +1,11 @@
-<section class="flex h-screen w-full flex-col items-center justify-center">
-	<h1>Welcome to Mosetsu | System Design</h1>
+<script lang="ts">
+	import NavigationDrawer from '../components/Navigation/Drawer.svelte';
+    import Canvas from '../components/Playground/Canvas.svelte';
+    import SideBar from '../components/WidgetStatus/SideBar.svelte';
+</script>
+
+<section class="grid h-screen w-full grid-cols-[260px_1fr_280px]">
+	<NavigationDrawer/>
+	<Canvas/>
+	<SideBar/>
 </section>
