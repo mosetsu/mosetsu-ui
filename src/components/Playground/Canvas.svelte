@@ -27,7 +27,7 @@
 		>
 		<button
 			class={`cursor-pointer rounded border px-3 py-1 text-xs focus:outline-none ` +
-				(modulesOverlayVisible ? 'bg-blue-400 text-white border-transparent hover:bg-blue-300' : 'border-gray-300 text-black hover:bg-gray-100')}
+				(modulesOverlayVisible ? 'bg-gray-800 text-white border-transparent hover:bg-gray-700' : 'border-gray-300 text-black hover:bg-gray-100')}
 			on:click={onModuleBtnClick}>Modules</button
 		>
 		<button
