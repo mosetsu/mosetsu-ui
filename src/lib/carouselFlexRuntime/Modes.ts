@@ -48,7 +48,7 @@ export default function Free(slider): void {
 		dur = adjustDuration(dur);
 		dist *= currentDirection;
 		if (isFreeSnap) {
-			const snapDist = track.idxToDist(track.distToIdx(dist), true);
+			const snapDist = track.getDistanceFromIndex(track.getDistanceToIdx(dist), true);
 			if (snapDist) dist = snapDist;
 		}
 
@@ -88,7 +88,7 @@ export default function Free(slider): void {
 			});
 		}
 
-		slider.animator.start(keyframes);
+		slider.transition.start(keyframes);
 	}
 
 	function speedToDistanceAndDuration(s, m = 1000) {
@@ -116,7 +116,7 @@ export default function Free(slider): void {
 	}
 
 	function stop() {
-		slider.animator.stop();
+		slider.transition.stop();
 	}
 
 	function check() {

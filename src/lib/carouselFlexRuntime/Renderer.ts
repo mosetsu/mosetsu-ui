@@ -6,7 +6,7 @@ export default function Renderer(slider): void {
 	let verticalOption;
 
 	function applyStylesInAnimationFrame(remove?, scale?, vertical?) {
-		slider.animator.active
+		slider.transition.active
 			? applyStyles(remove, scale, vertical)
 			: requestAnimationFrame(() => applyStyles(remove, scale, vertical));
 	}

@@ -33,7 +33,7 @@
 		<Carousel options={carouselOptions}>
 			{#each items as { id, bg }}
 				<div
-					class="flex h-[240px] items-center justify-center {bg} keen-slider__slide text-xl font-bold"
+					class="flex h-[240px] items-center justify-center {bg} carousel__flex text-xl font-bold"
 					data-data-carousel-slide={id}
 				>
 					Slide {id}
@@ -44,7 +44,7 @@
 		<Carousel options={{ ...carouselOptions, loop: false }}>
 			{#each items as { id, bg }}
 				<div
-					class="flex h-[240px] items-center justify-center {bg} keen-slider__slide text-xl font-bold"
+					class="flex h-[240px] items-center justify-center {bg} carousel__flex text-xl font-bold"
 					data-data-carousel-slide={id}
 				>
 					Slide {id}

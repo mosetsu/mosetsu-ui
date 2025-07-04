@@ -1,10 +1,17 @@
-import type { CarouselFlexController, CarouselTrackDetails, CarouselTrackInstance } from './types';
-import { clamp, round, sign } from './utils';
+import type { CarouselTrackDetails, CarouselTrackInstance } from '../types';
+import { clamp, round, sign } from '../utils';
 
-const CarouselTrack = (controller: CarouselFlexController) => {
-	// eslint-disable-next-line prefer-const
-	let instance: CarouselTrackInstance;
+type TrackOptions = {
+	isLoopEnabled: () => boolean;
+	onDetailsChanged: () => void;
+	onSlideChanged: () => void;
+	getTrackConfig: () => { size?: number; spacing?: number; origin?: number }[];
+};
 
+const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
+	const { isLoopEnabled, onDetailsChanged, onSlideChanged, getTrackConfig } = options;
+
+	let details: CarouselTrackDetails | undefined;
 	const infinity = Infinity;
 	let measurePoints: { distance: number; timestamp: number }[] = [];
 	let currentIdx: number | null = null;
@@ -16,8 +23,6 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 	let maxRelativeIdx: number = 0;
 	let position = 0;
 	let minIdx: number, maxIdx: number, loopMin: number, loopMax: number, min: number, max: number;
-
-	const isLoopEnabled = (): boolean | undefined => controller.options.loop;
 
 	const idxInRange = (idx: number): boolean => clampIdx(idx) === idx;
 
@@ -37,13 +42,13 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 		loopMin = minIdx = isLoopEnabled() ? -infinity : 0;
 		loopMax = maxIdx = isLoopEnabled() ? infinity : maxRelativeIdx;
 
-		min = round(minIdx === -infinity ? minIdx : controller.track.idxToDist(minIdx || 0, true, 0));
-		max = round(maxIdx === infinity ? maxIdx : (idxToDist(maxIdx, true, 0) ?? 0));
+		min = round(minIdx === -infinity ? minIdx : (getDistanceFromIndex(minIdx || 0, true, 0) ?? 0));
+		max = round(maxIdx === infinity ? maxIdx : (getDistanceFromIndex(maxIdx, true, 0) ?? 0));
 	};
 
-	const distToIdx = (distance: number): number | null => {
+	const getDistanceToIdx = (distance: number): number => {
 		const { abs } = determineCarouselIndexes(position + distance);
-		return idxInRange(abs) ? abs : null;
+		return idxInRange(abs) ? abs : 0;
 	};
 
 	const velocity = (): number => {
@@ -66,9 +71,9 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 		return data.distance / data.time || 0;
 	};
 
-	const getDistanceFromAbsoluteIndex = (idx: number, fromPosition?: number): number | null => {
+	const getDistanceFromAbsoluteIndex = (idx: number, fromPosition?: number): number => {
 		if (fromPosition == null) fromPosition = round(position);
-		if (!idxInRange(idx) || idx === null) {
+		if (!idxInRange(idx) || !idx) {
 			return 0;
 		}
 		idx = Math.round(idx);
@@ -88,11 +93,16 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 		);
 	};
 
-	const idxToDist = (idx: number, absolute: boolean, fromPosition?: number): number | null => {
+	const getDistanceFromIndex = (idx: number, absolute: boolean, fromPosition?: number): number => {
 		let distance: number = 0;
 
-		if (absolute || !isLoopEnabled()) return getDistanceFromAbsoluteIndex(idx, fromPosition);
-		if (!idxInRange(idx)) return null;
+		if (absolute || !isLoopEnabled()) {
+			return getDistanceFromAbsoluteIndex(idx, fromPosition);
+		}
+		if (!idxInRange(idx)) {
+			return 0;
+		}
+
 		const { abs, rel } = determineCarouselIndexes(fromPosition ?? position);
 		const idxDistance = idx - rel;
 		const nextIdx = abs + idxDistance;
@@ -117,7 +127,7 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 		if (idx !== currentIdx) {
 			currentIdx = idx;
 			if (Number.isInteger(idx)) {
-				controller.dispatch('slideChanged');
+				onSlideChanged();
 			}
 		}
 	};
@@ -235,14 +245,13 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 	};
 
 	const refreshTrackData = (unset?: boolean) => {
-		const trackDetails = unset ? null : getTrackDetails();
-		instance.details = trackDetails;
-		controller.dispatch('detailsChanged');
-		return trackDetails;
+		details = unset ? undefined : getTrackDetails();
+		onDetailsChanged();
+		return details;
 	};
 
 	const initializeCarouselSlides = (): void => {
-		const trackConfig = controller.options.trackConfig || [];
+		const trackConfig = getTrackConfig() || [];
 		slides = trackConfig.map((entry: { size?: number; spacing?: number; origin?: number }) => [
 			entry?.size ?? 1,
 			entry?.spacing ?? 0,
@@ -291,7 +300,7 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 		slidePositionOffsets.push(round(totalSlidesLength));
 	};
 
-	const initialiseCarouselTrack = (index?: number) => {
+	const refreshCarouselTrack = (index?: number) => {
 		initializeCarouselSlides();
 
 		if (!slidesCount) {
@@ -307,18 +316,20 @@ const CarouselTrack = (controller: CarouselFlexController) => {
 		}
 	};
 
-	instance = {
-		init: initialiseCarouselTrack,
-		absToRel: getRelativeIndex,
+	return {
+		refreshCarouselTrack,
 		add,
-		details: null,
-		distToIdx,
-		idxToDist,
-		to: updatePosition,
+		getDistanceToIdx,
+		getDistanceFromIndex,
+		get details() {
+			if (!details) {
+				throw new Error('CarouselTrack details are not initialized.');
+			}
+			return details;
+		},
+		updatePosition,
 		velocity
 	};
-
-	return instance;
 };
 
 export default CarouselTrack;

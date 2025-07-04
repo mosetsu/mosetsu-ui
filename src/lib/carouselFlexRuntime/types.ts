@@ -2,7 +2,7 @@ export type CarouselFlexOptions = {
 	breakpoints?: Record<string, string>;
 	loop?: boolean;
 	container: HTMLElement;
-	selector?: string;
+	selector: string;
 };
 
 export type SubscriptionProps = {
@@ -24,27 +24,16 @@ export type CarouselTrackDetails = {
 };
 
 export type CarouselTrackInstance = {
-	absToRel: (absoluteIdx: number) => number;
+	refreshCarouselTrack: (idx?: number) => void;
+	getDistanceToIdx: (distance: number) => number;
+	getDistanceFromIndex: (idx: number, absolute: boolean, fromPosition?: number) => number;
+	updatePosition: (value: number) => void;
 	add: (value: number) => void;
 	details: CarouselTrackDetails;
-	distToIdx: (distance: number) => number;
-	idxToDist: (idx: number, absolute?: boolean, fromPosition?: number) => number;
-	init: (idx?: number) => void;
-	to: (value: number) => void;
 	velocity: () => number;
 };
 
-export type CarouselFlexController = {
-	options: CarouselFlexOptions;
-	track?: CarouselTrackInstance;
-	animator?: any; // Placeholder for Animator type
-	navigateToIndex: (index: number, absolute: boolean) => void;
-	dispatch: (name: string) => void;
-	sub: (name: string, callback: (controller?: CarouselFlexController) => void) => void;
-};
-
-export type CarouselSlideAnimationInstance = {
-	active: boolean;
+export type CarouselTransitionInstance = {
 	start: (
 		keyframes: {
 			distance: number;
@@ -54,5 +43,20 @@ export type CarouselSlideAnimationInstance = {
 		}[]
 	) => void;
 	stop: () => void;
-	targetIdx: number | null;
+};
+
+export type CarouselFlexController = {
+	options: CarouselFlexOptions;
+	track: CarouselTrackInstance;
+	transition: CarouselTransitionInstance;
+	navigateToIndex: (index: number, absolute: boolean) => void;
+	dispatch: (name: string) => void;
+	sub: (name: string, callback: (controller?: CarouselFlexController) => void) => void;
+};
+
+export type KeyFrameOptions = {
+	distance: number;
+	duration: number;
+	earlyExit?: number;
+	easing: (t: number) => number;
 };

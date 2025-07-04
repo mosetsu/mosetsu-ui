@@ -4,11 +4,11 @@
   This version accepts slides directly via the default slot and uses Svelte's on: directive for events.
 -->
 <script lang="ts">
-	import Drag from '$lib/carouselFlexCore/Drag';
-	import Free from '$lib/carouselFlexCore/Modes';
-	import Renderer from '$lib/carouselFlexCore/Renderer';
-	import Slider from '$lib/carouselFlexCore/controller';
-	import Web from '$lib/carouselFlexCore/web';
+	import Drag from '$lib/carouselFlexRuntime/Drag';
+	import Free from '$lib/carouselFlexRuntime/Modes';
+	import Renderer from '$lib/carouselFlexRuntime/Renderer';
+	import Slider from '$lib/carouselFlexRuntime/controller';
+	import Web from '$lib/carouselFlexRuntime/web';
 	import { onMount } from 'svelte';
 
 	export let options = {};
@@ -32,10 +32,10 @@
 
 			const defOpts = {
 				// drag: true,
-				selector: '.keen-slider__slide'
+				selector: '.carousel__flex'
 			};
 			// Initialize the slider
-			Slider({ ...options, container, selector: '.keen-slider__slide' }, [
+			Slider({ ...options, container, selector: '.carousel__flex' }, [
 				Web(container, defOpts),
 				Renderer,
 				Drag,

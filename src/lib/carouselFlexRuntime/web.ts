@@ -1,4 +1,4 @@
-import { dir, elem, elems, Events, getProp, rect, setAttr } from './utils';
+import { elem, elems, Events, getProp, rect } from './utils';
 
 export default function Web(container, defaultOptions) {
 	return (slider): void => {
@@ -153,20 +153,20 @@ export default function Web(container, defaultOptions) {
 
 		slider.container = elem(container);
 
-		slider.destroy = () => {
-			events.purge();
-			slider.dispatch('destroyed');
-		};
+		// slider.destroy = () => {
+		// 	events.purge();
+		// 	slider.dispatch('destroyed');
+		// };
 
-		slider.prev = () => {
-			slider.navigateToIndex(slider.track.details.abs - 1, true);
-		};
+		// slider.prev = () => {
+		// 	slider.navigateToIndex(slider.track.details.abs - 1, true);
+		// };
 
-		slider.next = () => {
-			slider.navigateToIndex(slider.track.details.abs + 1, true);
-		};
+		// slider.next = () => {
+		// 	slider.navigateToIndex(slider.track.details.abs + 1, true);
+		// };
 
-		slider.update = update;
+		// slider.update = update;
 
 		init(slider.options);
 	};
