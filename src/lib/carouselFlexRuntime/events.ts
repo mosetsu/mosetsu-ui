@@ -1,8 +1,5 @@
-enum EventType {
+export enum CarouselFlexEventType {
 	CREATED = 'created',
-	BREAKPOINT_CHANGE = 'change',
-	ORIENTATION_CHANGE = 'orientationchange',
-	RESIZE = 'resize',
 	OPTIONS_CHANGED = 'optionsChanged',
 	UPDATED = 'updated',
 	BEFORE_OPTIONS_CHANGED = 'beforeOptionsChanged',
@@ -15,7 +12,24 @@ enum EventType {
 	DRAG_STARTED = 'dragStarted',
 	DRAG_ENDED = 'dragEnded',
 	DRAG_CHECKED = 'dragChecked',
-	DRAGGED = 'dragged',
+	DRAGGED = 'dragged'
 }
 
-export default EventType;
+export enum DOMEventType {
+	CLICK = 'click',
+	DRAG = 'drag',
+	DRAG_START = 'dragstart',
+	DRAG_END = 'dragEnd',
+	WHEEL = 'wheel',
+	RESIZE = 'resize',
+	ORIENTATION_CHANGE = 'orientationchange',
+	BREAKPOINT_CHANGE = 'change',
+	TOUCH_START = 'touchstart',
+	TOUCH_MOVE = 'touchmove',
+	TOUCH_END = 'touchend',
+	TOUCH_CANCEL = 'touchcancel',
+	MOUSE_DOWN = 'mousedown',
+	MOUSE_MOVE = 'mousemove',
+	MOUSE_UP = 'mouseup',
+	MOUSE_LEAVE = 'mouseleave'
+}

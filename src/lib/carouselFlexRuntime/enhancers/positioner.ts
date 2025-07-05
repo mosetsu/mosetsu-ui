@@ -1,4 +1,4 @@
-import EventType from '../events';
+import { CarouselFlexEventType } from '../events';
 import type { CarouselFlexController } from '../types';
 
 const Positioner = (controller: CarouselFlexController): (() => void) => {
@@ -77,7 +77,7 @@ const Positioner = (controller: CarouselFlexController): (() => void) => {
 			applyStyles(true, true, verticalOption);
 			elements = [];
 		}
-		controller.sub(EventType.DETAILS_CHANGED, applyStylesHook);
+		controller.sub(CarouselFlexEventType.DETAILS_CHANGED, applyStylesHook);
 	};
 
 	const applyStylesInAnimationFrame = (remove: boolean, scale: boolean, vertical: boolean) => {
@@ -95,7 +95,7 @@ const Positioner = (controller: CarouselFlexController): (() => void) => {
 	const update = () => {
 		reset();
 		verticalOption = controller.options.isLayoutVertical || false;
-		controller.sub(EventType.DETAILS_CHANGED, applyStylesHook);
+		controller.sub(CarouselFlexEventType.DETAILS_CHANGED, applyStylesHook);
 		elements = controller.config.slideElements || [];
 		if (!elements.length) {
 			return;
@@ -103,11 +103,11 @@ const Positioner = (controller: CarouselFlexController): (() => void) => {
 		positionAndScale();
 	};
 
-	controller.sub(EventType.CREATED, update);
-	controller.sub(EventType.OPTIONS_CHANGED, update);
-	controller.sub(EventType.BEFORE_OPTIONS_CHANGED, reset);
-	controller.sub(EventType.UPDATED, positionAndScale);
-	controller.sub(EventType.DESTROYED, reset);
+	controller.sub(CarouselFlexEventType.CREATED, update);
+	controller.sub(CarouselFlexEventType.OPTIONS_CHANGED, update);
+	controller.sub(CarouselFlexEventType.BEFORE_OPTIONS_CHANGED, reset);
+	controller.sub(CarouselFlexEventType.UPDATED, positionAndScale);
+	controller.sub(CarouselFlexEventType.DESTROYED, reset);
 
 	return () => {};
 };

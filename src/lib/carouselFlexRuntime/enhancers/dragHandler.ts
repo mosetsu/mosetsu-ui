@@ -1,5 +1,7 @@
-import { elems, Events, prevent, sign, stop } from '../utils';
-import EventType from '../events';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { elems, Events, prevent, getSign, stop } from '../utils';
+import { DOMEventType, CarouselFlexEventType } from '../events';
+
 import type { CarouselFlexController } from '../types';
 
 const DragHandler = (controller: CarouselFlexController): (() => void) => {
@@ -31,9 +33,9 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 
 	const isVertical = (): boolean => !!controller.options.isLayoutVertical;
 
-	const getMovementAxis = (e): number => (isVertical() ? e.y : e.x);
+	const getMovementAxis = (e: any): number => (isVertical() ? e.y : e.x);
 
-	const isValidSlideDirection = (e): boolean => {
+	const isValidSlideDirection = (e: any): boolean => {
 		const vertical = isVertical();
 		const x = vertical ? e.y : e.x;
 		const y = vertical ? e.x : e.y;
@@ -56,7 +58,7 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		max = details.max;
 	};
 
-	const preventClick = (e): void => {
+	const preventClick = (e: any): void => {
 		if (isProperDrag) {
 			stop(e);
 			prevent(e);
@@ -66,9 +68,9 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 	const preventClicks = (): void => {
 		const attr = `data-carousel-clickable`;
 		elems(`[${attr}]:not([${attr}=false])`, container).map((clickable) => {
-			events.add(clickable, 'dragstart', stop);
-			events.add(clickable, 'mousedown', stop);
-			events.add(clickable, 'touchstart', stop);
+			events.add(clickable, DOMEventType.DRAG_START, stop);
+			events.add(clickable, DOMEventType.MOUSE_DOWN, stop);
+			events.add(clickable, DOMEventType.TOUCH_START, stop);
 		});
 	};
 
@@ -76,16 +78,15 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		let start: number;
 		events.input(
 			element,
-			'touchstart',
+			DOMEventType.TOUCH_START,
 			(e) => {
-				console.log('touchstart', e);
 				start = getMovementAxis(e);
 				scrollLock = true;
 				isScrollTouchEnabled = true;
 			},
 			{ passive: true }
 		);
-		events.input(element, 'touchmove', (e) => {
+		events.input(element, DOMEventType.TOUCH_MOVE, (e) => {
 			const vertical = isVertical();
 			const maxPosition = vertical
 				? element.scrollHeight - element.clientHeight
@@ -109,7 +110,7 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 			scrollLock = false;
 		});
 
-		events.input(element, 'touchend', () => {
+		events.input(element, DOMEventType.TOUCH_END, () => {
 			scrollLock = false;
 		});
 	};
@@ -140,7 +141,7 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		return p * p * distance;
 	};
 
-	const dragStart = (e): void => {
+	const dragStart = (e: any): void => {
 		if (dragActive || !controller.track.details || !controller.track.details.length) {
 			return;
 		}
@@ -152,18 +153,18 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		dragIdentifier = e.id;
 		isValidSlideDirection(e);
 		lastValue = getMovementAxis(e);
-		controller.dispatch(EventType.DRAG_STARTED);
+		controller.dispatch(CarouselFlexEventType.DRAG_STARTED);
 	};
 
-	const dragStop = (e): void => {
+	const dragStop = (e: any): void => {
 		if (!dragActive || dragIdentifier !== e.idChanged) {
 			return;
 		}
 		dragActive = false;
-		controller.dispatch(EventType.DRAG_ENDED);
+		controller.dispatch(CarouselFlexEventType.DRAG_ENDED);
 	};
 
-	const drag = (e): void => {
+	const drag = (e: any): void => {
 		if (!dragActive || dragIdentifier !== e.id) {
 			return;
 		}
@@ -175,7 +176,7 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 			}
 			lastValue = value;
 			dragJustStarted = false;
-			controller.dispatch(EventType.DRAG_CHECKED);
+			controller.dispatch(CarouselFlexEventType.DRAG_CHECKED);
 		}
 
 		if (scrollLock) {
@@ -186,7 +187,7 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		const distance = applyRubberbandEffect(
 			(dragSpeed(lastValue - value) / containerSize) * defaultDirection
 		);
-		direction = sign(distance);
+		direction = getSign(distance);
 		const position = controller.track.details.position;
 
 		if (
@@ -202,7 +203,7 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		}
 		controller.track.add(distance);
 		lastValue = value;
-		controller.dispatch(EventType.DRAGGED);
+		controller.dispatch(CarouselFlexEventType.DRAGGED);
 	};
 
 	const update = (): void => {
@@ -211,22 +212,22 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		setSizes();
 		container = controller.options.container;
 		preventClicks();
-		events.add(container, 'dragstart', (e) => {
+		events.add(container, DOMEventType.DRAG_START, (e) => {
 			prevent(e);
 		});
-		events.add(container, 'click', preventClick, { capture: true });
-		events.input(container, 'ksDragStart', dragStart);
-		events.input(container, 'ksDrag', drag);
-		events.input(container, 'ksDragEnd', dragStop);
-		events.input(container, 'mousedown', dragStart);
-		events.input(container, 'mousemove', drag);
-		events.input(container, 'mouseleave', dragStop);
-		events.input(container, 'mouseup', dragStop);
-		events.input(container, 'touchstart', dragStart, { passive: true });
-		events.input(container, 'touchmove', drag, { passive: false });
-		events.input(container, 'touchend', dragStop);
-		events.input(container, 'touchcancel', dragStop);
-		events.add(window, 'wheel', (e) => {
+		events.add(container, DOMEventType.CLICK, preventClick, { capture: true });
+		// events.input(container, 'ksDragStart', dragStart);
+		// events.input(container, 'ksDrag', drag);
+		// events.input(container, 'ksDragEnd', dragStop);
+		events.input(container, DOMEventType.MOUSE_DOWN, dragStart);
+		events.input(container, DOMEventType.MOUSE_MOVE, drag);
+		events.input(container, DOMEventType.MOUSE_LEAVE, dragStop);
+		events.input(container, DOMEventType.MOUSE_UP, dragStop);
+		events.input(container, DOMEventType.TOUCH_START, dragStart, { passive: true });
+		events.input(container, DOMEventType.TOUCH_MOVE, drag, { passive: false });
+		events.input(container, DOMEventType.TOUCH_END, dragStop);
+		events.input(container, DOMEventType.TOUCH_CANCEL, dragStop);
+		events.add(window, DOMEventType.WHEEL, (e) => {
 			if (dragActive) {
 				prevent(e);
 			}
@@ -237,10 +238,10 @@ const DragHandler = (controller: CarouselFlexController): (() => void) => {
 		);
 	};
 
-	controller.sub(EventType.UPDATED, setSizes);
-	controller.sub(EventType.OPTIONS_CHANGED, update);
-	controller.sub(EventType.CREATED, update);
-	controller.sub(EventType.DESTROYED, events.purge);
+	controller.sub(CarouselFlexEventType.UPDATED, setSizes);
+	controller.sub(CarouselFlexEventType.OPTIONS_CHANGED, update);
+	controller.sub(CarouselFlexEventType.CREATED, update);
+	controller.sub(CarouselFlexEventType.DESTROYED, events.purge);
 
 	return () => {};
 };

@@ -1,5 +1,5 @@
+import { clamp, roundToSixDecimalPlaces, getSign } from '../utils';
 import type { CarouselTrackDetails, CarouselTrackInstance } from '../types';
-import { clamp, round, sign } from '../utils';
 
 type TrackOptions = {
 	isLoopEnabled: () => boolean;
@@ -42,8 +42,8 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		loopMin = minIdx = isLoopEnabled() ? -infinity : 0;
 		loopMax = maxIdx = isLoopEnabled() ? infinity : maxRelativeIdx;
 
-		min = round(minIdx === -infinity ? minIdx : (getDistanceFromIndex(minIdx || 0, true, 0) ?? 0));
-		max = round(maxIdx === infinity ? maxIdx : (getDistanceFromIndex(maxIdx, true, 0) ?? 0));
+		min = roundToSixDecimalPlaces(minIdx === -infinity ? minIdx : (getDistanceFromIndex(minIdx || 0, true, 0) ?? 0));
+		max = roundToSixDecimalPlaces(maxIdx === infinity ? maxIdx : (getDistanceFromIndex(maxIdx, true, 0) ?? 0));
 	};
 
 	const getDistanceToIdx = (distance: number): number => {
@@ -58,7 +58,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 				const { distance } = next;
 				const { timestamp } = next;
 				if (timestampNow - timestamp > 200) return acc;
-				if (sign(distance) !== sign(acc.distance) && acc.distance) {
+				if (getSign(distance) !== getSign(acc.distance) && acc.distance) {
 					acc = { distance: 0, lastTimestamp: 0, time: 0 };
 				}
 				if (acc.time) acc.distance += distance;
@@ -72,7 +72,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 	};
 
 	const getDistanceFromAbsoluteIndex = (idx: number, fromPosition?: number): number => {
-		if (fromPosition == null) fromPosition = round(position);
+		if (fromPosition == null) fromPosition = roundToSixDecimalPlaces(position);
 		if (!idxInRange(idx) || !idx) {
 			return 0;
 		}
@@ -83,7 +83,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 			((fromPosition % totalSlidesLength) + totalSlidesLength) % totalSlidesLength;
 		const distanceToStart = slidePositionOffsets[origin];
 		const distance = Math.floor((idx - (abs - rel)) / slidesCount) * totalSlidesLength;
-		return round(
+		return roundToSixDecimalPlaces(
 			distanceToStart -
 				positionRelative -
 				distanceToStart +
@@ -108,7 +108,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		const nextIdx = abs + idxDistance;
 		distance = getDistanceFromAbsoluteIndex(nextIdx) || 0;
 		const otherDistance =
-			getDistanceFromAbsoluteIndex(nextIdx - slidesCount * sign(idxDistance)) || 0;
+			getDistanceFromAbsoluteIndex(nextIdx - slidesCount * getSign(idxDistance)) || 0;
 
 		if (
 			(otherDistance !== null && Math.abs(otherDistance) < Math.abs(distance)) ||
@@ -117,12 +117,12 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 			distance = otherDistance;
 		}
 
-		return round(distance);
+		return roundToSixDecimalPlaces(distance);
 	};
 
 	const updatePosition = (value: number): void => {
 		measure(value - position);
-		position = round(value);
+		position = roundToSixDecimalPlaces(value);
 		const idx = refreshTrackData()?.abs || 0;
 		if (idx !== currentIdx) {
 			currentIdx = idx;
@@ -138,14 +138,14 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		((idx % slidesCount) + slidesCount) % slidesCount;
 
 	const determineCarouselIndexes = (pos: number): { abs: number; origin: number; rel: number } => {
-		let factor = Math.floor(Math.abs(round(pos / totalSlidesLength)));
-		let positionRelative = round(
+		let factor = Math.floor(Math.abs(roundToSixDecimalPlaces(pos / totalSlidesLength)));
+		let positionRelative = roundToSixDecimalPlaces(
 			((pos % totalSlidesLength) + totalSlidesLength) % totalSlidesLength
 		);
 		if (positionRelative === totalSlidesLength) {
 			positionRelative = 0;
 		}
-		const positionSign = sign(pos);
+		const positionSign = getSign(pos);
 		const origin = slidePositionOffsets.indexOf(
 			[...slidePositionOffsets].reduce((a, b) =>
 				Math.abs(b - positionRelative) < Math.abs(a - positionRelative) ? b : a
@@ -192,11 +192,11 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 			if (distanceViewport < 0 - slide[0] || distanceViewport > 1) {
 				distanceViewport +=
 					(Math.abs(distanceViewport) > totalSlidesLength - 1 && loop ? totalSlidesLength : 0) *
-					sign(-distanceViewport);
+					getSign(-distanceViewport);
 			}
 
 			const idxDistance = idx - rel;
-			const signIdxDistance = sign(idxDistance);
+			const signIdxDistance = getSign(idxDistance);
 			let absoluteIndex = idxDistance + abs;
 			if (loop) {
 				if (signIdxDistance === -1 && distanceViewport > activeOrigin) absoluteIndex += slidesCount;
@@ -263,12 +263,12 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 			return;
 		}
 
-		totalSlidesLength = round(
+		totalSlidesLength = roundToSixDecimalPlaces(
 			slides.reduce((acc: number, val: number[]) => acc + val[0] + val[1], 0)
 		);
 
 		const lastIdx = slidesCount - 1;
-		trackLength = round(
+		trackLength = roundToSixDecimalPlaces(
 			totalSlidesLength +
 				slides[0][2] -
 				slides[lastIdx][0] -
@@ -285,7 +285,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 
 			distance -= val[2];
 			if (acc[acc.length - 1] > distance) distance = acc[acc.length - 1];
-			distance = round(distance);
+			distance = roundToSixDecimalPlaces(distance);
 			acc.push(distance);
 			if (!lastDistance || lastDistance < distance) maxRelativeIdx = acc.length - 1;
 			lastDistance = distance;
@@ -297,7 +297,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 			maxRelativeIdx = 0;
 		}
 
-		slidePositionOffsets.push(round(totalSlidesLength));
+		slidePositionOffsets.push(roundToSixDecimalPlaces(totalSlidesLength));
 	};
 
 	const refreshCarouselTrack = (index?: number) => {

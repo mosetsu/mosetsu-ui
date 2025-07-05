@@ -1,41 +1,36 @@
-function toArray(nodeList) {
-	return Array.prototype.slice.call(nodeList);
-}
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-function getFloatOrInt(float, int) {
+const toArray = (nodeList: NodeList) => Array.prototype.slice.call(nodeList);
+
+const getFloatOrInt = (float: number, int: number) => {
 	const floatFloor = Math.floor(float);
-	if (floatFloor === int || floatFloor + 1 === int) return float;
+	if (floatFloor === int || floatFloor + 1 === int) {
+		return float;
+	}
+
 	return int;
-}
+};
 
-export function now(): number {
-	return Date.now();
-}
+export const clamp = (value: number, min: number, max: number): number => {
+	return Math.min(Math.max(value, min), max);
+};
 
-export function dir(element): string {
-	return window.getComputedStyle(element, null).getPropertyValue('direction');
-}
+export const getSign = (x: number): number => {
+	return (x > 0 ? 1 : 0) - (x < 0 ? 1 : 0) || +x;
+};
 
-export function setAttr(elem: HTMLElement, name: string, value: string): void {
-	const prefix = 'data-carousel-';
-	name = prefix + name;
-	if (value === null) return elem.removeAttribute(name);
-	elem.setAttribute(name, value || '');
-}
+export const calculateBoundingRect = (elem: HTMLElement): { height: number; width: number } => {
+	const boundingRect = elem.getBoundingClientRect();
 
-export function elem(
-	element:
-		| string
-		| HTMLElement
-		| NodeList
-		| ((wrapper: HTMLElement | Document) => HTMLElement[] | NodeList | HTMLCollection | null),
-	wrapper?: HTMLElement
-): HTMLElement {
-	const elements = elems(element, wrapper || document);
-	return elements.length ? elements[0] : null;
-}
+	return {
+		height: getFloatOrInt(boundingRect.height, elem.offsetHeight),
+		width: getFloatOrInt(boundingRect.width, elem.offsetWidth)
+	};
+};
 
-export function elems(
+export const roundToSixDecimalPlaces = (value: number): number => Math.round(value * 1000000) / 1000000;
+
+export const elems = (
 	elements:
 		| string
 		| HTMLElement
@@ -47,7 +42,7 @@ export function elems(
 				wrapper: HTMLElement | Document
 		  ) => string | HTMLElement | HTMLElement[] | NodeList | HTMLCollection | null),
 	wrapper: HTMLElement | Document
-): HTMLElement[] {
+): HTMLElement[] => {
 	wrapper = wrapper || document;
 	if (typeof elements === 'function') elements = elements(wrapper);
 
@@ -60,21 +55,31 @@ export function elems(
 				: elements instanceof NodeList
 					? toArray(elements)
 					: [];
-}
+};
 
-export function prevent(e: any): void {
-	if (e.raw) e = e.raw;
-	if (e.cancelable && !e.defaultPrevented) e.preventDefault();
-}
+export const prevent = (e: any): void => {
+	if (e.raw) {
+		e = e.raw;
+	}
+	if (e.cancelable && !e.defaultPrevented) {
+		e.preventDefault();
+	}
+};
 
-export function stop(e: any): void {
-	if (e.raw) e = e.raw;
-	if (e.stopPropagation) e.stopPropagation();
-}
+export const stop = (e: any): void => {
+	if (e.raw) {
+		e = e.raw;
+	}
+	if (e.stopPropagation) {
+		e.stopPropagation();
+	}
+};
 
-export function inputHandler(handler: any): any {
-	return (e) => {
-		if (e.nativeEvent) e = e.nativeEvent;
+const inputHandler = (handler: any): any => {
+	return (e: any) => {
+		if (e.nativeEvent) {
+			e = e.nativeEvent;
+		}
 		const changedTouches = e.changedTouches || [];
 		const touchPoints = e.targetTouches || [];
 		const detail = e.detail && e.detail.x ? e.detail : null;
@@ -116,9 +121,9 @@ export function inputHandler(handler: any): any {
 							: e.pageY
 		});
 	};
-}
+};
 
-export function Events(): {
+export const Events = (): {
 	add: (
 		element: Element | Document | Window | MediaQueryList,
 		event: string,
@@ -132,14 +137,16 @@ export function Events(): {
 		options?: AddEventListenerOptions
 	) => void;
 	purge: () => void;
-} {
-	let events = [];
+} => {
+	let events: any[] = [];
 
 	return {
 		add(element, event, handler, options) {
-			(element as MediaQueryList).addListener
-				? (element as MediaQueryList).addListener(handler)
-				: element.addEventListener(event, handler, options);
+			if ((element as MediaQueryList).addListener) {
+				(element as MediaQueryList).addListener(handler);
+			} else {
+				element.addEventListener(event, handler, options);
+			}
 			events.push([element, event, handler, options]);
 		},
 		input(element, event, handler, options) {
@@ -147,83 +154,13 @@ export function Events(): {
 		},
 		purge() {
 			events.forEach((event) => {
-				event[0].removeListener
-					? event[0].removeListener(event[2])
-					: event[0].removeEventListener(event[1], event[2], event[3]);
+				if (event[0].removeListener) {
+					event[0].removeListener(event[2]);
+				} else {
+					event[0].removeEventListener(event[1], event[2], event[3]);
+				}
 			});
 			events = [];
 		}
 	};
-}
-
-export function clamp(value: number, min: number, max: number): number {
-	return Math.min(Math.max(value, min), max);
-}
-
-export function sign(x: number): number {
-	return (x > 0 ? 1 : 0) - (x < 0 ? 1 : 0) || +x;
-}
-
-export function getFrame(cb: FrameRequestCallback): number {
-	return window.requestAnimationFrame(cb);
-}
-
-export function cancelFrame(id: number): void {
-	return window.cancelAnimationFrame(id);
-}
-
-export function rect(elem: HTMLElement): { height: number; width: number } {
-	const boundingRect = elem.getBoundingClientRect();
-
-	return {
-		height: getFloatOrInt(boundingRect.height, elem.offsetHeight),
-		width: getFloatOrInt(boundingRect.width, elem.offsetWidth)
-	};
-}
-
-export function isNumber(n: unknown): boolean {
-	return Number(n) === n;
-}
-
-export function getProp<R>(obj: {}, key: string, fallback: R, resolve?: boolean): R {
-	const prop = obj && obj[key];
-	if (typeof prop === 'undefined' || prop === null) return fallback;
-	return resolve && typeof prop === 'function' ? prop() : prop;
-}
-
-export function style(elem: HTMLElement, style: string, value: string | null): void {
-	elem.style[style] = value;
-}
-
-export function round(value: number): number {
-	return Math.round(value * 1000000) / 1000000;
-}
-
-export function equal(v1: any, v2: any): boolean {
-	if (v1 === v2) return true;
-	const t1 = typeof v1;
-	const t2 = typeof v2;
-	if (t1 !== t2) return false;
-	if (t1 === 'object' && v1 !== null && v2 !== null) {
-		if (
-			v1.length !== v2.length ||
-			Object.getOwnPropertyNames(v1).length !== Object.getOwnPropertyNames(v2).length
-		)
-			return false;
-		for (const prop in v1) {
-			if (!equal(v1[prop], v2[prop])) return false;
-		}
-	} else if (t1 === 'function') {
-		return v1.toString() === v2.toString();
-	} else {
-		return false;
-	}
-	return true;
-}
-
-export function checkOptions(currentOptions, newOptions) {
-	if (!equal(currentOptions.current, newOptions)) {
-		currentOptions.current = newOptions;
-	}
-	return currentOptions.current;
-}
+};

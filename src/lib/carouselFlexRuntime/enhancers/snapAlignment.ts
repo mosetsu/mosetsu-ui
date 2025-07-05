@@ -1,5 +1,5 @@
+import { clamp, getSign } from '../utils';
 import type { CarouselFlexController, KeyFrameOptions } from '../types';
-import { clamp, sign } from '../utils';
 
 const SnapAlignment = (controller: CarouselFlexController): (() => void) => {
 	let checked: boolean;
@@ -59,12 +59,12 @@ const SnapAlignment = (controller: CarouselFlexController): (() => void) => {
 		const isFreeSnap = true;
 		const track = controller.track;
 		const speed = velocity();
-		currentDirection = sign(speed);
+		currentDirection = getSign(speed);
 		const trackDetails = controller.track.details;
 
 		const keyframes: KeyFrameOptions[] = [];
 		if (!speed && isFreeSnap) {
-			controller.navigateToIndex(clampIdx(trackDetails.abs), true);
+			controller.navigateToSlideIdx(clampIdx(trackDetails.abs), true);
 			// {
 			// 	duration: 500,
 			// 	easing: (t) => 1 + --t * t * t * t * t
@@ -90,7 +90,7 @@ const SnapAlignment = (controller: CarouselFlexController): (() => void) => {
 			const newDistance = newPosition < min ? min - position : max - position;
 			let addToBounceBack = 0;
 			let bounceSpeed = speed;
-			if (sign(newDistance) === currentDirection) {
+			if (getSign(newDistance) === currentDirection) {
 				const distancePortion = Math.min(Math.abs(newDistance) / Math.abs(dist), 1);
 				const durationPortion = t(distancePortion) * dur;
 				keyframes[0].earlyExit = durationPortion;

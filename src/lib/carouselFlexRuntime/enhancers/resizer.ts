@@ -1,6 +1,6 @@
+import { Events, calculateBoundingRect } from '../utils';
+import { CarouselFlexEventType, DOMEventType } from '../events';
 import type { CarouselFlexController } from '../types';
-import { Events, rect } from '../utils';
-import EventType from '../events';
 
 const Resizer = (controller: CarouselFlexController): (() => void) => {
 	const events = Events();
@@ -43,7 +43,7 @@ const Resizer = (controller: CarouselFlexController): (() => void) => {
 	};
 
 	const updateContainerSize = (): void => {
-		const size = rect(controller.options.container);
+		const size = calculateBoundingRect(controller.options.container);
 		controller.config.containerSize =
 			(controller.options.isLayoutVertical ? size.height : size.width) || 1;
 	};
@@ -60,7 +60,7 @@ const Resizer = (controller: CarouselFlexController): (() => void) => {
 			return false;
 		}
 		if (!currentMatch) {
-			controller.dispatch(EventType.BEFORE_OPTIONS_CHANGED);
+			controller.dispatch(CarouselFlexEventType.BEFORE_OPTIONS_CHANGED);
 		}
 
 		currentMatch = match;
@@ -97,7 +97,7 @@ const Resizer = (controller: CarouselFlexController): (() => void) => {
 			refreshTrack();
 		}
 
-		controller.dispatch(EventType.UPDATED);
+		controller.dispatch(CarouselFlexEventType.UPDATED);
 	};
 
 	const handleOrientationChange = () => setTimeout(handleWindowResize, 500);
@@ -111,7 +111,7 @@ const Resizer = (controller: CarouselFlexController): (() => void) => {
 
 	const optionsChanged = (idx?: number) => {
 		refreshTrack(idx);
-		controller.dispatch(EventType.OPTIONS_CHANGED);
+		controller.dispatch(CarouselFlexEventType.OPTIONS_CHANGED);
 	};
 
 	const handleBreakpointChange = (): void => {
@@ -130,16 +130,16 @@ const Resizer = (controller: CarouselFlexController): (() => void) => {
 			const mediaQueryList: MediaQueryList & { __media?: string } = window.matchMedia(value);
 			mediaQueryList.__media = value;
 			mediaQueryLists.push(mediaQueryList);
-			events.add(mediaQueryList, EventType.BREAKPOINT_CHANGE, handleBreakpointChange);
+			events.add(mediaQueryList, DOMEventType.BREAKPOINT_CHANGE, handleBreakpointChange);
 		}
-		events.add(window, EventType.ORIENTATION_CHANGE, handleOrientationChange);
-		events.add(window, EventType.RESIZE, handleWindowResize);
+		events.add(window, DOMEventType.ORIENTATION_CHANGE, handleOrientationChange);
+		events.add(window, DOMEventType.RESIZE, handleWindowResize);
 		hasBreakpointChanged();
 	})();
 
 	return (): void => {
 		events.purge();
-		controller.dispatch(EventType.DESTROYED);
+		controller.dispatch(CarouselFlexEventType.DESTROYED);
 	};
 };
 

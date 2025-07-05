@@ -1,6 +1,6 @@
 import CarouselTransition from './core/transition';
 import CarouselTrack from './core/track';
-import EventType from './events';
+import { CarouselFlexEventType } from './events';
 import type { CarouselFlexOptions, CarouselFlexController, SubscriptionProps } from './types';
 
 const createBaseController = (options: CarouselFlexOptions): CarouselFlexController => {
@@ -30,28 +30,27 @@ const createBaseController = (options: CarouselFlexOptions): CarouselFlexControl
 
 const Controller = (
 	options: CarouselFlexOptions,
-	enhancers?: Array<(controller: CarouselFlexController) => void>
+	enhancers?: Array<(controller: CarouselFlexController) => () => void>
 ): CarouselFlexController => {
+	const cleanUps: Array<() => void> = [];
 	const controller = createBaseController(options);
-
-	console.log('Controller created with options:', options);
 
 	controller.config.slideElements = Array.from(
 		controller.options.container.querySelectorAll(controller.options.selector)
 	);
 	controller.track = CarouselTrack({
 		isLoopEnabled: () => !!controller.options.loop,
-		onDetailsChanged: () => controller.dispatch(EventType.DETAILS_CHANGED),
-		onSlideChanged: () => controller.dispatch(EventType.SLIDE_CHANGED),
+		onDetailsChanged: () => controller.dispatch(CarouselFlexEventType.DETAILS_CHANGED),
+		onSlideChanged: () => controller.dispatch(CarouselFlexEventType.SLIDE_CHANGED),
 		getTrackConfig: () => controller.config.trackConfig || []
 	});
 	controller.transition = CarouselTransition({
-		onAnimationStarted: () => controller.dispatch(EventType.ANIMATION_STARTED),
-		onAnimationEnded: () => controller.dispatch(EventType.ANIMATION_ENDED),
-		onAnimationStopped: () => controller.dispatch(EventType.ANIMATION_STOPPED),
+		onAnimationStarted: () => controller.dispatch(CarouselFlexEventType.ANIMATION_STARTED),
+		onAnimationEnded: () => controller.dispatch(CarouselFlexEventType.ANIMATION_ENDED),
+		onAnimationStopped: () => controller.dispatch(CarouselFlexEventType.ANIMATION_STOPPED),
 		getCarouselTrack: () => controller.track
 	});
-	controller.navigateToIndex = (idx: number, absolute: boolean) => {
+	controller.navigateToSlideIdx = (idx: number, absolute: boolean) => {
 		const distance = controller.track.getDistanceFromIndex(idx, absolute);
 		if (distance) {
 			controller.transition.start([
@@ -59,21 +58,24 @@ const Controller = (
 			]);
 		}
 	};
-	// controller.prev = () => {
-	// 	controller.navigateToIndex(controller.track.details.abs - 1, true);
-	// };
-	// controller.next = () => {
-	// 	controller.navigateToIndex(controller.track.details.abs + 1, true);
-	// };
+	controller.prevSlide = (): void => {
+		controller.navigateToSlideIdx(controller.track.details.abs - 1, true);
+	};
+	controller.nextSlide = () => {
+		controller.navigateToSlideIdx(controller.track.details.abs + 1, true);
+	};
+	controller.destroy = () => {
+		cleanUps.forEach((cleanup) => cleanup());
+	};
 
 	if (enhancers) {
 		for (const enhancer of enhancers) {
-			enhancer(controller);
+			cleanUps.push(enhancer(controller));
 		}
 	}
 
 	controller.track.refreshCarouselTrack(0);
-	controller.dispatch(EventType.CREATED);
+	controller.dispatch(CarouselFlexEventType.CREATED);
 
 	return controller;
 };

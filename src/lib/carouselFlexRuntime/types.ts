@@ -59,7 +59,9 @@ export type CarouselFlexController = {
 	options: CarouselFlexOptions;
 	track: CarouselTrackInstance;
 	transition: CarouselTransitionInstance;
-	navigateToIndex: (index: number, absolute: boolean) => void;
+	navigateToSlideIdx: (index: number, absolute: boolean) => void;
+	prevSlide: () => void;
+	nextSlide: () => void;
 	dispatch: (name: string) => void;
 	sub: (name: string, callback: (controller?: CarouselFlexController) => void) => void;
 	config: {
@@ -67,6 +69,7 @@ export type CarouselFlexController = {
 		trackConfig: Array<{ origin: number; size: number; spacing: number }>;
 		slideElements: HTMLElement[];
 	};
+	destroy: () => void;
 };
 
 export type KeyFrameOptions = {

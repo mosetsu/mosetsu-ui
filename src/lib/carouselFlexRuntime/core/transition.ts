@@ -1,4 +1,3 @@
-import { cancelFrame, getFrame } from '../utils';
 import type { CarouselTrackInstance, CarouselTransitionInstance, KeyFrameOptions } from '../types';
 
 type TransitionOptions = {
@@ -55,11 +54,11 @@ const CarouselTransition = (options: TransitionOptions): CarouselTransitionInsta
 	};
 
 	function nextFrame() {
-		reqId = getFrame(runKeyframeAnimation);
+		reqId = window.requestAnimationFrame(runKeyframeAnimation);
 	}
 
 	const stopTransition = (): void => {
-		cancelFrame(reqId);
+		window.cancelAnimationFrame(reqId);
 		if (started) {
 			onAnimationStopped();
 		}
