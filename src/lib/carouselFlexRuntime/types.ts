@@ -78,3 +78,11 @@ export type KeyFrameOptions = {
 	earlyExit?: number;
 	easing: (t: number) => number;
 };
+
+export type CarouselFlexClient = {
+	navigateToSlideIdx: (index: number, absolute: boolean) => void;
+	prevSlide: () => void;
+	nextSlide: () => void;
+	on: (name: string, callback: (controller?: CarouselFlexController) => void) => void;
+	destroy: () => void;
+};

@@ -1,7 +1,12 @@
 import CarouselTransition from './core/transition';
 import CarouselTrack from './core/track';
 import { CarouselFlexEventType } from './events';
-import type { CarouselFlexOptions, CarouselFlexController, SubscriptionProps } from './types';
+import type {
+	CarouselFlexOptions,
+	CarouselFlexController,
+	SubscriptionProps,
+	CarouselFlexClient
+} from './types';
 
 const createBaseController = (options: CarouselFlexOptions): CarouselFlexController => {
 	const subscriptions: SubscriptionProps = {};
@@ -31,7 +36,7 @@ const createBaseController = (options: CarouselFlexOptions): CarouselFlexControl
 const Controller = (
 	options: CarouselFlexOptions,
 	enhancers?: Array<(controller: CarouselFlexController) => () => void>
-): CarouselFlexController => {
+): CarouselFlexClient => {
 	const cleanUps: Array<() => void> = [];
 	const controller = createBaseController(options);
 
@@ -77,7 +82,13 @@ const Controller = (
 	controller.track.refreshCarouselTrack(0);
 	controller.dispatch(CarouselFlexEventType.CREATED);
 
-	return controller;
+	return {
+		navigateToSlideIdx: controller.navigateToSlideIdx,
+		prevSlide: controller.prevSlide,
+		nextSlide: controller.nextSlide,
+		on: controller.sub,
+		destroy: controller.destroy
+	};
 };
 
 export default Controller;

@@ -1,23 +1,33 @@
-<!-- 
-  Carousel.svelte 
-  A minimal, dependency-free Svelte carousel inspired by Keen Slider's architecture.
-  This version accepts slides directly via the default slot and uses Svelte's on: directive for events.
--->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import DragHandler from '$lib/carouselFlexRuntime/enhancers/dragHandler';
 	import SnapAlignment from '$lib/carouselFlexRuntime/enhancers/snapAlignment';
 	import Positioner from '$lib/carouselFlexRuntime/enhancers/positioner';
 	import Slider from '$lib/carouselFlexRuntime/controller';
 	import Resizer from '$lib/carouselFlexRuntime/enhancers/resizer';
-	import { onMount } from 'svelte';
+
+	import type { CarouselFlexClient } from '$lib/carouselFlexRuntime/types';
 
 	export let options = {};
 	let container: HTMLDivElement | null = null;
+	let controller: CarouselFlexClient;
+
+	export function handlePrevSlide() {
+		if (controller) {
+			controller.prevSlide();
+		}
+	}
+
+	export function handleNextSlide() {
+		if (controller) {
+			controller.nextSlide();
+		}
+	}
 
 	onMount(() => {
 		if (container) {
 			// Initialize the slider
-			Slider({ ...options, container, selector: '.carousel__flex' }, [
+			controller = Slider({ ...options, container, selector: '.carousel__flex' }, [
 				Resizer,
 				Positioner,
 				DragHandler,
@@ -25,7 +35,9 @@
 			]);
 		}
 
-		return () => {};
+		return () => {
+			controller.destroy();
+		};
 	});
 </script>
 
@@ -41,17 +53,16 @@
 
 <style>
 	.carousel-wrapper {
-		-webkit-tap-highlight-color: transparent;
-		align-content: flex-start;
+		width: 100%;
 		display: flex;
-		overflow: hidden;
 		position: relative;
+		align-content: flex-start;
+		overflow: hidden;
+		user-select: none;
 		touch-action: pan-y;
 		-webkit-user-select: none;
 		-moz-user-select: none;
 		-ms-user-select: none;
-		user-select: none;
-		-khtml-user-select: none;
-		width: 100%;
+		-webkit-tap-highlight-color: transparent;
 	}
 </style>

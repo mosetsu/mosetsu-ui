@@ -25,12 +25,21 @@
 	};
 
 	let activeIndex = 0;
+	let controller;
 </script>
 
 <section class="w-full p-8">
 	<h1 class="mb-8 text-2xl font-bold">Carousel Test</h1>
 	<div class="relative mt-3 w-full overflow-hidden p-4">
 		<Carousel options={carouselOptions}>
+			{#each items as { id, bg }}
+				<div
+					class="flex h-[240px] items-center justify-center {bg} carousel__flex text-xl font-bold"
+					data-data-carousel-slide={id}
+				>
+					Slide {id}
+				</div>
+			{/each}
 			{#each items as { id, bg }}
 				<div
 					class="flex h-[240px] items-center justify-center {bg} carousel__flex text-xl font-bold"
@@ -45,7 +54,7 @@
 			{/each}
 		</Carousel>
 		<div class="my-4"></div>
-		<Carousel options={{ ...carouselOptions, loop: false }}>
+		<Carousel options={{ ...carouselOptions, loop: false }} bind:this={controller}>
 			{#each items as { id, bg }}
 				<div
 					class="flex h-[240px] items-center justify-center {bg} carousel__flex text-xl font-bold"
@@ -58,7 +67,7 @@
 	</div>
 	<div class="mt-8 flex items-center justify-center space-x-4">
 		<button
-			on:click={() => {}}
+			on:click={controller.handlePrevSlide}
 			class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 text-white shadow-md transition-colors duration-200 hover:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
 			aria-label="Previous slide"
 		>
@@ -88,7 +97,7 @@
 		</div>
 
 		<button
-			on:click={() => {}}
+			on:click={controller.handleNextSlide}
 			class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 text-white shadow-md transition-colors duration-200 hover:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
 			aria-label="Next slide"
 		>
