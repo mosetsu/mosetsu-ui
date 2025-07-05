@@ -9,6 +9,7 @@ import type {
 } from './types';
 
 const createBaseController = (options: CarouselFlexOptions): CarouselFlexController => {
+	// TODO: REMOVE SUBSCRIPTIONS
 	const subscriptions: SubscriptionProps = {};
 	const controller = {
 		options: {

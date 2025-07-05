@@ -41,9 +41,21 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 	const calculateCarouselBoundaries = (): void => {
 		loopMin = minIdx = isLoopEnabled() ? -infinity : 0;
 		loopMax = maxIdx = isLoopEnabled() ? infinity : maxRelativeIdx;
-
-		min = roundToSixDecimalPlaces(minIdx === -infinity ? minIdx : (getDistanceFromIndex(minIdx || 0, true, 0) ?? 0));
-		max = roundToSixDecimalPlaces(maxIdx === infinity ? maxIdx : (getDistanceFromIndex(maxIdx, true, 0) ?? 0));
+		const dragMin = null;
+		const dragMax = null;
+		if (dragMin !== null) {
+			minIdx = dragMin;
+		}
+		if (dragMax !== null) {
+			maxIdx = dragMax;
+		}
+		min = minIdx === -infinity ? minIdx : (getDistanceFromIndex(minIdx || 0, true, 0) ?? 0);
+		max = maxIdx === infinity ? maxIdx : (getDistanceFromIndex(maxIdx, true, 0) ?? 0);
+		if (dragMax === null) {
+			loopMax = maxIdx;
+		}
+		min = roundToSixDecimalPlaces(min);
+		max = roundToSixDecimalPlaces(max);
 	};
 
 	const getDistanceToIdx = (distance: number): number => {
@@ -71,10 +83,12 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		return data.distance / data.time || 0;
 	};
 
-	const getDistanceFromAbsoluteIndex = (idx: number, fromPosition?: number): number => {
-		if (fromPosition == null) fromPosition = roundToSixDecimalPlaces(position);
-		if (!idxInRange(idx) || !idx) {
-			return 0;
+	const getDistanceFromAbsoluteIndex = (idx: number, fromPosition?: number): number | null => {
+		if (fromPosition == null) {
+			fromPosition = roundToSixDecimalPlaces(position);
+		}
+		if (!idxInRange(idx) || idx === null) {
+			return null;
 		}
 		idx = Math.round(idx);
 		const { abs, rel, origin } = determineCarouselIndexes(fromPosition);
@@ -93,14 +107,18 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		);
 	};
 
-	const getDistanceFromIndex = (idx: number, absolute: boolean, fromPosition?: number): number => {
+	const getDistanceFromIndex = (
+		idx: number,
+		absolute: boolean,
+		fromPosition?: number
+	): number | null => {
 		let distance: number = 0;
 
 		if (absolute || !isLoopEnabled()) {
 			return getDistanceFromAbsoluteIndex(idx, fromPosition);
 		}
 		if (!idxInRange(idx)) {
-			return 0;
+			return null;
 		}
 
 		const { abs, rel } = determineCarouselIndexes(fromPosition ?? position);
@@ -123,10 +141,10 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 	const updatePosition = (value: number): void => {
 		measure(value - position);
 		position = roundToSixDecimalPlaces(value);
-		const idx = refreshTrackData()?.abs || 0;
+		const idx = refreshTrackData()?.abs || null;
 		if (idx !== currentIdx) {
 			currentIdx = idx;
-			if (Number.isInteger(idx)) {
+			if (currentIdx === null) {
 				onSlideChanged();
 			}
 		}
@@ -287,7 +305,9 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 			if (acc[acc.length - 1] > distance) distance = acc[acc.length - 1];
 			distance = roundToSixDecimalPlaces(distance);
 			acc.push(distance);
-			if (!lastDistance || lastDistance < distance) maxRelativeIdx = acc.length - 1;
+			if (!lastDistance || lastDistance < distance) {
+				maxRelativeIdx = acc.length - 1;
+			}
 			lastDistance = distance;
 			return acc;
 			// @ts-expect-error starting at null
