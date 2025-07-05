@@ -35,6 +35,10 @@
 				<div
 					class="flex h-[240px] items-center justify-center {bg} carousel__flex text-xl font-bold"
 					data-data-carousel-slide={id}
+					on:click={() => {
+						console.log(`Clicked on slide ${id}`);
+					}}
+					aria-hidden={true}
 				>
 					Slide {id}
 				</div>

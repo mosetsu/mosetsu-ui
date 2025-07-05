@@ -1,11 +1,19 @@
 import CarouselTransition from './core/transition';
 import CarouselTrack from './core/track';
+import EventType from './events';
 import type { CarouselFlexOptions, CarouselFlexController, SubscriptionProps } from './types';
 
 const createBaseController = (options: CarouselFlexOptions): CarouselFlexController => {
 	const subscriptions: SubscriptionProps = {};
 	const controller = {
-		options,
+		options: {
+			breakpoints: { slides: { perView: 1, spacing: 10 } },
+			loop: false,
+			isLayoutVertical: false,
+			dragSpeed: 1,
+			...options
+		},
+		config: {},
 		sub: (name: string, callback: (instance?: CarouselFlexController) => void) => {
 			if (!subscriptions[name]) subscriptions[name] = [];
 			if (!subscriptions[name].includes(callback)) subscriptions[name].push(callback);
@@ -26,16 +34,21 @@ const Controller = (
 ): CarouselFlexController => {
 	const controller = createBaseController(options);
 
+	console.log('Controller created with options:', options);
+
+	controller.config.slideElements = Array.from(
+		controller.options.container.querySelectorAll(controller.options.selector)
+	);
 	controller.track = CarouselTrack({
 		isLoopEnabled: () => !!controller.options.loop,
-		onDetailsChanged: () => controller.dispatch('detailsChanged'),
-		onSlideChanged: () => controller.dispatch('slideChanged'),
-		getTrackConfig: () => controller.options.trackConfig || []
+		onDetailsChanged: () => controller.dispatch(EventType.DETAILS_CHANGED),
+		onSlideChanged: () => controller.dispatch(EventType.SLIDE_CHANGED),
+		getTrackConfig: () => controller.config.trackConfig || []
 	});
 	controller.transition = CarouselTransition({
-		onAnimationStarted: () => controller.dispatch('animationStarted'),
-		onAnimationEnded: () => controller.dispatch('animationEnded'),
-		onAnimationStopped: () => controller.dispatch('animationStopped'),
+		onAnimationStarted: () => controller.dispatch(EventType.ANIMATION_STARTED),
+		onAnimationEnded: () => controller.dispatch(EventType.ANIMATION_ENDED),
+		onAnimationStopped: () => controller.dispatch(EventType.ANIMATION_STOPPED),
 		getCarouselTrack: () => controller.track
 	});
 	controller.navigateToIndex = (idx: number, absolute: boolean) => {
@@ -60,7 +73,7 @@ const Controller = (
 	}
 
 	controller.track.refreshCarouselTrack(0);
-	controller.dispatch('created');
+	controller.dispatch(EventType.CREATED);
 
 	return controller;
 };

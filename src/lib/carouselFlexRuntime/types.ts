@@ -1,8 +1,18 @@
 export type CarouselFlexOptions = {
-	breakpoints?: Record<string, string>;
+	breakpoints?: Record<
+		string,
+		{
+			slides: {
+				perView: number;
+				spacing: number;
+			};
+		}
+	>;
 	loop?: boolean;
+	isLayoutVertical?: boolean;
 	container: HTMLElement;
 	selector: string;
+	dragSpeed?: number | ((value: number) => number);
 };
 
 export type SubscriptionProps = {
@@ -52,6 +62,11 @@ export type CarouselFlexController = {
 	navigateToIndex: (index: number, absolute: boolean) => void;
 	dispatch: (name: string) => void;
 	sub: (name: string, callback: (controller?: CarouselFlexController) => void) => void;
+	config: {
+		containerSize: number;
+		trackConfig: Array<{ origin: number; size: number; spacing: number }>;
+		slideElements: HTMLElement[];
+	};
 };
 
 export type KeyFrameOptions = {
