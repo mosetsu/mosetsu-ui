@@ -9,6 +9,8 @@
 	import type { CarouselFlexClient } from '$lib/carouselFlexRuntime/types';
 
 	export let options = {};
+	export let onSlideChange: (details: any) => void = () => {};
+
 	let container: HTMLDivElement | null = null;
 	let controller: CarouselFlexClient;
 
@@ -24,6 +26,12 @@
 		}
 	}
 
+	export function goToSlide(index: number) {
+		if (controller) {
+			controller.navigateToSlideIdx(index, false);
+		}
+	}
+
 	onMount(() => {
 		if (container) {
 			// Initialize the slider
@@ -36,7 +44,7 @@
 
 			controller.on('slideChanged', (details) => {
 				// Update the active index or perform any other action when details change
-				console.log('Carousel slide changed:', details);
+				onSlideChange(details?.track.details);
 			});
 		}
 

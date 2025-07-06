@@ -8,9 +8,10 @@ import type {
 	CarouselFlexClient
 } from './types';
 
-const createBaseController = (options: CarouselFlexOptions): CarouselFlexController => {
-	// TODO: REMOVE SUBSCRIPTIONS
-	const subscriptions: SubscriptionProps = {};
+const createBaseController = (
+	options: CarouselFlexOptions,
+	subscriptions: SubscriptionProps
+): CarouselFlexController => {
 	const controller = {
 		options: {
 			breakpoints: { slides: { perView: 1, spacing: 10 } },
@@ -39,7 +40,8 @@ const Controller = (
 	enhancers?: Array<(controller: CarouselFlexController) => () => void>
 ): CarouselFlexClient => {
 	const cleanUps: Array<() => void> = [];
-	const controller = createBaseController(options);
+	let subscriptions: SubscriptionProps = {};
+	const controller = createBaseController(options, subscriptions);
 
 	controller.config.slideElements = Array.from(
 		controller.options.container.querySelectorAll(controller.options.selector)
@@ -72,6 +74,7 @@ const Controller = (
 	};
 	controller.destroy = () => {
 		cleanUps.forEach((cleanup) => cleanup());
+		subscriptions = {};
 	};
 
 	if (enhancers) {

@@ -54,7 +54,14 @@
 			{/each}
 		</Carousel>
 		<div class="my-4"></div>
-		<Carousel options={{ ...carouselOptions, loop: false }} bind:this={controller}>
+		<Carousel
+			options={{ ...carouselOptions, loop: false }}
+			bind:this={controller}
+			onSlideChange={(e) => {
+				activeIndex = e.rel;
+				console.log(`Active slide changed to: ${e}`);
+			}}
+		>
 			{#each items as { id, bg }}
 				<div
 					class="flex h-[240px] items-center justify-center {bg} carousel__flex text-xl font-bold"
@@ -85,9 +92,9 @@
 		</button>
 
 		<div class="flex items-center justify-center space-x-2">
-			{#each [1, 2, 3, 4, 5, 6, 7, 8] as _, i (i)}
+			{#each items as { id }, i}
 				<button
-					on:click={() => {}}
+					on:click={() => controller.goToSlide(i)}
 					class="h-3 w-3 rounded-full transition-all duration-300 {activeIndex === i
 						? 'scale-125 bg-sky-400'
 						: 'bg-gray-600 hover:bg-gray-500'}"
