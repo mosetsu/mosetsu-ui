@@ -35,7 +35,7 @@ export type CarouselTrackDetails = {
 
 export type CarouselTrackInstance = {
 	refreshCarouselTrack: (idx?: number) => void;
-	getDistanceToIdx: (distance: number) => number;
+	getDistanceToIdx: (distance: number) => number | null;
 	getDistanceFromIndex: (idx: number, absolute: boolean, fromPosition?: number) => number | null;
 	updatePosition: (value: number) => void;
 	add: (value: number) => void;

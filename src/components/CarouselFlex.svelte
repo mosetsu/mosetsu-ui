@@ -33,6 +33,11 @@
 				DragHandler,
 				SnapAlignment
 			]);
+
+			controller.on('slideChanged', (details) => {
+				// Update the active index or perform any other action when details change
+				console.log('Carousel slide changed:', details);
+			});
 		}
 
 		return () => {

@@ -49,8 +49,8 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		if (dragMax !== null) {
 			maxIdx = dragMax;
 		}
-		min = minIdx === -infinity ? minIdx : (getDistanceFromIndex(minIdx || 0, true, 0) ?? 0);
-		max = maxIdx === infinity ? maxIdx : (getDistanceFromIndex(maxIdx, true, 0) ?? 0);
+		min = minIdx === -infinity ? minIdx : (getDistanceFromIndex(minIdx || 0, true, 0) as number);
+		max = maxIdx === infinity ? maxIdx : (getDistanceFromIndex(maxIdx, true, 0) as number);
 		if (dragMax === null) {
 			loopMax = maxIdx;
 		}
@@ -58,9 +58,9 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		max = roundToSixDecimalPlaces(max);
 	};
 
-	const getDistanceToIdx = (distance: number): number => {
+	const getDistanceToIdx = (distance: number): number | null => {
 		const { abs } = determineCarouselIndexes(position + distance);
-		return idxInRange(abs) ? abs : 0;
+		return idxInRange(abs) ? abs : null;
 	};
 
 	const velocity = (): number => {
@@ -83,7 +83,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		return data.distance / data.time || 0;
 	};
 
-	const getDistanceFromAbsoluteIndex = (idx: number, fromPosition?: number): number | null => {
+	const absoluteIdxToDist = (idx: number, fromPosition?: number): number | null => {
 		if (fromPosition == null) {
 			fromPosition = roundToSixDecimalPlaces(position);
 		}
@@ -112,10 +112,10 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		absolute: boolean,
 		fromPosition?: number
 	): number | null => {
-		let distance: number = 0;
+		let distance: number | null;
 
 		if (absolute || !isLoopEnabled()) {
-			return getDistanceFromAbsoluteIndex(idx, fromPosition);
+			return absoluteIdxToDist(idx, fromPosition);
 		}
 		if (!idxInRange(idx)) {
 			return null;
@@ -124,27 +124,26 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		const { abs, rel } = determineCarouselIndexes(fromPosition ?? position);
 		const idxDistance = idx - rel;
 		const nextIdx = abs + idxDistance;
-		distance = getDistanceFromAbsoluteIndex(nextIdx) || 0;
-		const otherDistance =
-			getDistanceFromAbsoluteIndex(nextIdx - slidesCount * getSign(idxDistance)) || 0;
+		distance = absoluteIdxToDist(nextIdx);
+		const otherDistance = absoluteIdxToDist(nextIdx - slidesCount * getSign(idxDistance));
 
 		if (
-			(otherDistance !== null && Math.abs(otherDistance) < Math.abs(distance)) ||
+			(otherDistance !== null && Math.abs(otherDistance) < Math.abs(distance as number)) ||
 			distance === null
 		) {
 			distance = otherDistance;
 		}
 
-		return roundToSixDecimalPlaces(distance);
+		return roundToSixDecimalPlaces(distance as number);
 	};
 
 	const updatePosition = (value: number): void => {
 		measure(value - position);
 		position = roundToSixDecimalPlaces(value);
-		const idx = refreshTrackData()?.abs || null;
+		const idx = refreshTrackData()?.abs || 0;
 		if (idx !== currentIdx) {
 			currentIdx = idx;
-			if (currentIdx === null) {
+			if (Number.isInteger(idx)) {
 				onSlideChanged();
 			}
 		}
@@ -330,7 +329,7 @@ const CarouselTrack = (options: TrackOptions): CarouselTrackInstance => {
 		calculateCarouselBoundaries();
 
 		if (index && Number.isInteger(index)) {
-			add(getDistanceFromAbsoluteIndex(clampIdx(index)) || 0);
+			add(absoluteIdxToDist(clampIdx(index)) || 0);
 		} else {
 			refreshTrackData();
 		}

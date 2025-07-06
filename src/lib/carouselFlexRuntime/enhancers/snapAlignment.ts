@@ -75,7 +75,7 @@ const SnapAlignment = (controller: CarouselFlexController): (() => void) => {
 		dur = adjustDuration(dur);
 		dist *= currentDirection;
 		if (isFreeSnap) {
-			const snapDist = track.getDistanceFromIndex(track.getDistanceToIdx(dist), true);
+			const snapDist = track.getDistanceFromIndex(track.getDistanceToIdx(dist) as number, true);
 			if (snapDist) dist = snapDist;
 		}
 
