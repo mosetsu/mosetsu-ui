@@ -7,6 +7,7 @@ import type {
 	SubscriptionProps,
 	CarouselFlexClient
 } from './types';
+import { elems } from './utils';
 
 const createBaseController = (
 	options: CarouselFlexOptions,
@@ -35,16 +36,26 @@ const createBaseController = (
 	return controller;
 };
 
+export type CB = [string, (controller: CarouselFlexController) => void];
+
 const Controller = (
 	options: CarouselFlexOptions,
-	enhancers?: Array<(controller: CarouselFlexController) => () => void>
+	enhancers?: Array<(controller: CarouselFlexController) => () => void>,
+	hooks?: Array<CB>
 ): CarouselFlexClient => {
 	const cleanUps: Array<() => void> = [];
 	let subscriptions: SubscriptionProps = {};
 	const controller = createBaseController(options, subscriptions);
 
-	controller.config.slideElements = Array.from(
-		controller.options.container.querySelectorAll(controller.options.selector)
+	if (Array.isArray(hooks)) {
+		for (const [name, callback] of hooks) {
+			controller.sub(name, callback);
+		}
+	}
+
+	controller.config.slideElements = elems(
+		controller.options.selector,
+		controller.options.container
 	);
 	controller.track = CarouselTrack({
 		isLoopEnabled: () => !!controller.options.loop,

@@ -68,6 +68,9 @@ const Resizer = (controller: CarouselFlexController): (() => void) => {
 			perView: 1,
 			spacing: 10
 		};
+		controller.config.currentBreakpoint = currentBreakpoint;
+		// console.log('Current breakpoint:', currentBreakpoint);
+		controller.dispatch('bpchange');
 
 		updateContainerSize();
 		renewTrackConfig();

@@ -3,16 +3,29 @@
 	import DragHandler from '$lib/carouselFlexRuntime/enhancers/dragHandler';
 	import SnapAlignment from '$lib/carouselFlexRuntime/enhancers/snapAlignment';
 	import Positioner from '$lib/carouselFlexRuntime/enhancers/positioner';
-	import Slider from '$lib/carouselFlexRuntime/controller';
+	import Slider, { type CB } from '$lib/carouselFlexRuntime/controller';
 	import Resizer from '$lib/carouselFlexRuntime/enhancers/resizer';
 
-	import type { CarouselFlexClient } from '$lib/carouselFlexRuntime/types';
+	import type { CarouselFlexClient, CarouselFlexOptions } from '$lib/carouselFlexRuntime/types';
+	import KeyboardA11y from '$lib/carouselFlexRuntime/enhancers/keyboardA11y';
 
-	export let options = {};
-	export let onSlideChange: (details: any) => void = () => {};
+	export let options: Omit<CarouselFlexOptions, 'container'> = {
+		breakpoints: {
+			'(min-width: 400px)': {
+				slides: { perView: 1, spacing: 0 }
+			}
+		},
+		loop: false,
+		selector: '.carousel__flex'
+	};
+	export let hooks: CB[];
 
 	let container: HTMLDivElement | null = null;
 	let controller: CarouselFlexClient;
+
+	export function getController(): CarouselFlexClient | undefined {
+		return controller;
+	}
 
 	export function handlePrevSlide() {
 		if (controller) {
@@ -26,6 +39,11 @@
 		}
 	}
 
+	/**
+	 * @summary
+	 * This function allows you to programmatically navigate to a specific slide in the carousel.
+	 * It can be used to jump to a slide based on user interaction or other logic.
+	 */
 	export function goToSlide(index: number) {
 		if (controller) {
 			controller.navigateToSlideIdx(index, false);
@@ -34,18 +52,27 @@
 
 	onMount(() => {
 		if (container) {
-			// Initialize the slider
-			controller = Slider({ ...options, container, selector: '.carousel__flex' }, [
-				Resizer,
-				Positioner,
-				DragHandler,
-				SnapAlignment
-			]);
-
-			controller.on('slideChanged', (details) => {
-				// Update the active index or perform any other action when details change
-				onSlideChange(details?.track.details);
-			});
+			controller = Slider(
+				{ ...options, container },
+				[Resizer, Positioner, DragHandler, SnapAlignment, KeyboardA11y],
+				[
+					...(Array.isArray(hooks) ? hooks : [])
+					// [
+					// 	'slideChanged',
+					// 	(details) => {
+					// 		// Update the active index or perform any other action when details change
+					// 		onSlideChange(details?.track.details);
+					// 	}
+					// ],
+					// [
+					// 	'bpchange',
+					// 	(e) => {
+					// 		// Handle options change if needed
+					// 		console.log('Options changed:', e?.config.currentBreakpoint);
+					// 	}
+					// ]
+				]
+			);
 		}
 
 		return () => {
