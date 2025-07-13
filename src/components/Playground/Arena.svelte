@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { createBaseModule } from './utils/modules';
+	import KybaController from '$lib/Kyba/main';
+	import ModuleMenuInteraction from '$lib/Kyba/enhancers/moduleMenuInteraction';
 
 	let canvas: HTMLCanvasElement;
 
@@ -9,21 +10,20 @@
 			const ctx = canvas.getContext('2d');
 			const arena = document.getElementById('arena') as HTMLDivElement | null;
 			if (ctx && arena) {
-				canvas.width = arena.clientWidth;
-				canvas.height = arena.clientHeight;
+				KybaController({
+					canvas: {
+						id: 'kyba',
+						width: arena.clientWidth,
+						height: arena.clientHeight
+					},
+					enhancers: [ModuleMenuInteraction]
+				});
 			}
 		}
 	});
-
-	const handleClick = (event: MouseEvent) => {
-		const ctx = canvas.getContext('2d');
-		if (ctx) {
-			createBaseModule(ctx, event.offsetX, event.offsetY);
-		}
-	};
 </script>
 
-<canvas bind:this={canvas} onclick={handleClick}></canvas>
+<canvas id="kyba" bind:this={canvas}></canvas>
 
 <style>
 	canvas {

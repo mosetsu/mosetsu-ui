@@ -6,7 +6,14 @@ const config = {
 	kit: {
 		adapter: adapter({
 			edge: true
-		})
+		}),
+		alias: {
+			$actions: './src/actions',
+			$components: './src/components',
+			$lib: './src/lib',
+			$kyba: './src/lib/kyba',
+			$stores: './src/stores'
+		}
 	}
 };
 
