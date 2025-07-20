@@ -1,5 +1,5 @@
 import { Rect } from 'fabric';
-import type { KybaInterface } from '../types';
+import type { KybaInterface } from '../../../types';
 
 const ClientModule = (controller: KybaInterface, cb: () => void) => {
 	const { canvas } = controller;
@@ -10,6 +10,12 @@ const ClientModule = (controller: KybaInterface, cb: () => void) => {
 
 	canvas.defaultCursor = 'crosshair';
 	canvas.selectionColor = '';
+
+	const tearDown = () => {
+		canvas.defaultCursor = 'default';
+		canvas.renderAll();
+		canvas.off('mouse:down', _mouseDown);
+	};
 
 	// @ts-expect-error todo add types
 	const _mouseDown = (event): void => {
@@ -30,10 +36,7 @@ const ClientModule = (controller: KybaInterface, cb: () => void) => {
 			selectable: true
 		});
 		canvas.add(rect);
-
-		canvas.defaultCursor = 'default';
-		canvas.renderAll();
-		canvas.off('mouse:down', _mouseDown);
+		tearDown();
 		cb();
 	};
 
@@ -45,7 +48,7 @@ const ClientModule = (controller: KybaInterface, cb: () => void) => {
 
 	init();
 
-	return () => {};
+	return tearDown;
 };
 
 export default ClientModule;

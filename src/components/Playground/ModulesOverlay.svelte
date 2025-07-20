@@ -36,20 +36,20 @@
 
 {#if visible}
 	<div
-		class="absolute bottom-16 flex gap-4 self-center rounded-md bg-gray-800 p-3"
+		class="absolute bottom-16 flex gap-4 self-center rounded-md bg-gray-800 p-2"
 		transition:fly={{ y: 64, duration: 360 }}
 	>
 		{#each MENUS as { icon, menu }}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
-				class="flex cursor-pointer items-center justify-center rounded-md p-3"
+				class="flex cursor-pointer items-center justify-center rounded-md p-1"
 				class:active={moduleMenu === menu}
 				on:click={() => handleOnMenuClick(menu)}
 				role="button"
 				tabindex="0"
 				aria-label={menu}
 			>
-				<span class={icon + ' scale-115 text-white transition-all duration-150 hover:scale-100'}
+				<span class={icon + ' h-12 w-12 text-white transition-all duration-150 hover:scale-110'}
 				></span>
 			</div>
 		{/each}

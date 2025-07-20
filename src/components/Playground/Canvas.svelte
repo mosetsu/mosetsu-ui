@@ -1,4 +1,5 @@
 <script>
+	import commonStore from '$stores/common';
 	import Arena from './Arena.svelte';
 	import ModulesOverlay from './ModulesOverlay.svelte';
 
@@ -27,12 +28,14 @@
 		>
 		<button
 			class={`cursor-pointer rounded border px-3 py-1 text-xs focus:outline-none ` +
-				(modulesOverlayVisible ? 'bg-blue-400 text-white border-transparent hover:bg-blue-300' : 'border-gray-300 text-black hover:bg-gray-100')}
+				(modulesOverlayVisible
+					? 'border-transparent bg-blue-400 text-white hover:bg-blue-300'
+					: 'border-gray-300 text-black hover:bg-gray-100')}
 			on:click={onModuleBtnClick}>Modules</button
 		>
 		<button
-			class="mx-auto cursor-pointer rounded border border-gray-300 px-3 py-1 text-xs text-black hover:bg-gray-100 focus:outline-none"
-			>Start Simulation</button
+			class={`mx-auto cursor-pointer rounded border border-gray-300 px-3 py-1 text-xs text-black hover:bg-gray-100 focus:outline-none`}
+			on:click={() => commonStore.toggleSimulation()}>Start Simulation</button
 		>
 	</footer>
 </section>

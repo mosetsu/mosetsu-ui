@@ -43,6 +43,7 @@
 		"vitest-browser-svelte": "^0.1.0"
 	},
 	"dependencies": {
-		"fabric": "^6.7.0"
+		"fabric": "^6.7.0",
+		"gsap": "^3.13.0"
 	}
 }

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import KybaController from '$lib/Kyba/main';
-	import ModuleMenuInteraction from '$lib/Kyba/enhancers/moduleMenuInteraction';
+	import ModuleInteraction from '$lib/Kyba/enhancers/moduleInteraction/moduleInteraction';
+	import Simulation from '$lib/Kyba/enhancers/simulation';
 
 	let canvas: HTMLCanvasElement;
 
@@ -16,7 +17,7 @@
 						width: arena.clientWidth,
 						height: arena.clientHeight
 					},
-					enhancers: [ModuleMenuInteraction]
+					enhancers: [ModuleInteraction, Simulation]
 				});
 			}
 		}
