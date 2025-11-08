@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
+	optimizeDeps: {
+		include: ['@xyflow/svelte']
+	},
 	test: {
 		projects: [
 			{

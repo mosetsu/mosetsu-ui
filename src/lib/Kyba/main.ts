@@ -1,18 +1,25 @@
-import { Canvas } from 'fabric';
+import { writable } from 'svelte/store';
+import type { Node, Edge } from '@xyflow/svelte';
 import type { KybaInterface, SubscriptionProps, KybaOptions, HooksCallback } from './types.ts';
 
 const KybaController = (options: KybaOptions): KybaInterface => {
-	const { canvas, enhancers, hooks } = options;
+	const { container, enhancers, hooks } = options;
 
 	const tearDowns: Array<() => void> = [];
 	const subscriptions: SubscriptionProps = {};
 
+	const nodes = writable<Node[]>([]);
+	const edges = writable<Edge[]>([]);
+	const panEnabled = writable<boolean>(true);
+
+	let nodeIdCounter = 0;
+	let edgeIdCounter = 0;
+
 	const controller: KybaInterface = {
-		canvas: new Canvas(canvas.id, {
-			width: canvas.width,
-			height: canvas.height,
-			preserveObjectStacking: true
-		}),
+		nodes,
+		edges,
+		container,
+		panEnabled,
 		sub: (name: string, callback: HooksCallback) => {
 			if (!subscriptions[name]) {
 				subscriptions[name] = [];
@@ -27,6 +34,30 @@ const KybaController = (options: KybaOptions): KybaInterface => {
 					cb(controller);
 				}
 			}
+		},
+		addNode: (node: Omit<Node, 'id'>) => {
+			const id = `node-${nodeIdCounter++}`;
+			nodes.update((n) => [...n, { ...node, id } as Node]);
+			return id;
+		},
+		addEdge: (edge: Omit<Edge, 'id'>) => {
+			const id = `edge-${edgeIdCounter++}`;
+			edges.update((e) => [...e, { ...edge, id } as Edge]);
+			return id;
+		},
+		getNodeCount: () => {
+			let count = 0;
+			nodes.subscribe((n) => {
+				count = n.length;
+			})();
+			return count;
+		},
+		getEdgeCount: () => {
+			let count = 0;
+			edges.subscribe((e) => {
+				count = e.length;
+			})();
+			return count;
 		}
 	};
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MenuBar from './MenuBar.svelte';
+	import MenuBar from '$components/MenuBar.svelte';
 </script>
 
 <section class="flex h-full w-full flex-col border-r border-gray-200 bg-white">

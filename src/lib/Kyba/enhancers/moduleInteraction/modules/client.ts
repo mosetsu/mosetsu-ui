@@ -1,49 +1,42 @@
-import { Rect } from 'fabric';
 import type { KybaInterface } from '../../../types';
 
 const ClientModule = (controller: KybaInterface, cb: () => void) => {
-	const { canvas } = controller;
-	const fill = '#fff';
-	const stroke = '#EDECEF';
+	const { container } = controller;
 
-	let rect: Rect;
-
-	canvas.defaultCursor = 'crosshair';
-	canvas.selectionColor = '';
+	if (!container) {
+		return () => {};
+	}
 
 	const tearDown = () => {
-		canvas.defaultCursor = 'default';
-		canvas.renderAll();
-		canvas.off('mouse:down', _mouseDown);
+		container.style.cursor = '';
+		container.removeEventListener('click', _onClick, { capture: true });
+		controller.panEnabled.set(true);
 	};
 
-	// @ts-expect-error todo add types
-	const _mouseDown = (event): void => {
-		const { x, y } = canvas.getViewportPoint(event.e);
+	const _onClick = (event: MouseEvent) => {
+		// Prevent default SvelteFlow behavior
+		event.stopPropagation();
 
-		rect = new Rect({
-			left: x,
-			top: y,
-			width: 200,
-			height: 100,
-			originX: 'left',
-			originY: 'top',
-			fill,
-			stroke,
-			strokeWidth: 1.5,
-			rx: 8,
-			ry: 8,
-			selectable: true
+		// Get click position relative to the container
+		const rect = container.getBoundingClientRect();
+		const x = event.clientX - rect.left;
+		const y = event.clientY - rect.top;
+
+		// Add node at click position
+		controller.addNode({
+			type: 'client',
+			position: { x, y },
+			data: { label: 'Client' }
 		});
-		canvas.add(rect);
+
 		tearDown();
 		cb();
 	};
 
 	const init = () => {
-		canvas.defaultCursor = 'crosshair';
-		canvas.selectionColor = '';
-		canvas.on('mouse:down', _mouseDown);
+		controller.panEnabled.set(false);
+		container.style.cursor = 'crosshair';
+		container.addEventListener('click', _onClick, { capture: true });
 	};
 
 	init();
