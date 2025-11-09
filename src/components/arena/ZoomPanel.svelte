@@ -1,39 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { useSvelteFlow } from '@xyflow/svelte';
+	import { zoomControl } from './helper/zoom.svelte';
 
-	const { zoomIn, zoomOut, getViewport, setViewport } = useSvelteFlow();
+	const flowApi = useSvelteFlow();
 
-	let zoomLevel = $state(90);
-
-	$effect(() => {
-		const interval = setInterval(() => {
-			try {
-				const viewport = getViewport();
-				zoomLevel = Math.round(viewport.zoom * 100);
-			} catch (_) {}
-		}, 100);
-
-		return () => clearInterval(interval);
+	onMount(() => {
+		zoomControl.init(flowApi);
+		zoomControl.setInitialZoom();
 	});
 
 	export function handleZoomIn() {
-		zoomIn();
+		zoomControl.zoomIn();
 	}
 
 	export function handleZoomOut() {
-		zoomOut();
+		zoomControl.zoomOut();
 	}
 
 	export function getZoomLevel() {
-		return zoomLevel;
+		return zoomControl.getZoomLevel();
 	}
-
-	onMount(() => {
-		setTimeout(() => {
-			try {
-				setViewport({ x: 0, y: 0, zoom: 0.9 });
-			} catch (_) {}
-		}, 100);
-	});
 </script>

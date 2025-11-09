@@ -1,11 +1,16 @@
 <script lang="ts">
 	import commonStore from '$stores/common';
+	import { zoomControl } from './helper/zoom.svelte';
 
 	let { toolbarVisible, onModuleBtnClick } = $props();
-	let zoomLevel = $state(90);
 
-	const handleZoomIn = () => {};
-	const handleZoomOut = () => {};
+	const handleZoomIn = () => {
+		zoomControl.zoomIn();
+	};
+
+	const handleZoomOut = () => {
+		zoomControl.zoomOut();
+	};
 </script>
 
 <footer
@@ -38,7 +43,7 @@
 		>
 			−
 		</button>
-		<span class="min-w-[3rem] text-center text-xs text-gray-600">{zoomLevel}%</span>
+		<span class="min-w-[3rem] text-center text-xs text-gray-600">{zoomControl.zoomLevel}%</span>
 		<button
 			class="cursor-pointer rounded border border-gray-300 px-2 py-1 text-sm text-black hover:bg-gray-100 focus:outline-none"
 			onclick={handleZoomIn}
