@@ -1,5 +1,6 @@
-import Client from '$components/blocks/Client.svelte';
-import Server from '$components/blocks/Server.svelte';
+import Client from '$components/arena/blocks/Client.svelte';
+import Server from '$components/arena/blocks/Server.svelte';
+import AnimatedEdge from '$components/arena/edges/AnimatedEdge.svelte';
 
 import type { Component } from 'svelte';
 import type { Edge, Node } from '@xyflow/svelte';
@@ -19,7 +20,9 @@ export class DrawStateClass {
 		server: Server
 	};
 
-	edgeTypes: EdgeTypes = {};
+	edgeTypes: EdgeTypes = {
+		default: AnimatedEdge
+	};
 
 	setContainer = (container: HTMLDivElement) => {
 		this.container = container;

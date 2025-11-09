@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-type CommonStore = {
+export type CommonStore = {
 	isSimulationActive: boolean;
 };
 

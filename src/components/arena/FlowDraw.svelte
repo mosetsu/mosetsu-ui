@@ -7,19 +7,17 @@
 	import ToolbarAction from '$components/arena/helper/toolbarAction';
 	import ZoomPanel from '$components/arena/ZoomPanel.svelte';
 
-	import '@xyflow/svelte/dist/style.css';
-
 	let container = $state<HTMLDivElement | null>(null);
 
 	onMount(() => {
-		let tearDown = () => {};
+		let tearDown: (() => void)[] = [];
 		if (container) {
 			drawState.setContainer(container);
-			tearDown = ToolbarAction();
+			tearDown.push(ToolbarAction());
 		}
 
 		return () => {
-			tearDown();
+			tearDown.forEach((_) => _());
 			drawState.destroy();
 		};
 	});

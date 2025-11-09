@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { type NodeProps } from '@xyflow/svelte';
-	import { selectBlock } from '$components/blocks/helper';
+	import { Position, type NodeProps } from '@xyflow/svelte';
+	import { selectBlock } from './helper';
+	import ConnectedHandle from './ConnectedHandle.svelte';
 
 	let { id, data }: NodeProps = $props();
 
-	let metrics = $derived(data?.metrics);
-	const handleDbClick = () => selectBlock(id, 'server', 31);
+	let metrics = $derived(data?.metrics as number);
+	const handleDbClick = () => selectBlock(id, 'server', metrics);
 </script>
 
 <div
@@ -30,3 +31,6 @@
 		<span class="text-xs text-gray-500">{metrics}/s</span>
 	</div>
 </div>
+
+<ConnectedHandle nodeId={id} type="target" position={Position.Left} handleId="left" />
+<ConnectedHandle nodeId={id} type="source" position={Position.Bottom} handleId="bottom" />

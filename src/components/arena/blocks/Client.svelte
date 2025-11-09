@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { type NodeProps } from '@xyflow/svelte';
-	import { selectBlock } from '$components/blocks/helper';
+	import { Position, type NodeProps } from '@xyflow/svelte';
+	import { selectBlock } from './helper';
+	import ConnectedHandle from './ConnectedHandle.svelte';
 
 	let { id, data }: NodeProps = $props();
-
-	let metrics = $derived(data?.metrics);
-	const handleDbClick = () => selectBlock(id, 'client', 12);
+	let metrics = $derived(data?.metrics as number);
+	const handleDbClick = () => selectBlock(id, 'client', metrics);
 </script>
 
 <div
 	{id}
-	class="flex w-56 cursor-pointer flex-col rounded-md border border-gray-200 p-2 bg-white"
+	class="flex w-56 cursor-pointer flex-col rounded-md border border-gray-200 bg-white p-2"
 	ondblclick={handleDbClick}
 	role="button"
 	tabindex="0"
@@ -30,3 +30,5 @@
 		<span class="text-xs text-gray-500">{metrics}/s</span>
 	</div>
 </div>
+<ConnectedHandle nodeId={id} type="source" position={Position.Right} handleId="right" />
+<ConnectedHandle nodeId={id} type="source" position={Position.Bottom} handleId="bottom" />

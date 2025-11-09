@@ -1,0 +1,45 @@
+.svelte-flow {
+	--xy-edge-stroke: #4caf50;
+}
+
+/* Animated edge particles */
+.animated-particle {
+	filter: drop-shadow(0 0 3px rgba(76, 175, 80, 0.6));
+}
+
+.svelte-flow__handle {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	border: 1px solid #666;
+	background: #a6a6a6;
+	transition: all 0.2s ease-in-out;
+}
+
+.svelte-flow__handle:hover {
+	scale: 1.2;
+	background: #666;
+}
+
+/* Connected handles - highlighted after connection */
+.svelte-flow__handle.connected {
+	background: #4caf50;
+	border-color: #4caf50;
+	box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.svelte-flow__handle-top {
+	top: -12px;
+}
+
+.svelte-flow__handle-bottom {
+	bottom: -12px;
+}
+
+.svelte-flow__handle-left {
+	left: -12px;
+}
+
+.svelte-flow__handle-right {
+	right: -12px;
+}
