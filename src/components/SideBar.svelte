@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { blockStore } from '$stores/block';
-	import { useSvelteFlow } from '@xyflow/svelte';
-
-	const { updateNodeData } = useSvelteFlow();
+	import { drawState } from '$components/arena/helper/draw.svelte.ts';
 
 	let block = $derived($blockStore);
 
@@ -14,7 +12,11 @@
 		const target = event.target as HTMLInputElement;
 		const newValue = parseInt(target.value) || 0;
 
-		updateNodeData(block.id, { metrics: newValue });
+		drawState.nodes = drawState.nodes.map((node) =>
+			node.id === block.id ? { ...node, data: { ...node.data, metrics: newValue } } : node
+		);
+
+		blockStore.updateMetrics(newValue);
 	}
 </script>
 
