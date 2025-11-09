@@ -1,40 +1,40 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import moduleMenuStore, { ModuleMenu } from '$stores/moduleMenu';
+	import toolbarStore, { ToolbarMenu } from '$stores/toolbar';
 
-	export let visible: boolean = false;
+	let { toolbarVisible } = $props();
 
 	const MENUS = [
 		{
 			icon: 'ic-pc',
-			menu: ModuleMenu.CLIENT
+			menu: ToolbarMenu.CLIENT
 		},
 		{
 			icon: 'ic-connect',
-			menu: ModuleMenu.LINK
+			menu: ToolbarMenu.LINK
 		},
 		{
 			icon: 'ic-nodejs',
-			menu: ModuleMenu.SERVER
+			menu: ToolbarMenu.SERVER
 		},
 		{
 			icon: 'ic-database',
-			menu: ModuleMenu.DB
+			menu: ToolbarMenu.DB
 		}
 	];
 
-	$: moduleMenu = $moduleMenuStore;
-
-	const handleOnMenuClick = (menu: ModuleMenu) => {
-		if (moduleMenu === menu) {
-			moduleMenuStore.reset();
+	const handleOnMenuClick = (menu: ToolbarMenu) => {
+		if (toolbarMenu === menu) {
+			toolbarStore.reset();
 			return;
 		}
-		moduleMenuStore.select(menu);
+		toolbarStore.select(menu);
 	};
+
+	let toolbarMenu = $derived($toolbarStore);
 </script>
 
-{#if visible}
+{#if toolbarVisible}
 	<div
 		class="absolute bottom-16 flex gap-4 self-center rounded-md bg-gray-800 p-2"
 		transition:fly={{ y: 64, duration: 360 }}
@@ -43,8 +43,8 @@
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
 				class="flex cursor-pointer items-center justify-center rounded-md p-1"
-				class:active={moduleMenu === menu}
-				on:click={() => handleOnMenuClick(menu)}
+				class:active={toolbarMenu === menu}
+				onclick={() => handleOnMenuClick(menu)}
 				role="button"
 				tabindex="0"
 				aria-label={menu}

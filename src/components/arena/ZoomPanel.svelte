@@ -4,17 +4,14 @@
 
 	const { zoomIn, zoomOut, getViewport, setViewport } = useSvelteFlow();
 
-	let zoomLevel = $state(80);
+	let zoomLevel = $state(90);
 
-	// Update zoom level when viewport changes
 	$effect(() => {
 		const interval = setInterval(() => {
 			try {
 				const viewport = getViewport();
 				zoomLevel = Math.round(viewport.zoom * 100);
-			} catch (e) {
-				// Viewport not ready yet
-			}
+			} catch (_) {}
 		}, 100);
 
 		return () => clearInterval(interval);
@@ -32,16 +29,11 @@
 		return zoomLevel;
 	}
 
-	// Set initial zoom to 80% on mount
 	onMount(() => {
 		setTimeout(() => {
 			try {
-				setViewport({ x: 0, y: 0, zoom: 0.8 });
-			} catch (e) {
-				// Viewport not ready yet
-			}
+				setViewport({ x: 0, y: 0, zoom: 0.9 });
+			} catch (_) {}
 		}, 100);
 	});
 </script>
-
-<!-- This component doesn't render anything, just provides zoom functions -->
