@@ -25,8 +25,8 @@
 
 <div bind:this={container} class="arena-container h-full w-full">
 	<SvelteFlow
-		nodes={drawState.nodes}
-		edges={drawState.edges}
+		bind:nodes={drawState.nodes}
+		bind:edges={drawState.edges}
 		nodeTypes={drawState.nodeTypes}
 		edgeTypes={drawState.edgeTypes}
 		deleteKey="Delete"

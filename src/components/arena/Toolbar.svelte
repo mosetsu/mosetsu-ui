@@ -9,10 +9,10 @@
 			icon: 'ic-pc',
 			menu: ToolbarMenu.CLIENT
 		},
-		{
-			icon: 'ic-connect',
-			menu: ToolbarMenu.LINK
-		},
+		// {
+		// 	icon: 'ic-connect',
+		// 	menu: ToolbarMenu.LINK
+		// },
 		{
 			icon: 'ic-nodejs',
 			menu: ToolbarMenu.SERVER
