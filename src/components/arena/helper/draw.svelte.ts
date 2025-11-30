@@ -1,5 +1,6 @@
 import Client from '$components/arena/blocks/Client.svelte';
 import Server from '$components/arena/blocks/Server.svelte';
+import Database from '$components/arena/blocks/Database.svelte';
 import AnimatedEdge from '$components/arena/edges/AnimatedEdge.svelte';
 
 import type { Component } from 'svelte';
@@ -17,7 +18,8 @@ export class DrawStateClass {
 
 	nodeTypes: NodeTypes = {
 		client: Client,
-		server: Server
+		server: Server,
+		db: Database
 	};
 
 	edgeTypes: EdgeTypes = {
@@ -52,6 +54,18 @@ export class DrawStateClass {
 				type: 'server',
 				position: { x, y },
 				data: { metrics: 54 }
+			}
+		];
+	};
+
+	addDbNode = (x: number, y: number) => {
+		this.nodes = [
+			...this.nodes,
+			{
+				id: `db-${this.nodes.length}`,
+				type: 'db',
+				position: { x, y },
+				data: { metrics: 100 }
 			}
 		];
 	};

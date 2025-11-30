@@ -2,11 +2,6 @@
 	--xy-edge-stroke: #4caf50;
 }
 
-/* Animated edge particles */
-.animated-particle {
-	filter: drop-shadow(0 0 3px rgba(76, 175, 80, 0.6));
-}
-
 .svelte-flow__handle {
 	width: 8px;
 	height: 8px;
@@ -19,13 +14,6 @@
 .svelte-flow__handle:hover {
 	scale: 1.2;
 	background: #666;
-}
-
-/* Connected handles - highlighted after connection */
-.svelte-flow__handle.connected {
-	background: #4caf50;
-	border-color: #4caf50;
-	box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .svelte-flow__handle-top {

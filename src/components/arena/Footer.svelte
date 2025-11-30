@@ -12,7 +12,6 @@
 		zoomControl.zoomOut();
 	};
 
-	// Use $derived to make it reactive in Svelte 5
 	let simulationActive = $derived($commonStore.isSimulationActive);
 </script>
 
@@ -38,7 +37,8 @@
 			(simulationActive
 				? 'border-transparent bg-blue-400 text-white hover:bg-blue-300'
 				: 'border-gray-300 text-black hover:bg-gray-100')}
-		onclick={() => commonStore.toggleSimulation()}>Start Simulation</button
+		onclick={() => commonStore.toggleSimulation()}
+		>{simulationActive ? 'Stop' : 'Start'} Simulation</button
 	>
 
 	<div class="flex items-center gap-2">

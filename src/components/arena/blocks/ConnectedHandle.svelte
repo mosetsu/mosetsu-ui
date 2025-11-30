@@ -10,7 +10,6 @@
 
 	const { getEdges } = useSvelteFlow();
 
-	// Reactively check if this handle is connected
 	let isConnected = $derived.by(() => {
 		const edges = getEdges();
 		return edges.some((edge) => {
@@ -24,3 +23,11 @@
 </script>
 
 <Handle id={handleId} {type} {position} class={isConnected ? 'connected' : ''} {...restProps} />
+
+<style>
+	:global(.connected) {
+		background: #4caf50;
+		border-color: #4caf50;
+		box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+	}
+</style>

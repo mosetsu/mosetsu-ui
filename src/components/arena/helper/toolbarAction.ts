@@ -23,6 +23,8 @@ const ToolbarAction = (): (() => void) => {
 			drawState.addClientNode(x, y);
 		} else if (lastSelectedMenu === ToolbarMenu.SERVER) {
 			drawState.addServerNode(x, y);
+		} else if (lastSelectedMenu === ToolbarMenu.DB) {
+			drawState.addDbNode(x, y);
 		}
 
 		resetToolbar();
