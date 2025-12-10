@@ -36,20 +36,22 @@
 
 {#if toolbarVisible}
 	<div
-		class="absolute bottom-16 flex gap-4 self-center rounded-md bg-gray-800 p-2"
+		class="border-dark-border bg-dark-elevated absolute bottom-20 flex gap-3 self-center rounded-xl border p-2 shadow-2xl"
 		transition:fly={{ y: 64, duration: 360 }}
 	>
 		{#each MENUS as { icon, menu }}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div
-				class="flex cursor-pointer items-center justify-center rounded-md p-1"
+				class="flex cursor-pointer items-center justify-center rounded-lg p-2 transition-all duration-150"
 				class:active={toolbarMenu === menu}
 				onclick={() => handleOnMenuClick(menu)}
 				role="button"
 				tabindex="0"
 				aria-label={menu}
 			>
-				<span class={icon + ' h-12 w-12 text-white transition-all duration-150 hover:scale-110'}
+				<span
+					class={icon +
+						' text-text-secondary h-10 w-10 transition-all duration-150 hover:scale-110'}
 				></span>
 			</div>
 		{/each}
@@ -58,7 +60,7 @@
 
 <style>
 	.active {
-		background-color: var(--color-gray-600);
-		transition: background-color 0.3s ease-in-out;
+		background-color: var(--color-dark-border);
+		transition: background-color 0.2s ease-in-out;
 	}
 </style>

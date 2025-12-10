@@ -16,42 +16,42 @@
 </script>
 
 <footer
-	class="z-10 mt-auto flex h-14 items-center justify-between border-t border-gray-200 bg-white px-3 py-2"
+	class="border-dark-border bg-dark-surface z-10 mt-auto flex h-16 items-center justify-between border-t px-4 py-2"
 >
 	<div class="flex items-center gap-2">
 		<button
-			class="cursor-pointer rounded border border-gray-300 px-3 py-1 text-xs text-black hover:bg-gray-100 focus:outline-none"
+			class="border-dark-border bg-dark-elevated text-text-secondary hover:bg-dark-highlight cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all focus:outline-none"
 			>Share</button
 		>
 		<button
-			class={`cursor-pointer rounded border px-3 py-1 text-xs focus:outline-none ` +
+			class={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all focus:outline-none ` +
 				(toolbarVisible
-					? 'border-transparent bg-blue-400 text-white hover:bg-blue-300'
-					: 'border-gray-300 text-black hover:bg-gray-100')}
+					? 'bg-accent-primary hover:bg-accent-hover border-transparent text-white'
+					: 'border-dark-border bg-dark-elevated text-text-secondary hover:bg-dark-highlight')}
 			onclick={onModuleBtnClick}>Modules</button
 		>
 	</div>
 
 	<button
-		class={`cursor-pointer rounded border px-3 py-1 text-xs focus:outline-none ` +
+		class={`cursor-pointer rounded-lg border px-4 py-1.5 text-sm font-medium transition-all focus:outline-none ` +
 			(simulationActive
-				? 'border-transparent bg-blue-400 text-white hover:bg-blue-300'
-				: 'border-gray-300 text-black hover:bg-gray-100')}
+				? 'bg-accent-primary hover:bg-accent-hover border-transparent text-white'
+				: 'border-dark-border bg-dark-elevated text-text-secondary hover:bg-dark-highlight')}
 		onclick={() => commonStore.toggleSimulation()}
-		>{simulationActive ? 'Stop' : 'Start'} Simulation</button
+		>{simulationActive ? 'Stop' : 'Run'} Simulation</button
 	>
 
-	<div class="flex items-center gap-2">
+	<div class="flex items-center gap-1">
 		<button
-			class="cursor-pointer rounded border border-gray-300 px-2 py-1 text-sm text-black hover:bg-gray-100 focus:outline-none"
+			class="border-dark-border bg-dark-elevated text-text-secondary hover:bg-dark-highlight cursor-pointer rounded-lg border px-2.5 py-1.5 text-sm transition-all focus:outline-none"
 			onclick={handleZoomOut}
 			title="Zoom out"
 		>
 			−
 		</button>
-		<span class="min-w-[3rem] text-center text-xs text-gray-600">{zoomControl.zoomLevel}%</span>
+		<span class="text-text-subtle min-w-[3rem] text-center text-sm">{zoomControl.zoomLevel}%</span>
 		<button
-			class="cursor-pointer rounded border border-gray-300 px-2 py-1 text-sm text-black hover:bg-gray-100 focus:outline-none"
+			class="border-dark-border bg-dark-elevated text-text-secondary hover:bg-dark-highlight cursor-pointer rounded-lg border px-2.5 py-1.5 text-sm transition-all focus:outline-none"
 			onclick={handleZoomIn}
 			title="Zoom in"
 		>

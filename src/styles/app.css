@@ -4,3 +4,25 @@
 @import './flow.css';
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui';
+
+@theme {
+	/* Dark theme base colors */
+	--color-dark-base: #13131a;
+	--color-dark-surface: #18181f;
+	--color-dark-elevated: #1e1e26;
+	--color-dark-highlight: #252530;
+	--color-dark-border: #2a2a35;
+	--color-dark-border-strong: #3a3a45;
+	--color-dark-dots: #3d3d4a;
+
+	/* Text colors */
+	--color-text-primary: #e2e2e8;
+	--color-text-secondary: #a5a5b2;
+	--color-text-muted: #8b8b96;
+	--color-text-subtle: #6b6b78;
+	--color-text-faint: #4a4a56;
+
+	/* Accent colors */
+	--color-accent-primary: #3a7ce6;
+	--color-accent-hover: #5090f8;
+}

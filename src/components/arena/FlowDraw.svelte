@@ -38,19 +38,25 @@
 		preventScrolling={false}
 		proOptions={{ hideAttribution: true }}
 	>
-		<Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+		<Background
+			variant={BackgroundVariant.Dots}
+			gap={16}
+			size={1.5}
+			bgColor="transparent"
+			patternColor="var(--color-dark-dots)"
+		/>
 		<ZoomPanel />
 	</SvelteFlow>
 </div>
 
 <style>
 	:global(.svelte-flow) {
-		background-color: #f5f5f5;
+		background-color: var(--color-dark-base);
 		cursor: inherit !important;
 	}
 
 	:global(.svelte-flow__background) {
-		background-color: #f5f5f5;
+		background-color: var(--color-dark-base);
 	}
 
 	:global(.svelte-flow__pane) {

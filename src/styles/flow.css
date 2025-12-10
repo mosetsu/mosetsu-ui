@@ -3,17 +3,18 @@
 }
 
 .svelte-flow__handle {
-	width: 8px;
-	height: 8px;
+	width: 10px;
+	height: 10px;
 	border-radius: 50%;
-	border: 1px solid #666;
-	background: #a6a6a6;
+	border: 2px solid var(--color-dark-border-strong);
+	background: var(--color-dark-highlight);
 	transition: all 0.2s ease-in-out;
 }
 
 .svelte-flow__handle:hover {
-	scale: 1.2;
-	background: #666;
+	scale: 1.3;
+	background: var(--color-accent);
+	border-color: var(--color-accent);
 }
 
 .svelte-flow__handle-top {

@@ -2,10 +2,10 @@
 	import MenuBar from '$components/MenuBar.svelte';
 </script>
 
-<section class="flex h-full w-full flex-col border-r border-gray-200 bg-white">
-	<div class="flex h-16 items-center gap-2 border-b border-gray-200 p-4">
-		<span class="ic-primary-logo"></span>
-		<h1 class="text-lg">Mosetsu</h1>
+<section class="border-dark-border bg-dark-surface flex h-full w-full flex-col border-r">
+	<div class="border-dark-border flex h-16 items-center gap-2 border-b p-4">
+		<span class="ic-primary-logo text-text-secondary"></span>
+		<h1 class="text-text-primary text-lg">Mosetsu</h1>
 	</div>
 	<MenuBar
 		title="General"

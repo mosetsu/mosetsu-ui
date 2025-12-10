@@ -20,49 +20,50 @@
 	}
 </script>
 
-<section class="flex h-full w-full flex-col border-l border-gray-200 bg-white">
-	<div class="flex h-16 items-center gap-2 border-b border-gray-200 p-4">
-		<span class="ic-primary-logo"></span>
+<section class="border-dark-border bg-dark-surface flex h-full w-full flex-col border-l">
+	<div class="border-dark-border flex h-16 items-center gap-2 border-b p-4">
+		<span class="ic-primary-logo text-text-secondary"></span>
 		<div class="flex flex-col">
-			<span class="mb-1 text-sm">Tooling</span>
-			<span class="text-xs text-gray-400">Update block metrics</span>
+			<span class="text-text-primary mb-0.5 text-base">Tooling</span>
+			<span class="text-text-subtle text-sm">Update block metrics</span>
 		</div>
 	</div>
 
 	<section class="flex flex-col gap-4 p-4">
 		{#if block}
-			<div class="flex flex-col gap-1">
-				<span class="font-mono text-xs text-gray-500">ID</span>
-				<span class="font-mono text-sm text-black">{block.id}</span>
+			<div class="flex flex-col gap-1.5">
+				<span class="text-text-subtle font-mono text-xs">ID</span>
+				<span class="text-text-primary font-mono text-sm">{block.id}</span>
 			</div>
 
-			<div class="flex flex-col gap-1">
-				<span class="font-mono text-xs text-gray-500">Type</span>
-				<span class="font-mono text-sm text-black capitalize">{block.type}</span>
+			<div class="flex flex-col gap-1.5">
+				<span class="text-text-subtle font-mono text-xs">Type</span>
+				<span class="text-text-primary font-mono text-sm capitalize">{block.type}</span>
 			</div>
 
-			<div class="flex flex-col gap-1">
-				<span class="mb-1 font-mono text-xs text-gray-500">Processing Rate</span>
+			<div class="flex flex-col gap-1.5">
+				<span class="text-text-subtle font-mono text-xs">Processing Rate</span>
 				<label
-					class="flex items-center gap-2 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm focus-within:border-gray-400"
+					class="border-dark-border bg-dark-elevated flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all"
 				>
 					<input
 						type="number"
-						class="min-w-0 flex-1 border-none bg-transparent font-mono text-sm text-black outline-none placeholder:text-gray-400"
+						class="text-text-primary min-w-0 flex-1 border-none bg-transparent font-mono text-sm outline-none"
 						value={block.metrics}
 						oninput={handleMetricsChange}
 						placeholder="0"
 						min="0"
 					/>
-					<span class="flex-shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600"
+					<span
+						class="bg-dark-highlight text-text-muted flex-shrink-0 rounded-md px-2 py-1 text-[10px]"
 						>req/s</span
 					>
 				</label>
 			</div>
 		{:else}
-			<div class="h-[64px] rounded-sm bg-[#eee]"></div>
-			<div class="h-[120px] rounded-sm bg-[#eee]"></div>
-			<div class="h-[120px] rounded-sm bg-[#eee]"></div>
+			<div class="bg-dark-elevated h-[64px] animate-pulse rounded-lg"></div>
+			<div class="bg-dark-elevated h-[120px] animate-pulse rounded-lg"></div>
+			<div class="bg-dark-elevated h-[120px] animate-pulse rounded-lg"></div>
 		{/if}
 	</section>
 </section>

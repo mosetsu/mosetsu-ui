@@ -11,7 +11,7 @@
 	};
 </script>
 
-<section class="relative flex h-full w-full flex-col bg-[#f5f5f5]">
+<section class="bg-dark-base relative flex h-full w-full flex-col">
 	<Header />
 	<div class="flex flex-1">
 		<FlowDraw />
