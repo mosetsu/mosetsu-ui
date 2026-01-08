@@ -9,10 +9,6 @@
 			icon: 'ic-pc',
 			menu: ToolbarMenu.CLIENT
 		},
-		// {
-		// 	icon: 'ic-connect',
-		// 	menu: ToolbarMenu.LINK
-		// },
 		{
 			icon: 'ic-nodejs',
 			menu: ToolbarMenu.SERVER
@@ -20,6 +16,22 @@
 		{
 			icon: 'ic-database',
 			menu: ToolbarMenu.DB
+		},
+		{
+			icon: 'ic-kafka',
+			menu: ToolbarMenu.KAFKA
+		},
+		{
+			icon: 'ic-rabbitmq',
+			menu: ToolbarMenu.RABBITMQ
+		},
+		{
+			icon: 'ic-s3',
+			menu: ToolbarMenu.S3
+		},
+		{
+			icon: 'ic-load-balancer',
+			menu: ToolbarMenu.LOAD_BALANCER
 		}
 	];
 
@@ -48,6 +60,7 @@
 				role="button"
 				tabindex="0"
 				aria-label={menu}
+				title={menu}
 			>
 				<span
 					class={icon +

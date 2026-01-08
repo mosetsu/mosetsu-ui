@@ -1,9 +1,5 @@
-import { blockStore } from '$stores/block';
+import { blockStore, type BlockSpecs, type BlockMetrics, type BlockType } from '$stores/block';
 
-export const selectBlock = (id: string, type: string, metrics: number) => {
-	blockStore.select({
-		id,
-		type,
-		metrics
-	});
+export const selectBlock = (id: string, type: BlockType, metrics: BlockMetrics) => {
+	blockStore.select({ id, type, metrics } as BlockSpecs);
 };

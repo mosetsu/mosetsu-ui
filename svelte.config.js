@@ -12,7 +12,8 @@ const config = {
 			$components: './src/components',
 			$lib: './src/lib',
 			$kyba: './src/lib/kyba',
-			$stores: './src/stores'
+			$stores: './src/stores',
+			$utils: './src/utils'
 		}
 	}
 };

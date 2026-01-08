@@ -19,12 +19,28 @@ const ToolbarAction = (): (() => void) => {
 		const x = event.clientX - rect.left;
 		const y = event.clientY - rect.top;
 
-		if (lastSelectedMenu === ToolbarMenu.CLIENT) {
-			drawState.addClientNode(x, y);
-		} else if (lastSelectedMenu === ToolbarMenu.SERVER) {
-			drawState.addServerNode(x, y);
-		} else if (lastSelectedMenu === ToolbarMenu.DB) {
-			drawState.addDbNode(x, y);
+		switch (lastSelectedMenu) {
+			case ToolbarMenu.CLIENT:
+				drawState.addClientNode(x, y);
+				break;
+			case ToolbarMenu.SERVER:
+				drawState.addServerNode(x, y);
+				break;
+			case ToolbarMenu.DB:
+				drawState.addDbNode(x, y);
+				break;
+			case ToolbarMenu.KAFKA:
+				drawState.addKafkaNode(x, y);
+				break;
+			case ToolbarMenu.RABBITMQ:
+				drawState.addRabbitMQNode(x, y);
+				break;
+			case ToolbarMenu.S3:
+				drawState.addS3Node(x, y);
+				break;
+			case ToolbarMenu.LOAD_BALANCER:
+				drawState.addLoadBalancerNode(x, y);
+				break;
 		}
 
 		resetToolbar();

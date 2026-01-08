@@ -5,7 +5,10 @@ export enum ToolbarMenu {
 	CLIENT = 'client',
 	DB = 'db',
 	SERVER = 'server',
-	LINK = 'link'
+	KAFKA = 'kafka',
+	RABBITMQ = 'rabbitmq',
+	S3 = 's3',
+	LOAD_BALANCER = 'load-balancer'
 }
 
 const createToolbarStore = () => {

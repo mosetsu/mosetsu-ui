@@ -1,23 +1,9 @@
 <script lang="ts">
-	import { BaseEdge, getBezierPath, type EdgeProps, useNodesData } from '@xyflow/svelte';
+	import { BaseEdge, getBezierPath, type EdgeProps, useSvelteFlow } from '@xyflow/svelte';
 	import commonStore from '$stores/common';
+	import { getEdgeCongestion, CONGESTION_COLORS, getAnimationDelays } from '$utils/congestion';
 
 	type Props = EdgeProps;
-
-	const GREEN = {
-		solid: '#4CAF50',
-		light: '#4CAF5066'
-	};
-
-	const YELLOW = {
-		solid: '#FFC50F',
-		light: '#FFC50F66'
-	};
-
-	const RED = {
-		solid: '#D97D55',
-		light: '#D97D5566'
-	};
 
 	let {
 		id,
@@ -33,6 +19,7 @@
 	}: Props = $props();
 
 	let isSimulationActive = $derived($commonStore.isSimulationActive);
+	const { getNodes, getEdges } = useSvelteFlow();
 
 	let path = $derived(
 		getBezierPath({
@@ -45,77 +32,17 @@
 		})[0]
 	);
 
-	const sourceNode = useNodesData(source);
-	const targetNode = useNodesData(target);
-
-	const getTafficCongestion = (sMetrics: number, tMetrics: number) => {
-		try {
-			const congestion = Number((sMetrics / tMetrics).toFixed(2)) * 100;
-
-			return congestion;
-		} catch (error) {
-			return 0;
-		}
-	};
-
 	const { pathColor, send, recv } = $derived.by(() => {
-		const sMetrics = sourceNode.current?.data?.metrics as number;
-		const tMetrics = targetNode.current?.data?.metrics as number;
-
-		if (!sMetrics || !tMetrics) {
-			return {
-				pathColor: GREEN.light,
-				send: {
-					delay: 1,
-					color: GREEN.solid
-				},
-				recv: {
-					delay: 1,
-					color: GREEN.solid
-				}
-			};
-		}
-
-		const congestion = getTafficCongestion(sMetrics, tMetrics);
-
-		if (congestion < 50) {
-			return {
-				pathColor: GREEN.light,
-				send: {
-					delay: 1,
-					color: GREEN.solid
-				},
-				recv: {
-					delay: 1,
-					color: GREEN.solid
-				}
-			};
-		}
-
-		if (congestion < 80) {
-			return {
-				pathColor: YELLOW.light,
-				send: {
-					delay: 1,
-					color: GREEN.solid
-				},
-				recv: {
-					delay: 2,
-					color: YELLOW.solid
-				}
-			};
-		}
+		const nodes = getNodes();
+		const edges = getEdges();
+		const congestion = getEdgeCongestion(source, target, nodes, edges);
+		const colors = CONGESTION_COLORS[congestion.status];
+		const delays = getAnimationDelays(congestion.status);
 
 		return {
-			pathColor: RED.light,
-			send: {
-				delay: 1,
-				color: GREEN.solid
-			},
-			recv: {
-				delay: 4,
-				color: RED.solid
-			}
+			pathColor: colors.light,
+			send: { delay: delays.send, color: CONGESTION_COLORS.green.solid },
+			recv: { delay: delays.recv, color: colors.solid }
 		};
 	});
 </script>
