@@ -1,0 +1,6 @@
+# SystemSage robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://systemsage.netlify.app/sitemap.xml

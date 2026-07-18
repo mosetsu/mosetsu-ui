@@ -10,8 +10,6 @@ export type ClientMetrics = {
 export type ServerMetrics = {
 	requestsPerSec: number;
 	responseTimeMs: number;
-	cpuUsage: number;
-	memoryUsage: number;
 };
 
 export type DatabaseMetrics = {
@@ -65,7 +63,7 @@ export type BlockMetrics =
 
 export const DEFAULT_METRICS: Record<BlockType, BlockMetrics> = {
 	client: { requestsPerSec: 24, concurrentConnections: 10 },
-	server: { requestsPerSec: 100, responseTimeMs: 50, cpuUsage: 30, memoryUsage: 40 },
+	server: { requestsPerSec: 100, responseTimeMs: 50 },
 	db: { queriesPerSec: 200, readLatencyMs: 5, writeLatencyMs: 10, maxConnections: 100 },
 	kafka: { messagesPerSec: 1000, partitions: 3, consumerLag: 0 },
 	rabbitmq: { messagesPerSec: 500, queueDepth: 0, consumerCount: 2 },

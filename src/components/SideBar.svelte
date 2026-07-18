@@ -48,9 +48,7 @@
 		},
 		server: {
 			requestsPerSec: { label: 'Processing Rate', unit: 'req/s' },
-			responseTimeMs: { label: 'Response Time', unit: 'ms' },
-			cpuUsage: { label: 'CPU Usage', unit: '%' },
-			memoryUsage: { label: 'Memory Usage', unit: '%' }
+			responseTimeMs: { label: 'Response Time', unit: 'ms' }
 		},
 		db: {
 			queriesPerSec: { label: 'Query Rate', unit: 'qps' },
@@ -134,8 +132,8 @@
 	}
 </script>
 
-<section class="border-dark-border bg-dark-surface flex h-full w-full flex-col border-l">
-	<div class="border-dark-border flex h-16 items-center gap-2 border-b p-4">
+<section class="border-dark-border bg-dark-surface flex h-full min-h-0 w-full flex-col overflow-hidden border-l">
+	<div class="border-dark-border flex h-16 flex-shrink-0 items-center gap-2 border-b p-4">
 		<span class="ic-primary-logo text-text-secondary"></span>
 		<div class="flex flex-col">
 			<span class="text-text-primary mb-0.5 text-base">Tooling</span>
@@ -143,7 +141,7 @@
 		</div>
 	</div>
 
-	<section class="flex flex-col gap-4 overflow-y-auto p-4">
+	<section class="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
 		{#if block}
 			<!-- Selected Block -->
 			<div class="border-dark-border bg-dark-elevated rounded-lg border p-3">

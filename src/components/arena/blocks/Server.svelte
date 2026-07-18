@@ -36,14 +36,6 @@
 				<img src="/images/request.svg" alt="icon" class="h-3 w-3 opacity-60" />
 				<span class="text-text-muted text-sm">{metrics?.responseTimeMs ?? 0}ms</span>
 			</div>
-			<div class="bg-dark-highlight flex items-center gap-1.5 rounded-lg px-2 py-1">
-				<img src="/images/request.svg" alt="icon" class="h-3 w-3 opacity-60" />
-				<span class="text-text-muted text-sm">{metrics?.cpuUsage ?? 0}% cpu</span>
-			</div>
-			<div class="bg-dark-highlight flex items-center gap-1.5 rounded-lg px-2 py-1">
-				<img src="/images/request.svg" alt="icon" class="h-3 w-3 opacity-60" />
-				<span class="text-text-muted text-sm">{metrics?.memoryUsage ?? 0}% mem</span>
-			</div>
 		</div>
 	</div>
 </div>

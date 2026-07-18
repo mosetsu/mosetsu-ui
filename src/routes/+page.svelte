@@ -4,7 +4,7 @@
 	import NavigationDrawer from '$components/Drawer.svelte';
 </script>
 
-<section class="grid h-screen w-full grid-cols-[260px_1fr_280px]">
+<section class="grid h-screen w-full grid-cols-[260px_1fr_320px]">
 	<NavigationDrawer />
 	<Arena />
 	<SideBar />
