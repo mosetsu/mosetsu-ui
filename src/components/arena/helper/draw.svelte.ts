@@ -1,12 +1,8 @@
-import Client from '$components/arena/blocks/Client.svelte';
-import Server from '$components/arena/blocks/Server.svelte';
-import Database from '$components/arena/blocks/Database.svelte';
+import BlockNode from '$components/arena/blocks/BlockNode.svelte';
 import Kafka from '$components/arena/blocks/Kafka.svelte';
 import RabbitMQ from '$components/arena/blocks/RabbitMQ.svelte';
-import S3 from '$components/arena/blocks/S3.svelte';
-import LoadBalancer from '$components/arena/blocks/LoadBalancer.svelte';
 import AnimatedEdge from '$components/arena/edges/AnimatedEdge.svelte';
-import { DEFAULT_METRICS } from '$stores/block';
+import { MODULES, getDefaultMetrics } from '$lib/modules';
 
 import type { Component } from 'svelte';
 import type { Edge, Node } from '@xyflow/svelte';
@@ -15,21 +11,26 @@ import type { NodeProps, EdgeProps } from '@xyflow/svelte';
 type NodeTypes = Record<string, Component<NodeProps>>;
 type EdgeTypes = Record<string, Component<EdgeProps>>;
 
+// Bespoke components override the generic BlockNode for a given type.
+const BESPOKE: Record<string, Component<NodeProps>> = {
+	kafka: Kafka,
+	rabbitmq: RabbitMQ
+};
+
+const buildNodeTypes = (): NodeTypes =>
+	Object.keys(MODULES).reduce((acc, type) => {
+		acc[type] = BESPOKE[type] ?? BlockNode;
+		return acc;
+	}, {} as NodeTypes);
+
 export class DrawStateClass {
 	container: HTMLDivElement | null = null;
 	nodes = $state.raw<Node[]>([]);
 	edges = $state.raw<Edge[]>([]);
 	panEnabled = $state<boolean>(true);
+	private nodeSeq = 0;
 
-	nodeTypes: NodeTypes = {
-		client: Client,
-		server: Server,
-		db: Database,
-		kafka: Kafka,
-		rabbitmq: RabbitMQ,
-		s3: S3,
-		'load-balancer': LoadBalancer
-	};
+	nodeTypes: NodeTypes = buildNodeTypes();
 
 	edgeTypes: EdgeTypes = {
 		default: AnimatedEdge
@@ -43,86 +44,18 @@ export class DrawStateClass {
 		return this.container;
 	};
 
-	addClientNode = (x: number, y: number) => {
+	/** Drop a node of any registered module type at (x, y). */
+	addNode = (type: string, x: number, y: number) => {
+		if (!MODULES[type]) {
+			return;
+		}
 		this.nodes = [
 			...this.nodes,
 			{
-				id: `client-${this.nodes.length}`,
-				type: 'client',
+				id: `${type}-${this.nodeSeq++}`,
+				type,
 				position: { x, y },
-				data: { metrics: { ...DEFAULT_METRICS.client } }
-			}
-		];
-	};
-
-	addServerNode = (x: number, y: number) => {
-		this.nodes = [
-			...this.nodes,
-			{
-				id: `server-${this.nodes.length}`,
-				type: 'server',
-				position: { x, y },
-				data: { metrics: { ...DEFAULT_METRICS.server } }
-			}
-		];
-	};
-
-	addDbNode = (x: number, y: number) => {
-		this.nodes = [
-			...this.nodes,
-			{
-				id: `db-${this.nodes.length}`,
-				type: 'db',
-				position: { x, y },
-				data: { metrics: { ...DEFAULT_METRICS.db } }
-			}
-		];
-	};
-
-	addKafkaNode = (x: number, y: number) => {
-		this.nodes = [
-			...this.nodes,
-			{
-				id: `kafka-${this.nodes.length}`,
-				type: 'kafka',
-				position: { x, y },
-				data: { metrics: { ...DEFAULT_METRICS.kafka } }
-			}
-		];
-	};
-
-	addRabbitMQNode = (x: number, y: number) => {
-		this.nodes = [
-			...this.nodes,
-			{
-				id: `rabbitmq-${this.nodes.length}`,
-				type: 'rabbitmq',
-				position: { x, y },
-				data: { metrics: { ...DEFAULT_METRICS.rabbitmq } }
-			}
-		];
-	};
-
-	addS3Node = (x: number, y: number) => {
-		this.nodes = [
-			...this.nodes,
-			{
-				id: `s3-${this.nodes.length}`,
-				type: 's3',
-				position: { x, y },
-				data: { metrics: { ...DEFAULT_METRICS.s3 } }
-			}
-		];
-	};
-
-	addLoadBalancerNode = (x: number, y: number) => {
-		this.nodes = [
-			...this.nodes,
-			{
-				id: `load-balancer-${this.nodes.length}`,
-				type: 'load-balancer',
-				position: { x, y },
-				data: { metrics: { ...DEFAULT_METRICS['load-balancer'] } }
+				data: { metrics: getDefaultMetrics(type) }
 			}
 		];
 	};
@@ -132,6 +65,7 @@ export class DrawStateClass {
 		this.nodes = [];
 		this.edges = [];
 		this.panEnabled = true;
+		this.nodeSeq = 0;
 		this.nodeTypes = {};
 		this.edgeTypes = {};
 	};

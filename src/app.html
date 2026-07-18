@@ -2,8 +2,30 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+		<link rel="alternate icon" href="%sveltekit.assets%/favicon.png" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<!-- Dark base painted before CSS loads to prevent white flash on first paint -->
+		<style>
+			html {
+				background-color: #100b08;
+				color-scheme: dark;
+			}
+			body {
+				margin: 0;
+				background-color: #100b08;
+			}
+		</style>
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+			rel="stylesheet"
+		/>
 		
 		<!-- Primary Meta Tags -->
 		<meta name="title" content="SystemSage - Learn System Design with Interactive Simulations" />
@@ -39,8 +61,8 @@
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="mobile-web-app-capable" content="yes" />
-		<meta name="theme-color" content="#0f0f0f" />
-		<meta name="msapplication-TileColor" content="#0f0f0f" />
+		<meta name="theme-color" content="#100b08" />
+		<meta name="msapplication-TileColor" content="#100b08" />
 		
 		<!-- Structured Data for Rich Snippets -->
 		<script type="application/ld+json">

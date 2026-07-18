@@ -1,8 +1,8 @@
-import toolbarStore, { ToolbarMenu } from '$stores/toolbar';
+import toolbarStore, { TOOLBAR_NONE, type ToolbarSelection } from '$stores/toolbar';
 import { drawState } from '$components/arena/helper/draw.svelte.ts';
 
 const ToolbarAction = (): (() => void) => {
-	let lastSelectedMenu: ToolbarMenu | null = null;
+	let armedType: ToolbarSelection = TOOLBAR_NONE;
 	const container = () => drawState.getContainer();
 	const resetToolbar = () => {
 		toolbarStore.reset();
@@ -12,36 +12,14 @@ const ToolbarAction = (): (() => void) => {
 		event.stopPropagation();
 		const rect = container()?.getBoundingClientRect();
 
-		if (!rect) {
+		if (!rect || !armedType) {
 			return;
 		}
 
 		const x = event.clientX - rect.left;
 		const y = event.clientY - rect.top;
 
-		switch (lastSelectedMenu) {
-			case ToolbarMenu.CLIENT:
-				drawState.addClientNode(x, y);
-				break;
-			case ToolbarMenu.SERVER:
-				drawState.addServerNode(x, y);
-				break;
-			case ToolbarMenu.DB:
-				drawState.addDbNode(x, y);
-				break;
-			case ToolbarMenu.KAFKA:
-				drawState.addKafkaNode(x, y);
-				break;
-			case ToolbarMenu.RABBITMQ:
-				drawState.addRabbitMQNode(x, y);
-				break;
-			case ToolbarMenu.S3:
-				drawState.addS3Node(x, y);
-				break;
-			case ToolbarMenu.LOAD_BALANCER:
-				drawState.addLoadBalancerNode(x, y);
-				break;
-		}
+		drawState.addNode(armedType, x, y);
 
 		resetToolbar();
 		removeClickEvent();
@@ -63,10 +41,10 @@ const ToolbarAction = (): (() => void) => {
 		}
 	};
 
-	const handleToolbarAction = (toolbarMenu: ToolbarMenu) => {
+	const handleToolbarAction = (type: ToolbarSelection) => {
 		removeClickEvent();
-		lastSelectedMenu = toolbarMenu;
-		if (lastSelectedMenu) {
+		armedType = type;
+		if (armedType) {
 			addClickEvent();
 		}
 	};

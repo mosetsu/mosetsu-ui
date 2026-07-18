@@ -14,6 +14,6 @@
 	<meta name="twitter:description" content="Interactive sandbox for learning system design. Simulate distributed systems and practice for interviews!" />
 </svelte:head>
 
-<main class="bg-dark-base text-text-primary flex min-h-screen min-w-screen flex-col font-mono">
+<main class="bg-dark-base text-text-primary flex min-h-screen min-w-screen flex-col font-sans">
 	{@render children()}
 </main>

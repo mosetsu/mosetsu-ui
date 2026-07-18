@@ -2,9 +2,37 @@
 	import { blockStore, type BlockType, type BlockMetrics } from '$stores/block';
 	import { drawState } from '$components/arena/helper/draw.svelte.ts';
 	import { getInboundConnections, getOutboundConnections } from '$utils/congestion';
+	import { getModule } from '$lib/modules';
 	import type { Node } from '@xyflow/svelte';
 
+	const blockTitle = (type: BlockType) => getModule(type)?.title ?? type;
+	const blockIcon = (type: BlockType) => getModule(type)?.icon ?? 'ic-base-module';
+	const blockAccent = (type: BlockType) => getModule(type)?.accent ?? 'var(--color-text-muted)';
+
 	let block = $derived($blockStore);
+
+	// Searchable list of all placed modules (shown when nothing is selected).
+	let paletteSearch = $state('');
+	let placedNodes = $derived(
+		drawState.nodes.map((n) => ({
+			id: n.id,
+			type: n.type as BlockType,
+			metrics: (n.data?.metrics ?? {}) as BlockMetrics
+		}))
+	);
+	let filteredNodes = $derived.by(() => {
+		const q = paletteSearch.trim().toLowerCase();
+		if (!q) return placedNodes;
+		return placedNodes.filter(
+			(n) =>
+				blockTitle(n.type).toLowerCase().includes(q) ||
+				n.id.toLowerCase().includes(q) ||
+				n.type.toLowerCase().includes(q)
+		);
+	});
+	const selectPlacedNode = (n: { id: string; type: BlockType; metrics: BlockMetrics }) => {
+		blockStore.select({ id: n.id, type: n.type, metrics: n.metrics });
+	};
 
 	type ConnectedBlock = {
 		id: string;
@@ -41,63 +69,6 @@
 		return [...inbound, ...outbound];
 	});
 
-	const METRIC_LABELS: Record<BlockType, Record<string, { label: string; unit: string }>> = {
-		client: {
-			requestsPerSec: { label: 'Requests Rate', unit: 'req/s' },
-			concurrentConnections: { label: 'Concurrent Connections', unit: 'conn' }
-		},
-		server: {
-			requestsPerSec: { label: 'Processing Rate', unit: 'req/s' },
-			responseTimeMs: { label: 'Response Time', unit: 'ms' }
-		},
-		db: {
-			queriesPerSec: { label: 'Query Rate', unit: 'qps' },
-			readLatencyMs: { label: 'Read Latency', unit: 'ms' },
-			writeLatencyMs: { label: 'Write Latency', unit: 'ms' },
-			maxConnections: { label: 'Max Connections', unit: 'conn' }
-		},
-		kafka: {
-			messagesPerSec: { label: 'Message Rate', unit: 'msg/s' },
-			partitions: { label: 'Partitions', unit: '' },
-			consumerLag: { label: 'Consumer Lag', unit: 'msg' }
-		},
-		rabbitmq: {
-			messagesPerSec: { label: 'Message Rate', unit: 'msg/s' },
-			queueDepth: { label: 'Queue Depth', unit: 'msg' },
-			consumerCount: { label: 'Consumers', unit: '' }
-		},
-		s3: {
-			requestsPerSec: { label: 'Request Rate', unit: 'req/s' },
-			bandwidthMbps: { label: 'Bandwidth', unit: 'Mbps' },
-			storageSizeGb: { label: 'Storage Size', unit: 'GB' }
-		},
-		'load-balancer': {
-			requestsPerSec: { label: 'Throughput', unit: 'req/s' },
-			activeConnections: { label: 'Active Connections', unit: 'conn' },
-			backendServers: { label: 'Backend Servers', unit: '' }
-		}
-	};
-
-	const BLOCK_TITLES: Record<BlockType, string> = {
-		client: 'Client',
-		server: 'Server',
-		db: 'Database',
-		kafka: 'Kafka',
-		rabbitmq: 'RabbitMQ',
-		s3: 'S3 Storage',
-		'load-balancer': 'Load Balancer'
-	};
-
-	const BLOCK_ICONS: Record<BlockType, string> = {
-		client: 'ic-pc',
-		server: 'ic-nodejs',
-		db: 'ic-database',
-		kafka: 'ic-kafka',
-		rabbitmq: 'ic-rabbitmq',
-		s3: 'ic-s3',
-		'load-balancer': 'ic-load-balancer'
-	};
-
 	function handleMetricChange(
 		blockId: string,
 		blockType: BlockType,
@@ -122,33 +93,41 @@
 		type: BlockType,
 		metrics: BlockMetrics
 	): Array<{ key: string; value: number; label: string; unit: string }> {
-		const labels = METRIC_LABELS[type];
-		return Object.entries(metrics).map(([key, value]) => ({
-			key,
-			value: value as number,
-			label: labels[key]?.label ?? key,
-			unit: labels[key]?.unit ?? ''
+		const def = getModule(type);
+		if (!def) {
+			return Object.entries(metrics).map(([key, value]) => ({
+				key,
+				value: value as number,
+				label: key,
+				unit: ''
+			}));
+		}
+		return def.metrics.map((metric) => ({
+			key: metric.key,
+			value: metrics[metric.key] ?? 0,
+			label: metric.label,
+			unit: metric.unit
 		}));
 	}
 </script>
 
 <section class="border-dark-border bg-dark-surface flex h-full min-h-0 w-full flex-col overflow-hidden border-l">
-	<div class="border-dark-border flex h-16 flex-shrink-0 items-center gap-2 border-b p-4">
-		<span class="ic-primary-logo text-text-secondary"></span>
+	<div class="border-dark-border flex h-16 flex-shrink-0 items-center gap-2.5 border-b p-4">
+		<span class="ic-primary-logo text-accent-primary"></span>
 		<div class="flex flex-col">
-			<span class="text-text-primary mb-0.5 text-base">Tooling</span>
-			<span class="text-text-subtle text-sm">Update block metrics</span>
+			<span class="text-text-primary mb-0.5 text-base font-semibold tracking-tight">Tooling</span>
+			<span class="text-text-subtle text-xs">Update block metrics</span>
 		</div>
 	</div>
 
 	<section class="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
 		{#if block}
 			<!-- Selected Block -->
-			<div class="border-dark-border bg-dark-elevated rounded-lg border p-3">
+			<div class="border-dark-border-strong/50 bg-dark-highlight rounded-xl border p-3 shadow-lg">
 				<div class="mb-3 flex items-center gap-2">
-					<span class={BLOCK_ICONS[block.type] + ' text-text-secondary'}></span>
+					<span class={blockIcon(block.type)} style="color: {getModule(block.type)?.accent}"></span>
 					<div class="flex flex-col">
-						<span class="text-text-primary text-sm font-medium">{BLOCK_TITLES[block.type]}</span>
+						<span class="text-text-primary text-sm font-medium">{blockTitle(block.type)}</span>
 						<span class="text-text-subtle font-mono text-xs">{block.id}</span>
 					</div>
 					<span class="bg-accent-primary/20 text-accent-primary ml-auto rounded px-2 py-0.5 text-xs"
@@ -159,7 +138,7 @@
 					<div class="mb-2 flex flex-col gap-1">
 						<span class="text-text-subtle font-mono text-xs">{label}</span>
 						<label
-							class="border-dark-border bg-dark-surface flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"
+							class="border-dark-border bg-dark-surface focus-within:border-accent-primary/60 focus-within:bg-dark-elevated flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors"
 						>
 							<input
 								type="number"
@@ -189,13 +168,14 @@
 				</div>
 
 				{#each connectedBlocks as connBlock}
-					<div class="border-dark-border bg-dark-elevated/50 rounded-lg border p-3">
+					<div class="border-dark-border-strong/40 bg-dark-highlight/70 rounded-xl border p-3 shadow-md">
 						<div class="mb-3 flex items-center gap-2">
-							<span class={BLOCK_ICONS[connBlock.type] + ' text-text-secondary'}></span>
+							<span
+								class={blockIcon(connBlock.type)}
+								style="color: {getModule(connBlock.type)?.accent}"
+							></span>
 							<div class="flex flex-col">
-								<span class="text-text-primary text-sm font-medium"
-									>{BLOCK_TITLES[connBlock.type]}</span
-								>
+								<span class="text-text-primary text-sm font-medium">{blockTitle(connBlock.type)}</span>
 								<span class="text-text-subtle font-mono text-xs">{connBlock.id}</span>
 							</div>
 							<span
@@ -210,7 +190,7 @@
 							<div class="mb-2 flex flex-col gap-1">
 								<span class="text-text-subtle font-mono text-xs">{label}</span>
 								<label
-									class="border-dark-border bg-dark-surface flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"
+									class="border-dark-border bg-dark-surface focus-within:border-accent-primary/60 focus-within:bg-dark-elevated flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors"
 								>
 									<input
 										type="number"
@@ -233,10 +213,47 @@
 					</div>
 				{/each}
 			{/if}
+		{:else if placedNodes.length > 0}
+			<!-- Module list (nothing selected) -->
+			<label
+				class="border-dark-border bg-dark-surface focus-within:border-accent-primary/60 flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors"
+			>
+				<span class="text-text-subtle text-sm">⌕</span>
+				<input
+					type="text"
+					class="text-text-primary min-w-0 flex-1 border-none bg-transparent text-sm outline-none placeholder:text-text-faint"
+					placeholder="Search modules…"
+					bind:value={paletteSearch}
+				/>
+				<span class="text-text-faint flex-shrink-0 font-mono text-[10px]"
+					>{filteredNodes.length}/{placedNodes.length}</span
+				>
+			</label>
+
+			{#each filteredNodes as node (node.id)}
+				<button
+					class="border-dark-border-strong/40 bg-dark-highlight/70 hover:border-dark-border-strong hover:bg-dark-highlight flex w-full cursor-pointer items-center gap-2.5 rounded-xl border p-2.5 text-left transition-all focus:outline-none"
+					onclick={() => selectPlacedNode(node)}
+				>
+					<span class="node-icon flex items-center rounded-lg px-1.5 py-1" style="--accent: {blockAccent(node.type)}">
+						<span class={blockIcon(node.type)} style="color: {blockAccent(node.type)}"></span>
+					</span>
+					<div class="flex min-w-0 flex-col">
+						<span class="text-text-primary truncate text-sm font-medium">{blockTitle(node.type)}</span>
+						<span class="text-text-subtle truncate font-mono text-xs">{node.id}</span>
+					</div>
+				</button>
+			{/each}
+
+			{#if filteredNodes.length === 0}
+				<div class="text-text-subtle py-6 text-center text-xs">No modules match “{paletteSearch}”</div>
+			{/if}
 		{:else}
-			<div class="bg-dark-elevated h-[64px] animate-pulse rounded-lg"></div>
-			<div class="bg-dark-elevated h-[120px] animate-pulse rounded-lg"></div>
-			<div class="bg-dark-elevated h-[120px] animate-pulse rounded-lg"></div>
+			<div class="flex flex-1 flex-col items-center justify-center gap-2 py-10 text-center">
+				<span class="ic-base-module text-text-faint scale-150"></span>
+				<span class="text-text-secondary text-sm font-medium">No modules yet</span>
+				<span class="text-text-subtle text-xs">Add components from the dock below,<br />then select one to tune its metrics.</span>
+			</div>
 		{/if}
 	</section>
 </section>

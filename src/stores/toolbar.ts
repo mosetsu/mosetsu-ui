@@ -1,23 +1,17 @@
 import { writable } from 'svelte/store';
 
-export enum ToolbarMenu {
-	NULL = '',
-	CLIENT = 'client',
-	DB = 'db',
-	SERVER = 'server',
-	KAFKA = 'kafka',
-	RABBITMQ = 'rabbitmq',
-	S3 = 's3',
-	LOAD_BALANCER = 'load-balancer'
-}
+// The toolbar holds the currently-armed module type (a key in the module
+// registry), or '' when nothing is selected.
+export type ToolbarSelection = string;
+export const TOOLBAR_NONE: ToolbarSelection = '';
 
 const createToolbarStore = () => {
-	const { subscribe, set } = writable<ToolbarMenu>(ToolbarMenu.NULL);
+	const { subscribe, set } = writable<ToolbarSelection>(TOOLBAR_NONE);
 
 	return {
 		subscribe,
-		select: (menu: ToolbarMenu) => set(menu),
-		reset: () => set(ToolbarMenu.NULL)
+		select: (type: ToolbarSelection) => set(type),
+		reset: () => set(TOOLBAR_NONE)
 	};
 };
 

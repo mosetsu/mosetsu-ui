@@ -6,23 +6,160 @@
 @plugin 'daisyui';
 
 @theme {
-	/* Dark theme base colors */
-	--color-dark-base: #13131a;
-	--color-dark-surface: #18181f;
-	--color-dark-elevated: #1e1e26;
-	--color-dark-highlight: #252530;
-	--color-dark-border: #2a2a35;
-	--color-dark-border-strong: #3a3a45;
-	--color-dark-dots: #3d3d4a;
+	/* Warm dark base — terracotta / ember palette */
+	--color-dark-base: #100b08;
+	--color-dark-surface: #17100b;
+	--color-dark-elevated: #1f150e;
+	--color-dark-highlight: #2a1d13;
+	--color-dark-border: #33251a;
+	--color-dark-border-strong: #4a3627;
+	--color-dark-dots: #3a2a1d;
 
-	/* Text colors */
-	--color-text-primary: #e2e2e8;
-	--color-text-secondary: #a5a5b2;
-	--color-text-muted: #8b8b96;
-	--color-text-subtle: #6b6b78;
-	--color-text-faint: #4a4a56;
+	/* Text colors — warm off-white ramp */
+	--color-text-primary: #f6ece2;
+	--color-text-secondary: #cbb9a8;
+	--color-text-muted: #a08b78;
+	--color-text-subtle: #83705f;
+	--color-text-faint: #5a4a3c;
 
-	/* Accent colors */
-	--color-accent-primary: #3a7ce6;
-	--color-accent-hover: #5090f8;
+	/* Accent — ember orange / amber */
+	--color-accent-primary: #f0562b;
+	--color-accent-hover: #ff6f3d;
+	--color-accent: #f0562b;
+	--color-accent-amber: #ff9a4d;
+	--color-accent-glow: #ff7326;
+
+	/* Fonts */
+	--font-sans: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/* ---- Global surface --------------------------------------------------- */
+html,
+body {
+	background-color: var(--color-dark-base);
+}
+
+body {
+	background-image:
+		radial-gradient(120% 90% at 50% 118%, rgba(255, 115, 38, 0.16) 0%, transparent 55%),
+		radial-gradient(80% 70% at 0% 0%, rgba(255, 138, 61, 0.05) 0%, transparent 50%);
+	background-attachment: fixed;
+}
+
+/* ---- Glassmorphism ---------------------------------------------------- */
+.glass {
+	background: color-mix(in srgb, var(--color-dark-surface) 72%, transparent);
+	backdrop-filter: blur(16px) saturate(1.25);
+	-webkit-backdrop-filter: blur(16px) saturate(1.25);
+}
+
+.glass-elevated {
+	background: color-mix(in srgb, var(--color-dark-elevated) 78%, transparent);
+	backdrop-filter: blur(18px) saturate(1.3);
+	-webkit-backdrop-filter: blur(18px) saturate(1.3);
+	box-shadow:
+		0 8px 32px rgba(0, 0, 0, 0.45),
+		inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Thin luminous hairline on the top edge of a panel */
+.hairline-top {
+	position: relative;
+}
+.hairline-top::before {
+	content: '';
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 1px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 154, 77, 0.35) 50%,
+		transparent
+	);
+	pointer-events: none;
+}
+
+/* ---- Nodes (per-module colour identity) ------------------------------ */
+.node-card {
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(
+		155deg,
+		color-mix(in srgb, var(--accent, #f0562b) 16%, var(--color-dark-elevated)) 0%,
+		var(--color-dark-elevated) 55%
+	);
+	border: 1px solid color-mix(in srgb, var(--accent, #f0562b) 34%, var(--color-dark-border));
+	box-shadow: inset 0 1px 0 color-mix(in srgb, var(--accent, #f0562b) 18%, transparent);
+}
+/* luminous accent strip along the top of each card */
+.node-card::after {
+	content: '';
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 2px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix(in srgb, var(--accent, #f0562b) 75%, transparent),
+		transparent
+	);
+	pointer-events: none;
+}
+.node-icon {
+	background: color-mix(in srgb, var(--accent, #f0562b) 26%, var(--color-dark-surface));
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #f0562b) 45%, transparent);
+}
+.node-pill {
+	background: color-mix(in srgb, var(--accent, #f0562b) 12%, var(--color-dark-highlight));
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #f0562b) 16%, transparent);
+}
+
+/* ---- Glow ------------------------------------------------------------- */
+.glow-accent {
+	box-shadow:
+		0 0 0 1px rgba(255, 111, 61, 0.4),
+		0 6px 20px -6px rgba(240, 86, 43, 0.55),
+		0 0 22px -4px rgba(255, 115, 38, 0.45);
+}
+
+.glow-soft {
+	box-shadow: 0 0 24px -6px rgba(255, 115, 38, 0.35);
+}
+
+/* Ambient amber bloom behind the bottom dock (inspo 3) */
+.ambient-bloom {
+	position: absolute;
+	left: 50%;
+	bottom: 8px;
+	transform: translateX(-50%);
+	width: min(820px, 82%);
+	height: 300px;
+	pointer-events: none;
+	z-index: 10;
+	background: radial-gradient(
+		ellipse at bottom center,
+		rgba(255, 122, 46, 0.42) 0%,
+		rgba(240, 86, 43, 0.18) 38%,
+		transparent 72%
+	);
+	filter: blur(28px);
+}
+
+/* ---- Custom scrollbar ------------------------------------------------- */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-dark-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+	background: var(--color-dark-border-strong);
+	border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb:hover {
+	background: var(--color-accent-primary);
 }

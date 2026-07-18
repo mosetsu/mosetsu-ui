@@ -57,6 +57,13 @@
 
 	:global(.svelte-flow__background) {
 		background-color: var(--color-dark-base);
+		background-image:
+			radial-gradient(48% 42% at 16% 10%, rgba(139, 124, 246, 0.13), transparent 60%),
+			radial-gradient(44% 40% at 86% 14%, rgba(74, 158, 255, 0.1), transparent 60%),
+			radial-gradient(50% 46% at 82% 80%, rgba(63, 178, 122, 0.09), transparent 62%),
+			radial-gradient(40% 34% at 45% 42%, rgba(255, 138, 61, 0.05), transparent 66%),
+			radial-gradient(120% 90% at 50% 118%, rgba(255, 115, 38, 0.1), transparent 55%),
+			radial-gradient(150% 120% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
 	}
 
 	:global(.svelte-flow__pane) {

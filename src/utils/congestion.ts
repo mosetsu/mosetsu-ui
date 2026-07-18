@@ -1,5 +1,6 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import type { BlockMetrics } from '$stores/block';
+import { getThroughput } from '$lib/modules';
 
 export type CongestionStatus = 'green' | 'yellow' | 'red';
 
@@ -10,23 +11,9 @@ export type CongestionResult = {
 	capacity: number;
 };
 
-const getThroughputFromNodeData = (data: Record<string, unknown>): number => {
-	const metrics = data?.metrics as BlockMetrics | undefined;
-	if (!metrics) {
-		return 0;
-	}
-
-	if ('requestsPerSec' in metrics) {
-		return metrics.requestsPerSec;
-	}
-	if ('queriesPerSec' in metrics) {
-		return metrics.queriesPerSec;
-	}
-	if ('messagesPerSec' in metrics) {
-		return metrics.messagesPerSec;
-	}
-
-	return 0;
+const getThroughputFromNode = (node: Node): number => {
+	const metrics = (node.data?.metrics as BlockMetrics | undefined) ?? {};
+	return getThroughput(node.type as string, metrics);
 };
 
 export const getInboundConnections = (nodeId: string, edges: Edge[]): string[] => {
@@ -42,8 +29,7 @@ export const aggregateInboundMetrics = (nodeId: string, nodes: Node[], edges: Ed
 	const sourceNodes = nodes.filter((n) => sourceIds.includes(n.id));
 
 	return sourceNodes.reduce((sum, node) => {
-		const throughput = getThroughputFromNodeData(node.data as Record<string, unknown>);
-		return sum + throughput;
+		return sum + getThroughputFromNode(node);
 	}, 0);
 };
 
@@ -76,7 +62,7 @@ export const calculateNodeCongestion = (
 		return { status: 'green', ratio: 0, inboundTotal: 0, capacity: 0 };
 	}
 
-	const capacity = getThroughputFromNodeData(targetNode.data as Record<string, unknown>);
+	const capacity = getThroughputFromNode(targetNode);
 	const inboundTotal = aggregateInboundMetrics(nodeId, nodes, edges);
 	const ratio = calculateCongestionRatio(inboundTotal, capacity);
 	const status = getCongestionStatus(ratio);

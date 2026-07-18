@@ -1,24 +1,18 @@
 import { writable } from 'svelte/store';
+import { getDefaultMetrics, getThroughput } from '$lib/modules';
 
-export type BlockType = 'client' | 'server' | 'db' | 'kafka' | 'rabbitmq' | 's3' | 'load-balancer';
+// Metrics are a flat bag of numbers; the module registry defines which keys
+// each type has and what they mean.
+export type BlockType = string;
+export type BlockMetrics = Record<string, number>;
 
-export type ClientMetrics = {
-	requestsPerSec: number;
-	concurrentConnections: number;
+export type BlockSpecs = {
+	id: string;
+	type: BlockType;
+	metrics: BlockMetrics;
 };
 
-export type ServerMetrics = {
-	requestsPerSec: number;
-	responseTimeMs: number;
-};
-
-export type DatabaseMetrics = {
-	queriesPerSec: number;
-	readLatencyMs: number;
-	writeLatencyMs: number;
-	maxConnections: number;
-};
-
+// Kept for the bespoke Kafka / RabbitMQ components which read typed metrics.
 export type KafkaMetrics = {
 	messagesPerSec: number;
 	partitions: number;
@@ -31,64 +25,12 @@ export type RabbitMQMetrics = {
 	consumerCount: number;
 };
 
-export type S3Metrics = {
-	requestsPerSec: number;
-	bandwidthMbps: number;
-	storageSizeGb: number;
-};
+/** Default metrics for a freshly-dropped node of the given type. */
+export const getBlockDefaults = (type: BlockType): BlockMetrics => getDefaultMetrics(type);
 
-export type LoadBalancerMetrics = {
-	requestsPerSec: number;
-	activeConnections: number;
-	backendServers: number;
-};
-
-export type BlockSpecs =
-	| { id: string; type: 'client'; metrics: ClientMetrics }
-	| { id: string; type: 'server'; metrics: ServerMetrics }
-	| { id: string; type: 'db'; metrics: DatabaseMetrics }
-	| { id: string; type: 'kafka'; metrics: KafkaMetrics }
-	| { id: string; type: 'rabbitmq'; metrics: RabbitMQMetrics }
-	| { id: string; type: 's3'; metrics: S3Metrics }
-	| { id: string; type: 'load-balancer'; metrics: LoadBalancerMetrics };
-
-export type BlockMetrics =
-	| ClientMetrics
-	| ServerMetrics
-	| DatabaseMetrics
-	| KafkaMetrics
-	| RabbitMQMetrics
-	| S3Metrics
-	| LoadBalancerMetrics;
-
-export const DEFAULT_METRICS: Record<BlockType, BlockMetrics> = {
-	client: { requestsPerSec: 24, concurrentConnections: 10 },
-	server: { requestsPerSec: 100, responseTimeMs: 50 },
-	db: { queriesPerSec: 200, readLatencyMs: 5, writeLatencyMs: 10, maxConnections: 100 },
-	kafka: { messagesPerSec: 1000, partitions: 3, consumerLag: 0 },
-	rabbitmq: { messagesPerSec: 500, queueDepth: 0, consumerCount: 2 },
-	s3: { requestsPerSec: 50, bandwidthMbps: 100, storageSizeGb: 500 },
-	'load-balancer': { requestsPerSec: 500, activeConnections: 50, backendServers: 3 }
-};
-
-export const getThroughputMetric = (block: BlockSpecs): number => {
-	switch (block.type) {
-		case 'client':
-			return block.metrics.requestsPerSec;
-		case 'server':
-			return block.metrics.requestsPerSec;
-		case 'db':
-			return block.metrics.queriesPerSec;
-		case 'kafka':
-			return block.metrics.messagesPerSec;
-		case 'rabbitmq':
-			return block.metrics.messagesPerSec;
-		case 's3':
-			return block.metrics.requestsPerSec;
-		case 'load-balancer':
-			return block.metrics.requestsPerSec;
-	}
-};
+/** The metric that represents a block's processing capacity. */
+export const getThroughputMetric = (block: BlockSpecs): number =>
+	getThroughput(block.type, block.metrics);
 
 const createBlockStore = () => {
 	const { subscribe, set, update } = writable<BlockSpecs | null>(null);
@@ -97,16 +39,16 @@ const createBlockStore = () => {
 		subscribe,
 		select: (block: BlockSpecs) => set(block),
 		clear: () => set(null),
-		updateMetrics: <T extends BlockMetrics>(metrics: T) => {
+		updateMetrics: (metrics: BlockMetrics) => {
 			update((current) => {
 				if (!current) {
 					return current;
 				}
 
-				return { ...current, metrics } as BlockSpecs;
+				return { ...current, metrics };
 			});
 		},
-		updateMetricField: <K extends string>(field: K, value: number) => {
+		updateMetricField: (field: string, value: number) => {
 			update((current) => {
 				if (!current) {
 					return current;
@@ -115,7 +57,7 @@ const createBlockStore = () => {
 				return {
 					...current,
 					metrics: { ...current.metrics, [field]: value }
-				} as BlockSpecs;
+				};
 			});
 		}
 	};
