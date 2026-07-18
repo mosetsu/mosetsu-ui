@@ -115,7 +115,7 @@
 			animationId = requestAnimationFrame(animate);
 			return;
 		}
-		
+
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
@@ -134,9 +134,13 @@
 		ctx.clearRect(0, 0, width, height);
 
 		// Draw channel backgrounds
-		const channelColor = status === 'congested' ? 'rgba(217, 125, 85, 0.12)' : 
-			status === 'warning' ? 'rgba(255, 197, 15, 0.12)' : 'rgba(58, 124, 230, 0.12)';
-		
+		const channelColor =
+			status === 'congested'
+				? 'rgba(217, 125, 85, 0.12)'
+				: status === 'warning'
+					? 'rgba(255, 197, 15, 0.12)'
+					: 'rgba(58, 124, 230, 0.12)';
+
 		for (let i = 0; i < CHANNEL_COUNT; i++) {
 			const x = i * channelWidth + channelPadding;
 			ctx.fillStyle = channelColor;
@@ -146,18 +150,26 @@
 		}
 
 		// Colors based on status
-		const baseColor = status === 'congested' ? [217, 125, 85] : 
-			status === 'warning' ? [255, 197, 15] : [58, 124, 230];
-		const glowColor = status === 'congested' ? 'rgba(217, 125, 85,' : 
-			status === 'warning' ? 'rgba(255, 197, 15,' : 'rgba(58, 124, 230,';
+		const baseColor =
+			status === 'congested'
+				? [217, 125, 85]
+				: status === 'warning'
+					? [255, 197, 15]
+					: [58, 124, 230];
+		const glowColor =
+			status === 'congested'
+				? 'rgba(217, 125, 85,'
+				: status === 'warning'
+					? 'rgba(255, 197, 15,'
+					: 'rgba(58, 124, 230,';
 
-		const speedMultiplier = status === 'congested' ? 0.3 : status === 'warning' ? 0.6 : 1;
+		const speedMultiplier = status === 'congested' ? 0.2 : status === 'warning' ? 0.45 : 0.7;
 		const backpressure = status === 'congested' ? 0.6 : 0;
 
 		for (const p of particles) {
 			let effectiveSpeed = p.vy * speedMultiplier;
 			if (backpressure > 0 && p.y < height * 0.25) {
-				effectiveSpeed *= (1 - backpressure * (1 - p.y / (height * 0.25)));
+				effectiveSpeed *= 1 - backpressure * (1 - p.y / (height * 0.25));
 			}
 
 			p.y += effectiveSpeed;
@@ -195,7 +207,7 @@
 				const ox = 15 + Math.random() * (width - 30);
 				const oy = -3 - Math.random() * 15;
 				const size = 3 + Math.random() * 2;
-				
+
 				ctx.fillStyle = 'rgba(217, 125, 85, 0.8)';
 				ctx.beginPath();
 				ctx.arc(ox, oy, size, 0, Math.PI * 2);
@@ -224,103 +236,72 @@
 
 <div
 	{id}
-	class="load-balancer flex cursor-pointer flex-col rounded-2xl border border-transparent p-1 transition-all duration-200 hover:scale-[1.02]"
+	class="load-balancer flex cursor-pointer flex-col rounded-2xl border border-transparent p-1 shadow-lg transition-all duration-200 hover:scale-[1.02]"
 	onclick={handleClick}
 	role="button"
 	tabindex="0"
 	onkeydown={(e) => e.key === 'Enter' && handleClick()}
 >
-	<!-- Header -->
-	<div class="component-header mb-1.5 flex items-center justify-center gap-2 rounded-lg px-2 py-1.5"
-		class:header-healthy={status === 'healthy'}
-		class:header-warning={status === 'warning'}
-		class:header-congested={status === 'congested'}>
-		<span class="ic-load-balancer text-base"></span>
-		<span class="text-text-primary text-xs font-medium">Load Balancer</span>
-	</div>
+	<div class="bg-dark-elevated border-dark-border flex flex-col rounded-xl border p-3">
+		<div class="mb-2.5 flex gap-2.5">
+			<span class="bg-dark-dots flex items-center rounded-lg px-2 py-1.5">
+				<span class="ic-load-balancer scale-110"></span>
+			</span>
+			<div class="flex flex-col">
+				<span class="text-text-primary my-auto text-sm font-medium">Load Balancer</span>
+			</div>
+		</div>
 
-	<!-- Metrics row -->
-	<div class="mb-1.5 flex justify-center gap-2 text-[10px]">
-		<span class:text-cyan-400={status === 'healthy'} 
-			  class:text-yellow-400={status === 'warning'}
-			  class:text-orange-400={status === 'congested'}>
-			{metrics?.requestsPerSec ?? 0}/s
-		</span>
-		<span class="text-text-subtle">|</span>
-		<span class:text-cyan-400={status === 'healthy'} 
-			  class:text-yellow-400={status === 'warning'}
-			  class:text-orange-400={status === 'congested'}>
-			{Math.round(congestionRatio)}% load
-		</span>
-	</div>
+		<div
+			class="bg-dark-base relative aspect-square h-[280px] w-[180px] overflow-hidden rounded-xl border-none p-1 transition-all duration-200"
+			class:container-healthy={status === 'healthy' || !isSimulationActive}
+			class:container-warning={status === 'warning' && isSimulationActive}
+			class:container-congested={status === 'congested' && isSimulationActive}
+		>
+			<canvas bind:this={canvas} class="mx-auto block h-full w-full"></canvas>
+		</div>
 
-	<!-- Square visualization box -->
-	<div class="component-container relative aspect-square overflow-hidden rounded-xl"
-		class:container-healthy={status === 'healthy' || !isSimulationActive}
-		class:container-warning={status === 'warning' && isSimulationActive}
-		class:container-congested={status === 'congested' && isSimulationActive}>
-		<canvas bind:this={canvas} class="mx-auto block h-full w-full"></canvas>
-	</div>
-
-	<!-- Backend count -->
-	<div class="mt-1.5 flex justify-center">
-		<span class="text-text-subtle text-[10px]">{metrics?.backendServers ?? 3} backends</span>
+		<div class="flex flex-wrap gap-1.5 mt-4">
+			<div class="bg-dark-highlight flex items-center gap-1.5 rounded-lg px-2 py-1">
+				<img src="/images/request.svg" alt="icon" class="h-3 w-3 opacity-60" />
+				<span class="text-text-muted text-sm">{metrics?.requestsPerSec ?? 0}/s</span>
+			</div>
+			<div class="bg-dark-highlight flex items-center gap-1.5 rounded-lg px-2 py-1">
+				<img src="/images/request.svg" alt="icon" class="h-3 w-3 opacity-60" />
+				<span class="text-text-muted text-sm">{Math.round(congestionRatio)}% load</span>
+			</div>
+		</div>
 	</div>
 </div>
 
-<ConnectedHandle nodeId={id} type="target" position={Position.Top} handleId="top" />
 <ConnectedHandle nodeId={id} type="target" position={Position.Left} handleId="left" />
 <ConnectedHandle nodeId={id} type="source" position={Position.Right} handleId="right" />
-<ConnectedHandle nodeId={id} type="source" position={Position.Bottom} handleId="bottom" />
 
 <style>
-	.component-header {
-		background: rgba(30, 30, 38, 0.9);
-		border: 1px solid rgba(58, 58, 69, 0.5);
-	}
-
-	.header-healthy { box-shadow: 0 0 15px rgba(58, 124, 230, 0.15); }
-	.header-warning { box-shadow: 0 0 15px rgba(255, 197, 15, 0.15); }
-	.header-congested { box-shadow: 0 0 15px rgba(217, 125, 85, 0.2); }
-
-	.component-container {
-		background: rgba(18, 18, 24, 0.95);
-		border: 2px solid;
-		transition: all 0.3s ease;
-		width: 160px;
-		height: 160px;
-	}
-
-	.container-healthy {
-		border-color: rgba(58, 124, 230, 0.5);
-		box-shadow: 
-			0 0 25px rgba(58, 124, 230, 0.25),
-			inset 0 0 20px rgba(58, 124, 230, 0.08);
-	}
-
 	.container-warning {
 		border-color: rgba(255, 197, 15, 0.5);
-		box-shadow: 
+		box-shadow:
 			0 0 25px rgba(255, 197, 15, 0.25),
 			inset 0 0 20px rgba(255, 197, 15, 0.08);
 	}
 
 	.container-congested {
 		border-color: rgba(217, 125, 85, 0.7);
-		box-shadow: 
+		box-shadow:
 			0 0 35px rgba(217, 125, 85, 0.4),
 			inset 0 0 25px rgba(217, 125, 85, 0.15);
 		animation: pulse-glow 1.5s ease-in-out infinite;
 	}
 
 	@keyframes pulse-glow {
-		0%, 100% {
-			box-shadow: 
+		0%,
+		100% {
+			box-shadow:
 				0 0 35px rgba(217, 125, 85, 0.4),
 				inset 0 0 25px rgba(217, 125, 85, 0.15);
 		}
 		50% {
-			box-shadow: 
+			box-shadow:
 				0 0 50px rgba(217, 125, 85, 0.55),
 				inset 0 0 35px rgba(217, 125, 85, 0.25);
 		}
