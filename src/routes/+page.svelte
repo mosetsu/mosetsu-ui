@@ -1,8 +1,8 @@
 <script lang="ts">
-	import SideBar from '$components/SideBar.svelte';
+	import SideBar from '$components/arena/panels/ToolingPanel.svelte';
 	import Arena from '$components/arena/Arena.svelte';
-	import Header from '$components/arena/Header.svelte';
-	import SummaryHud from '$components/arena/SummaryHud.svelte';
+	import Header from '$components/arena/TitleBar.svelte';
+	import SummaryHud from '$components/arena/panels/OverviewPanel.svelte';
 </script>
 
 <!-- Canvas stage (inset so the background frames it) -->

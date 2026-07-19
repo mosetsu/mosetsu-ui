@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
-	import { drawState } from '$components/arena/helper/draw.svelte.ts';
+	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
 	import { hydrateDesign, serializeDesign } from '$lib/design/serialize';
 	import { createAutosaver, loadDraft } from '$lib/design/persistence';
 	import { readDesignFromHash, clearHash } from '$lib/design/share';
-	import { zoomControl } from '$components/arena/helper/zoom.svelte';
+	import { zoomControl } from '$components/arena/canvas-state/zoom.svelte';
 	import { specStore, setSpec, DEFAULT_SPEC_NAME } from '$stores/spec';
 
 	let ready = $state(false);

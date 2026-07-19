@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Position, type NodeProps } from '@xyflow/svelte';
-	import { selectBlock } from './helper';
+	import { selectBlock } from '$components/arena/canvas-state/selectBlock';
 	import { openTooling } from '$stores/panels';
 	import ConnectedHandle from './ConnectedHandle.svelte';
-	import type { RabbitMQMetrics } from '$stores/block';
-	import commonStore from '$stores/common';
+	import type { RabbitMQMetrics } from '$stores/selection';
+	import simulationStore from '$stores/simulation';
 	import { onMount, onDestroy } from 'svelte';
 
 	let { id, data }: NodeProps = $props();
@@ -15,7 +15,7 @@
 		openTooling();
 	};
 
-	let isSimulationActive = $derived($commonStore.isSimulationActive);
+	let isSimulationActive = $derived($simulationStore.isSimulationActive);
 
 	// Metrics derivation
 	let inRate = $derived(metrics?.messagesPerSec ?? 500);

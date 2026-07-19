@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { BaseEdge, getBezierPath, type EdgeProps, useSvelteFlow } from '@xyflow/svelte';
-	import commonStore from '$stores/common';
-	import { getEdgeCongestion, CONGESTION_COLORS, getAnimationDelays } from '$utils/congestion';
+	import simulationStore from '$stores/simulation';
+	import {
+		getEdgeCongestion,
+		CONGESTION_COLORS,
+		getAnimationDelays
+	} from '$lib/simulation/congestion';
 
 	type Props = EdgeProps;
 
@@ -18,7 +22,7 @@
 		selected = false
 	}: Props = $props();
 
-	let isSimulationActive = $derived($commonStore.isSimulationActive);
+	let isSimulationActive = $derived($simulationStore.isSimulationActive);
 	const { getNodes, getEdges } = useSvelteFlow();
 
 	let path = $derived(

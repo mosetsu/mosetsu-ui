@@ -1,5 +1,5 @@
 import toolbarStore, { TOOLBAR_NONE, type ToolbarSelection } from '$stores/toolbar';
-import { drawState } from '$components/arena/helper/draw.svelte.ts';
+import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
 
 const ToolbarAction = (): (() => void) => {
 	let armedType: ToolbarSelection = TOOLBAR_NONE;

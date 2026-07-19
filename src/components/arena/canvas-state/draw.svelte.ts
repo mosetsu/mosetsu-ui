@@ -80,14 +80,14 @@ export class DrawStateClass {
 		];
 	};
 
+	/**
+	 * Release the transient container reference on unmount. The graph itself is
+	 * a session singleton and is intentionally NOT cleared here, so in-app
+	 * navigation (e.g. Arena → Explore → back) preserves the working design.
+	 * Use `clearGraph()` to actually empty the canvas.
+	 */
 	destroy = () => {
 		this.container = null;
-		this.nodes = [];
-		this.edges = [];
-		this.panEnabled = true;
-		this.nodeSeq = 0;
-		this.nodeTypes = {};
-		this.edgeTypes = {};
 	};
 }
 

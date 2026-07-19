@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { blockStore, type BlockType, type BlockMetrics } from '$stores/block';
-	import { drawState } from '$components/arena/helper/draw.svelte.ts';
-	import { getInboundConnections, getOutboundConnections } from '$utils/congestion';
+	import { selectionStore, type BlockType, type BlockMetrics } from '$stores/selection';
+	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
+	import { getInboundConnections, getOutboundConnections } from '$lib/simulation/congestion';
 	import { getModule } from '$lib/modules';
 	import { toolingCollapsed, toggleTooling } from '$stores/panels';
 	import type { Node } from '@xyflow/svelte';
@@ -10,7 +10,7 @@
 	const blockIcon = (type: BlockType) => getModule(type)?.icon ?? 'ic-base-module';
 	const blockAccent = (type: BlockType) => getModule(type)?.accent ?? 'var(--color-text-muted)';
 
-	let block = $derived($blockStore);
+	let block = $derived($selectionStore);
 
 	// Searchable list of all placed modules (shown when nothing is selected).
 	let paletteSearch = $state('');
@@ -32,7 +32,7 @@
 		);
 	});
 	const selectPlacedNode = (n: { id: string; type: BlockType; metrics: BlockMetrics }) => {
-		blockStore.select({ id: n.id, type: n.type, metrics: n.metrics });
+		selectionStore.select({ id: n.id, type: n.type, metrics: n.metrics });
 	};
 
 	type ConnectedBlock = {
@@ -86,7 +86,7 @@
 		);
 
 		if (block && blockId === block.id) {
-			blockStore.updateMetricField(field, newValue);
+			selectionStore.updateMetricField(field, newValue);
 		}
 	}
 

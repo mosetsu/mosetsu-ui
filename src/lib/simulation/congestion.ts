@@ -1,5 +1,5 @@
 import type { Edge, Node } from '@xyflow/svelte';
-import type { BlockMetrics } from '$stores/block';
+import type { BlockMetrics } from '$stores/selection';
 import { getThroughput } from '$lib/modules';
 
 export type CongestionStatus = 'green' | 'yellow' | 'red';

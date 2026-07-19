@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import MenuBar from '$components/MenuBar.svelte';
+	import MenuBar from '$components/nav/NavMenu.svelte';
 
 	let collapsed = $state(true);
 

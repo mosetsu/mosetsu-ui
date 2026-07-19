@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { drawState } from '$components/arena/helper/draw.svelte.ts';
-	import { computeSummary } from '$utils/summary';
-	import { CONGESTION_COLORS } from '$utils/congestion';
+	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
+	import { computeSummary } from '$lib/simulation/summary';
+	import { CONGESTION_COLORS } from '$lib/simulation/congestion';
 
 	let summary = $derived(computeSummary(drawState.nodes, drawState.edges));
 	let collapsed = $state(true);

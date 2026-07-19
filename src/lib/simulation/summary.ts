@@ -1,6 +1,6 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import { getModule, getThroughput } from '$lib/modules';
-import { calculateNodeCongestion, type CongestionStatus } from '$utils/congestion';
+import { calculateNodeCongestion, type CongestionStatus } from '$lib/simulation/congestion';
 
 export type SystemSummary = {
 	modules: number;

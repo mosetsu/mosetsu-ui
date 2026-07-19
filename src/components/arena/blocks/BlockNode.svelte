@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { type NodeProps } from '@xyflow/svelte';
-	import { selectBlock } from './helper';
+	import { selectBlock } from '$components/arena/canvas-state/selectBlock';
 	import ConnectedHandle from './ConnectedHandle.svelte';
 	import { getModule } from '$lib/modules';
 	import { openTooling } from '$stores/panels';
-	import type { BlockMetrics, BlockType } from '$stores/block';
+	import type { BlockMetrics, BlockType } from '$stores/selection';
 
 	let { id, type, data }: NodeProps = $props();
 

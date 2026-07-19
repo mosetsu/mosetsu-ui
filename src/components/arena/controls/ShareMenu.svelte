@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { drawState } from '$components/arena/helper/draw.svelte.ts';
+	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
 	import { serializeDesign, hydrateDesign } from '$lib/design/serialize';
 	import { buildShareUrl, exportDesignFile, importDesignFile } from '$lib/design/share';
+	import Toast from '$components/ui/Toast.svelte';
 
 	let open = $state(false);
 	let toast = $state('');
@@ -110,12 +111,5 @@
 		</div>
 	{/if}
 
-	{#if toast}
-		<div
-			class="glass-elevated border-accent-primary/30 text-text-primary absolute bottom-full left-0 mb-2 rounded-lg border px-3 py-1.5 text-xs whitespace-nowrap shadow-xl"
-			transition:fly={{ y: 8, duration: 160 }}
-		>
-			{toast}
-		</div>
-	{/if}
+	<Toast message={toast} class="absolute bottom-full left-0 mb-2" />
 </div>

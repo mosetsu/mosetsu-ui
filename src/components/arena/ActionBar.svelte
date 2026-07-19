@@ -1,20 +1,12 @@
 <script lang="ts">
-	import commonStore from '$stores/common';
-	import { zoomControl } from './helper/zoom.svelte';
-	import ShareMenu from '$components/arena/ShareMenu.svelte';
-	import SpecControls from '$components/arena/SpecControls.svelte';
+	import simulationStore from '$stores/simulation';
+	import ShareMenu from '$components/arena/controls/ShareMenu.svelte';
+	import SpecControls from '$components/arena/controls/SpecControls.svelte';
+	import ZoomControls from '$components/arena/controls/ZoomControls.svelte';
 
 	let { toolbarVisible, onModuleBtnClick } = $props();
 
-	const handleZoomIn = () => {
-		zoomControl.zoomIn();
-	};
-
-	const handleZoomOut = () => {
-		zoomControl.zoomOut();
-	};
-
-	let simulationActive = $derived($commonStore.isSimulationActive);
+	let simulationActive = $derived($simulationStore.isSimulationActive);
 </script>
 
 <footer
@@ -34,7 +26,7 @@
 					(simulationActive
 						? 'bg-accent-primary glow-accent hover:bg-accent-hover border-transparent text-white'
 						: 'border-accent-primary/50 bg-accent-primary/10 text-accent-hover glow-soft hover:bg-accent-primary hover:text-white')}
-				onclick={() => commonStore.toggleSimulation()}
+				onclick={() => simulationStore.toggleSimulation()}
 			>
 				<span
 					class={`inline-block h-2 w-2 rounded-full transition-all ` +
@@ -53,27 +45,7 @@
 						: 'border-dark-border bg-dark-elevated/60 text-text-secondary hover:border-dark-border-strong hover:text-text-primary')}
 				onclick={onModuleBtnClick}>Modules</button
 			>
-			<div
-				class="border-dark-border bg-dark-elevated/60 flex items-center gap-1 rounded-lg border p-0.5"
-			>
-				<button
-					class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
-					onclick={handleZoomOut}
-					title="Zoom out"
-				>
-					−
-				</button>
-				<span class="text-text-subtle min-w-[3rem] text-center font-mono text-xs"
-					>{zoomControl.zoomLevel}%</span
-				>
-				<button
-					class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
-					onclick={handleZoomIn}
-					title="Zoom in"
-				>
-					+
-				</button>
-			</div>
+			<ZoomControls />
 		</div>
 	</div>
 </footer>

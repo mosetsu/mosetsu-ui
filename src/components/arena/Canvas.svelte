@@ -3,10 +3,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { SvelteFlow, Background, BackgroundVariant } from '@xyflow/svelte';
-	import { drawState } from '$components/arena/helper/draw.svelte.ts';
-	import ToolbarAction from '$components/arena/helper/toolbarAction';
+	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
+	import ToolbarAction from '$components/arena/canvas-state/toolbarAction';
 	import ZoomPanel from '$components/arena/ZoomPanel.svelte';
-	import { zoomControl } from '$components/arena/helper/zoom.svelte';
+	import { zoomControl } from '$components/arena/canvas-state/zoom.svelte';
 
 	let container = $state<HTMLDivElement | null>(null);
 

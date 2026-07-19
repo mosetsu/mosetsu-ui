@@ -1,5 +1,5 @@
 import { useSvelteFlow } from '@xyflow/svelte';
-import { drawState } from '$components/arena/helper/draw.svelte.ts';
+import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
 
 export const ZOOM_STEP = 0.2; // additive zoom factor per wheel notch / +- click
 const MIN_ZOOM = 0.1;

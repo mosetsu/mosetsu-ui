@@ -11,7 +11,6 @@ const config = {
 			$actions: './src/actions',
 			$components: './src/components',
 			$lib: './src/lib',
-			$kyba: './src/lib/kyba',
 			$stores: './src/stores',
 			$utils: './src/utils'
 		}

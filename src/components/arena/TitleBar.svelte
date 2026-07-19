@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import commonStore from '$stores/common';
+	import simulationStore from '$stores/simulation';
 	import { specStore, setSpec, DEFAULT_SPEC_NAME } from '$stores/spec';
-	import { drawState } from '$components/arena/helper/draw.svelte.ts';
+	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
 	import { serializeDesign } from '$lib/design/serialize';
 	import { saveSpec } from '$lib/design/persistence';
 
-	let simulationActive = $derived($commonStore.isSimulationActive);
+	let simulationActive = $derived($simulationStore.isSimulationActive);
 
 	let editing = $state(false);
 	let draftName = $state('');

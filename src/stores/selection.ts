@@ -32,7 +32,7 @@ export const getBlockDefaults = (type: BlockType): BlockMetrics => getDefaultMet
 export const getThroughputMetric = (block: BlockSpecs): number =>
 	getThroughput(block.type, block.metrics);
 
-const createBlockStore = () => {
+const createSelectionStore = () => {
 	const { subscribe, set, update } = writable<BlockSpecs | null>(null);
 
 	return {
@@ -63,4 +63,4 @@ const createBlockStore = () => {
 	};
 };
 
-export const blockStore = createBlockStore();
+export const selectionStore = createSelectionStore();

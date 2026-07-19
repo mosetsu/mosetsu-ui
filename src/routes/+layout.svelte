@@ -1,7 +1,8 @@
 <script lang="ts">
 	import '../styles/app.css';
-	import ViewportGuard from '$components/ViewportGuard.svelte';
-	import Drawer from '$components/Drawer.svelte';
+	import ViewportGuard from '$components/dialogs/ViewportGuard.svelte';
+	import Drawer from '$components/nav/Drawer.svelte';
+	import Brand from '$components/nav/Brand.svelte';
 
 	let { children } = $props();
 </script>
@@ -35,12 +36,7 @@
 	{@render children()}
 
 	<!-- Persistent app chrome (shared across routes) -->
-	<a href="/" class="absolute top-4 left-5 z-40 flex items-center gap-2.5 no-underline">
-		<span class="ic-primary-logo text-accent-primary glow-soft"></span>
-		<h1 class="text-text-primary text-lg font-semibold tracking-tight">
-			System<span class="text-accent-primary">Sage</span>
-		</h1>
-	</a>
+	<Brand />
 	<Drawer />
 </main>
 

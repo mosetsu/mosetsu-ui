@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Footer from '$components/arena/Footer.svelte';
-	import Toolbar from '$components/arena/Toolbar.svelte';
-	import FlowDraw from '$components/arena/FlowDraw.svelte';
+	import Footer from '$components/arena/ActionBar.svelte';
+	import Toolbar from '$components/arena/ModuleDock.svelte';
+	import FlowDraw from '$components/arena/Canvas.svelte';
 	import DesignSync from '$components/arena/DesignSync.svelte';
 
 	let toolbarVisible = $state(true);
