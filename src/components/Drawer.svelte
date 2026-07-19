@@ -1,7 +1,11 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import MenuBar from '$components/MenuBar.svelte';
 
 	let collapsed = $state(true);
+
+	// Active nav item derived from the current route.
+	let activeMenu = $derived($page.url.pathname.startsWith('/explore') ? 'Explore' : 'Arena');
 </script>
 
 <aside
@@ -30,11 +34,11 @@
 	<MenuBar
 		title="General"
 		{collapsed}
+		{activeMenu}
 		menus={[
 			{ href: '/', label: 'Arena', iconClass: 'ic-arena' },
-			{ href: '/', label: 'Explore', iconClass: 'ic-dashboard' }
+			{ href: '/explore', label: 'Explore', iconClass: 'ic-dashboard' }
 		]}
-		activeMenu="Arena"
 	/>
 	<MenuBar
 		title="Your Work"

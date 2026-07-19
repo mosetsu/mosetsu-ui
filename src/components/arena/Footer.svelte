@@ -1,6 +1,8 @@
 <script lang="ts">
 	import commonStore from '$stores/common';
 	import { zoomControl } from './helper/zoom.svelte';
+	import ShareMenu from '$components/arena/ShareMenu.svelte';
+	import SpecControls from '$components/arena/SpecControls.svelte';
 
 	let { toolbarVisible, onModuleBtnClick } = $props();
 
@@ -16,55 +18,62 @@
 </script>
 
 <footer
-	class="glass-elevated border-dark-border-strong/40 absolute bottom-4 left-1/2 z-20 flex h-14 w-auto -translate-x-1/2 items-center gap-5 rounded-2xl border px-3 shadow-2xl"
+	class="glass-elevated border-dark-border-strong/40 absolute bottom-4 left-1/2 z-20 flex h-14 w-[calc(100%-14rem)] -translate-x-1/2 items-center justify-center rounded-2xl border px-4 shadow-2xl"
 >
-	<div class="flex items-center gap-2">
-		<button
-			class="border-dark-border bg-dark-elevated/60 text-text-secondary hover:border-dark-border-strong hover:text-text-primary cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all focus:outline-none"
-			>Share</button
-		>
-		<button
-			class={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all focus:outline-none ` +
-				(toolbarVisible
-					? 'border-accent-primary/40 bg-accent-primary/15 text-accent-hover'
-					: 'border-dark-border bg-dark-elevated/60 text-text-secondary hover:border-dark-border-strong hover:text-text-primary')}
-			onclick={onModuleBtnClick}>Modules</button
-		>
-	</div>
+	<div class="flex w-full items-center gap-3">
+		<!-- Left group: document actions -->
+		<div class="flex flex-1 items-center justify-start gap-2">
+			<SpecControls />
+			<ShareMenu />
+		</div>
 
-	<button
-		class={`group flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-1.5 text-sm font-semibold transition-all focus:outline-none ` +
-			(simulationActive
-				? 'bg-accent-primary glow-accent hover:bg-accent-hover border-transparent text-white'
-				: 'border-accent-primary/50 bg-accent-primary/10 text-accent-hover glow-soft hover:bg-accent-primary hover:text-white')}
-		onclick={() => commonStore.toggleSimulation()}
-	>
-		<span
-			class={`inline-block h-2 w-2 rounded-full transition-all ` +
-				(simulationActive ? 'animate-pulse bg-white' : 'bg-accent-primary')}
-		></span>
-		{simulationActive ? 'Stop' : 'Run'} Simulation</button
-	>
+		<!-- Center: primary action -->
+		<div class="flex flex-1 justify-center">
+			<button
+				class={`group flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-1.5 text-sm font-semibold transition-all focus:outline-none ` +
+					(simulationActive
+						? 'bg-accent-primary glow-accent hover:bg-accent-hover border-transparent text-white'
+						: 'border-accent-primary/50 bg-accent-primary/10 text-accent-hover glow-soft hover:bg-accent-primary hover:text-white')}
+				onclick={() => commonStore.toggleSimulation()}
+			>
+				<span
+					class={`inline-block h-2 w-2 rounded-full transition-all ` +
+						(simulationActive ? 'animate-pulse bg-white' : 'bg-accent-primary')}
+				></span>
+				{simulationActive ? 'Stop' : 'Run'} Simulation</button
+			>
+		</div>
 
-	<div
-		class="border-dark-border bg-dark-elevated/60 flex items-center gap-1 rounded-lg border p-0.5"
-	>
-		<button
-			class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
-			onclick={handleZoomOut}
-			title="Zoom out"
-		>
-			−
-		</button>
-		<span class="text-text-subtle min-w-[3rem] text-center font-mono text-xs"
-			>{zoomControl.zoomLevel}%</span
-		>
-		<button
-			class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
-			onclick={handleZoomIn}
-			title="Zoom in"
-		>
-			+
-		</button>
+		<!-- Right group: canvas controls -->
+		<div class="flex flex-1 items-center justify-end gap-2">
+			<button
+				class={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all focus:outline-none ` +
+					(toolbarVisible
+						? 'border-accent-primary/40 bg-accent-primary/15 text-accent-hover'
+						: 'border-dark-border bg-dark-elevated/60 text-text-secondary hover:border-dark-border-strong hover:text-text-primary')}
+				onclick={onModuleBtnClick}>Modules</button
+			>
+			<div
+				class="border-dark-border bg-dark-elevated/60 flex items-center gap-1 rounded-lg border p-0.5"
+			>
+				<button
+					class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
+					onclick={handleZoomOut}
+					title="Zoom out"
+				>
+					−
+				</button>
+				<span class="text-text-subtle min-w-[3rem] text-center font-mono text-xs"
+					>{zoomControl.zoomLevel}%</span
+				>
+				<button
+					class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
+					onclick={handleZoomIn}
+					title="Zoom in"
+				>
+					+
+				</button>
+			</div>
+		</div>
 	</div>
 </footer>

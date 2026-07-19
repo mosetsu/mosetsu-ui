@@ -2,6 +2,7 @@
 	import Footer from '$components/arena/Footer.svelte';
 	import Toolbar from '$components/arena/Toolbar.svelte';
 	import FlowDraw from '$components/arena/FlowDraw.svelte';
+	import DesignSync from '$components/arena/DesignSync.svelte';
 
 	let toolbarVisible = $state(true);
 
@@ -20,4 +21,5 @@
 	<div class="ambient-bloom"></div>
 	<Toolbar {toolbarVisible} />
 	<Footer {toolbarVisible} {onModuleBtnClick} />
+	<DesignSync />
 </section>

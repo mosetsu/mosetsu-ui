@@ -3,6 +3,7 @@
 	import { drawState } from '$components/arena/helper/draw.svelte.ts';
 	import { getInboundConnections, getOutboundConnections } from '$utils/congestion';
 	import { getModule } from '$lib/modules';
+	import { toolingCollapsed, toggleTooling } from '$stores/panels';
 	import type { Node } from '@xyflow/svelte';
 
 	const blockTitle = (type: BlockType) => getModule(type)?.title ?? type;
@@ -110,12 +111,9 @@
 		}));
 	}
 
-	let collapsed = $state(true);
-
-	// Selecting a node opens the tooling panel so its metrics are editable.
-	$effect(() => {
-		if (block) collapsed = false;
-	});
+	// Open/closed is shared so nodes can open it on double-click; it never
+	// auto-opens on plain selection.
+	let collapsed = $derived($toolingCollapsed);
 </script>
 
 <aside
@@ -125,7 +123,7 @@
 	<!-- peek / collapse toggle strip (always visible) -->
 	<button
 		class="border-dark-border/50 hover:bg-dark-highlight/40 flex w-9 flex-shrink-0 cursor-pointer flex-col items-center justify-center gap-3 border-r transition-colors focus:outline-none"
-		onclick={() => (collapsed = !collapsed)}
+		onclick={toggleTooling}
 		title={collapsed ? 'Expand tooling' : 'Collapse tooling'}
 	>
 		<svg

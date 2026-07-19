@@ -44,6 +44,26 @@ export class DrawStateClass {
 		return this.container;
 	};
 
+	/** Replace the whole graph (used when restoring / loading a design). */
+	loadGraph = (nodes: Node[], edges: Edge[]) => {
+		this.nodes = nodes;
+		this.edges = edges;
+		// Advance the id counter past any restored ids to prevent collisions.
+		let max = -1;
+		for (const n of nodes) {
+			const m = /-(\d+)$/.exec(n.id);
+			if (m) max = Math.max(max, Number(m[1]));
+		}
+		this.nodeSeq = max + 1;
+	};
+
+	/** Clear the canvas. */
+	clearGraph = () => {
+		this.nodes = [];
+		this.edges = [];
+		this.nodeSeq = 0;
+	};
+
 	/** Drop a node of any registered module type at (x, y). */
 	addNode = (type: string, x: number, y: number) => {
 		if (!MODULES[type]) {

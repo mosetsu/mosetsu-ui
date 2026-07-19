@@ -4,12 +4,6 @@
 	export let activeMenu: string = '';
 	export let collapsed: boolean = false;
 	export let menus: Array<{ href: string; label: string; iconClass: string }> = [];
-
-	const getLabelClass = (label: string) => {
-		return activeMenu === label
-			? 'menu-active text-text-primary'
-			: 'text-text-subtle hover:text-text-secondary hover:bg-dark-highlight/50';
-	};
 </script>
 
 <nav class={`flex flex-col px-1 py-1 ${className}`}>
@@ -20,16 +14,21 @@
 			>{title}</span
 		>
 	{/if}
-	{#each menus as { label, iconClass = '' } (label)}
-		<span
-			class={`relative mb-0.5 flex cursor-pointer items-center rounded-lg p-2 text-sm transition-all duration-150 ${collapsed ? 'justify-center' : ''} ${getLabelClass(label)}`}
+	{#each menus as { label, href = '/', iconClass = '' } (label)}
+		<a
+			{href}
+			class={`relative mb-0.5 flex cursor-pointer items-center rounded-lg p-2 text-sm no-underline transition-all duration-150 ${collapsed ? 'justify-center' : ''} ${
+				activeMenu === label
+					? 'menu-active text-text-primary'
+					: 'text-text-subtle hover:text-text-secondary hover:bg-dark-highlight/50'
+			}`}
 			title={collapsed ? label : ''}
 		>
 			{#if iconClass}
 				<span class={`scale-95 ${collapsed ? '' : 'mr-2.5'} ${iconClass}`}></span>
 			{/if}
 			{#if !collapsed}{label}{/if}
-		</span>
+		</a>
 	{/each}
 </nav>
 

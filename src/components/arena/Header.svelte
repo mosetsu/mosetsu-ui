@@ -1,7 +1,50 @@
 <script lang="ts">
+	import { get } from 'svelte/store';
 	import commonStore from '$stores/common';
+	import { specStore, setSpec, DEFAULT_SPEC_NAME } from '$stores/spec';
+	import { drawState } from '$components/arena/helper/draw.svelte.ts';
+	import { serializeDesign } from '$lib/design/serialize';
+	import { saveSpec } from '$lib/design/persistence';
 
 	let simulationActive = $derived($commonStore.isSimulationActive);
+
+	let editing = $state(false);
+	let draftName = $state('');
+	let inputEl = $state<HTMLInputElement | null>(null);
+
+	function startEdit() {
+		draftName = $specStore.name;
+		editing = true;
+	}
+
+	function commit() {
+		if (!editing) return;
+		editing = false;
+		const name = draftName.trim() || DEFAULT_SPEC_NAME;
+		const spec = get(specStore);
+		setSpec({ ...spec, name });
+		// Renaming an already-saved spec updates its saved copy immediately.
+		if (spec.id) {
+			void saveSpec(
+				serializeDesign(drawState.nodes, drawState.edges, {
+					id: spec.id,
+					name,
+					updatedAt: Date.now()
+				})
+			);
+		}
+	}
+
+	function cancel() {
+		editing = false;
+	}
+
+	$effect(() => {
+		if (editing && inputEl) {
+			inputEl.focus();
+			inputEl.select();
+		}
+	});
 </script>
 
 <div
@@ -19,6 +62,27 @@
 		></span>
 		{simulationActive ? 'Live' : 'Idle'}
 	</span>
-	<span class="text-text-primary text-sm font-semibold tracking-tight">Custom Spec</span>
+
+	{#if editing}
+		<input
+			bind:this={inputEl}
+			bind:value={draftName}
+			class="border-dark-border bg-dark-surface text-text-primary focus:border-accent-primary/60 w-44 rounded-md border px-2 py-0.5 text-sm font-semibold outline-none"
+			onkeydown={(e) => {
+				if (e.key === 'Enter') commit();
+				else if (e.key === 'Escape') cancel();
+			}}
+			onblur={commit}
+		/>
+	{:else}
+		<button
+			class="text-text-primary hover:bg-dark-highlight/60 max-w-[240px] cursor-pointer truncate rounded-md px-1.5 py-0.5 text-sm font-semibold tracking-tight transition-colors"
+			onclick={startEdit}
+			title="Rename spec"
+		>
+			{$specStore.name}
+		</button>
+	{/if}
+
 	<span class="text-text-subtle hidden text-xs sm:inline">overview of system flow</span>
 </div>

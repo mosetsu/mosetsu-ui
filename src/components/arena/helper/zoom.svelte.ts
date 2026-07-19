@@ -69,6 +69,17 @@ export class ZoomControl {
 		this.zoomTo(this.currentZoom() - ZOOM_STEP, duration);
 	};
 
+	/** Frame all nodes in view (used after restoring / loading a design). */
+	fit = (delay = 120) => {
+		setTimeout(() => {
+			try {
+				this.flowApi?.fitView({ padding: 0.25, duration: 400, maxZoom: 1 });
+			} catch {
+				// ignore
+			}
+		}, delay);
+	};
+
 	setInitialZoom = () => {
 		setTimeout(() => {
 			try {

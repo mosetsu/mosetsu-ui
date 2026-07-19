@@ -3,6 +3,7 @@
 	import { selectBlock } from './helper';
 	import ConnectedHandle from './ConnectedHandle.svelte';
 	import { getModule } from '$lib/modules';
+	import { openTooling } from '$stores/panels';
 	import type { BlockMetrics, BlockType } from '$stores/block';
 
 	let { id, type, data }: NodeProps = $props();
@@ -12,6 +13,13 @@
 
 	const handleClick = () => {
 		if (def) selectBlock(id, type as BlockType, metrics);
+	};
+
+	// Double-click a module opens the tooling panel (if closed) to edit metrics.
+	const handleDblClick = () => {
+		if (!def) return;
+		selectBlock(id, type as BlockType, metrics);
+		openTooling();
 	};
 
 	const fmt = (value: number, unit: string): string => {
@@ -26,6 +34,7 @@
 		class={`${type} flex w-60 cursor-pointer flex-col rounded-2xl border border-transparent p-1 shadow-lg transition-all duration-200 hover:scale-[1.02]`}
 		style="--accent: {def.accent}"
 		onclick={handleClick}
+		ondblclick={handleDblClick}
 		role="button"
 		tabindex="0"
 		onkeydown={(e) => e.key === 'Enter' && handleClick()}

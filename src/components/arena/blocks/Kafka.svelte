@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Position, type NodeProps } from '@xyflow/svelte';
 	import { selectBlock } from './helper';
+	import { openTooling } from '$stores/panels';
 	import ConnectedHandle from './ConnectedHandle.svelte';
 	import type { KafkaMetrics } from '$stores/block';
 	import commonStore from '$stores/common';
@@ -9,6 +10,10 @@
 	let { id, data }: NodeProps = $props();
 	let metrics = $derived(data?.metrics as KafkaMetrics);
 	const handleClick = () => selectBlock(id, 'kafka', metrics);
+	const handleDblClick = () => {
+		selectBlock(id, 'kafka', metrics);
+		openTooling();
+	};
 
 	let isSimulationActive = $derived($commonStore.isSimulationActive);
 
@@ -292,6 +297,7 @@
 	{id}
 	class="kafka flex cursor-pointer flex-col items-center rounded-2xl border border-transparent p-1 transition-all duration-200 hover:scale-[1.02]"
 	onclick={handleClick}
+	ondblclick={handleDblClick}
 	role="button"
 	tabindex="0"
 	onkeydown={(e) => e.key === 'Enter' && handleClick()}
