@@ -16,7 +16,7 @@
 </script>
 
 <footer
-	class="glass-elevated border-dark-border-strong/40 relative z-20 mx-auto mt-auto mb-4 flex h-14 w-[82%] max-w-4xl items-center justify-between rounded-2xl border px-3 shadow-2xl"
+	class="glass-elevated border-dark-border-strong/40 absolute bottom-4 left-1/2 z-20 flex h-14 w-auto -translate-x-1/2 items-center gap-5 rounded-2xl border px-3 shadow-2xl"
 >
 	<div class="flex items-center gap-2">
 		<button

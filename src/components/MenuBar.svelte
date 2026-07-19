@@ -2,6 +2,7 @@
 	export let title: string = '';
 	export let className: string = '';
 	export let activeMenu: string = '';
+	export let collapsed: boolean = false;
 	export let menus: Array<{ href: string; label: string; iconClass: string }> = [];
 
 	const getLabelClass = (label: string) => {
@@ -11,21 +12,23 @@
 	};
 </script>
 
-<nav class={`flex flex-col p-4 ${className}`}>
-	{#if title}
+<nav class={`flex flex-col px-1 py-1 ${className}`}>
+	{#if title && !collapsed}
 		<span
 			aria-hidden="true"
-			class="text-text-faint mb-2 text-xs font-medium tracking-wider uppercase">{title}</span
+			class="text-text-faint mt-1 mb-1 px-2 text-[10px] font-medium tracking-wider uppercase"
+			>{title}</span
 		>
 	{/if}
 	{#each menus as { label, iconClass = '' } (label)}
 		<span
-			class={`relative mb-0.5 flex cursor-pointer items-center rounded-lg p-2 text-sm transition-all duration-150 ${getLabelClass(label)}`}
+			class={`relative mb-0.5 flex cursor-pointer items-center rounded-lg p-2 text-sm transition-all duration-150 ${collapsed ? 'justify-center' : ''} ${getLabelClass(label)}`}
+			title={collapsed ? label : ''}
 		>
 			{#if iconClass}
-				<span class={`mr-2.5 scale-95 ${iconClass}`}></span>
+				<span class={`scale-95 ${collapsed ? '' : 'mr-2.5'} ${iconClass}`}></span>
 			{/if}
-			{label}
+			{#if !collapsed}{label}{/if}
 		</span>
 	{/each}
 </nav>

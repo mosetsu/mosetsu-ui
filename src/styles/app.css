@@ -142,6 +142,17 @@ body {
 	filter: blur(28px);
 }
 
+/* Scrollable, but with no visible scrollbar */
+.no-scrollbar {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
+}
+
 /* ---- Custom scrollbar ------------------------------------------------- */
 * {
 	scrollbar-width: thin;

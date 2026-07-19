@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../styles/app.css';
+	import ViewportGuard from '$components/ViewportGuard.svelte';
 
 	let { children } = $props();
 </script>
@@ -32,3 +33,5 @@
 <main class="bg-dark-base text-text-primary flex min-h-screen min-w-screen flex-col font-sans">
 	{@render children()}
 </main>
+
+<ViewportGuard />

@@ -20,7 +20,7 @@
 
 {#if toolbarVisible}
 	<div
-		class="glass-elevated border-dark-border-strong/50 absolute bottom-28 z-20 flex items-center gap-1 self-center rounded-2xl border p-1.5"
+		class="glass-elevated border-dark-border-strong/50 absolute bottom-28 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-2xl border p-1.5"
 		transition:fly={{ y: 64, duration: 360 }}
 	>
 		{#each groups as group, gi (group.category)}
