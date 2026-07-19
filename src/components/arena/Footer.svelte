@@ -35,7 +35,7 @@
 	<button
 		class={`group flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-1.5 text-sm font-semibold transition-all focus:outline-none ` +
 			(simulationActive
-				? 'border-transparent bg-accent-primary text-white glow-accent hover:bg-accent-hover'
+				? 'bg-accent-primary glow-accent hover:bg-accent-hover border-transparent text-white'
 				: 'border-accent-primary/50 bg-accent-primary/10 text-accent-hover glow-soft hover:bg-accent-primary hover:text-white')}
 		onclick={() => commonStore.toggleSimulation()}
 	>
@@ -46,7 +46,9 @@
 		{simulationActive ? 'Stop' : 'Run'} Simulation</button
 	>
 
-	<div class="border-dark-border bg-dark-elevated/60 flex items-center gap-1 rounded-lg border p-0.5">
+	<div
+		class="border-dark-border bg-dark-elevated/60 flex items-center gap-1 rounded-lg border p-0.5"
+	>
 		<button
 			class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
 			onclick={handleZoomOut}
@@ -54,7 +56,9 @@
 		>
 			−
 		</button>
-		<span class="text-text-subtle min-w-[3rem] text-center font-mono text-xs">{zoomControl.zoomLevel}%</span>
+		<span class="text-text-subtle min-w-[3rem] text-center font-mono text-xs"
+			>{zoomControl.zoomLevel}%</span
+		>
 		<button
 			class="text-text-secondary hover:bg-dark-highlight hover:text-text-primary cursor-pointer rounded-md px-2.5 py-1 text-sm transition-all focus:outline-none"
 			onclick={handleZoomIn}

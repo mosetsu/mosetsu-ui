@@ -43,17 +43,24 @@
 				</div>
 			</div>
 			<div class="flex flex-wrap gap-1.5">
-				{#each def.metrics as metric}
+				{#each def.metrics as metric (metric.key)}
 					<div class="node-pill flex items-center gap-1.5 rounded-lg px-2 py-1">
 						<img src="/images/request.svg" alt="" class="h-3 w-3 opacity-60" />
-						<span class="text-text-muted text-sm">{fmt(metrics?.[metric.key] ?? 0, metric.unit)}</span>
+						<span class="text-text-muted text-sm"
+							>{fmt(metrics?.[metric.key] ?? 0, metric.unit)}</span
+						>
 					</div>
 				{/each}
 			</div>
 		</div>
 	</div>
 
-	{#each def.handles as handle}
-		<ConnectedHandle nodeId={id} type={handle.type} position={handle.position} handleId={handle.id} />
+	{#each def.handles as handle (handle.id)}
+		<ConnectedHandle
+			nodeId={id}
+			type={handle.type}
+			position={handle.position}
+			handleId={handle.id}
+		/>
 	{/each}
 {/if}

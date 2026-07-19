@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import toolbarStore from '$stores/toolbar';
+	import toolbarStore, { type ToolbarSelection } from '$stores/toolbar';
 	import { dockGroups } from '$lib/modules';
 
-	let { toolbarVisible } = $props();
+	let { toolbarVisible }: { toolbarVisible: boolean } = $props();
 
 	const groups = dockGroups();
 
-	const handleOnMenuClick = (type: string) => {
+	const handleOnMenuClick = (type: ToolbarSelection) => {
 		if (selected === type) {
 			toolbarStore.reset();
 			return;
@@ -23,11 +23,11 @@
 		class="glass-elevated border-dark-border-strong/50 absolute bottom-28 z-20 flex items-center gap-1 self-center rounded-2xl border p-1.5"
 		transition:fly={{ y: 64, duration: 360 }}
 	>
-		{#each groups as group, gi}
+		{#each groups as group, gi (group.category)}
 			{#if gi > 0}
 				<div class="bg-dark-border-strong/40 mx-0.5 h-8 w-px self-center"></div>
 			{/if}
-			{#each group.modules as def}
+			{#each group.modules as def (def.type)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<div
 					class="dock-item flex cursor-pointer items-center justify-center rounded-xl p-1.5 transition-all duration-150"

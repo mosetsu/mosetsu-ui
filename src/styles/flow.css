@@ -1,5 +1,7 @@
 .svelte-flow {
 	--xy-edge-stroke: var(--color-dark-border-strong);
+	/* Beat xyflow's default white background on first paint (prevents flash). */
+	background-color: var(--color-dark-base) !important;
 }
 
 /* Per-module accent colour is set inline on each node via --accent (see BlockNode). */

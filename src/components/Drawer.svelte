@@ -4,7 +4,9 @@
 
 <section class="border-dark-border bg-dark-surface flex h-full w-full flex-col border-r">
 	<div class="border-dark-border flex h-16 items-center gap-2.5 border-b p-4">
-		<span class="ic-primary-logo text-accent-primary glow-soft flex items-center justify-center rounded-lg"></span>
+		<span
+			class="ic-primary-logo text-accent-primary glow-soft flex items-center justify-center rounded-lg"
+		></span>
 		<h1 class="text-text-primary text-lg font-semibold tracking-tight">
 			System<span class="text-accent-primary">Sage</span>
 		</h1>

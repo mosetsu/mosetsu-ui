@@ -15,7 +15,6 @@
 	// Metrics derivation
 	let inRate = $derived(metrics?.messagesPerSec ?? 500);
 	let lag = $derived(metrics?.queueDepth ?? 0);
-	let outRate = $derived(Math.max(0, inRate - lag));
 
 	// Congestion calculation
 	let congestionRatio = $derived.by(() => {
@@ -82,12 +81,24 @@
 	};
 
 	const drawCapsule = (ctx: CanvasRenderingContext2D, status: string) => {
-		const borderColor = status === 'congested' ? 'rgba(217, 125, 85, 0.8)' : 
-			status === 'warning' ? 'rgba(255, 197, 15, 0.6)' : 'rgba(58, 124, 230, 0.6)';
-		const fillColor = status === 'congested' ? 'rgba(217, 125, 85, 0.12)' : 
-			status === 'warning' ? 'rgba(255, 197, 15, 0.08)' : 'rgba(58, 124, 230, 0.08)';
-		const glowColor = status === 'congested' ? 'rgba(217, 125, 85, 0.4)' : 
-			status === 'warning' ? 'rgba(255, 197, 15, 0.25)' : 'rgba(58, 124, 230, 0.2)';
+		const borderColor =
+			status === 'congested'
+				? 'rgba(217, 125, 85, 0.8)'
+				: status === 'warning'
+					? 'rgba(255, 197, 15, 0.6)'
+					: 'rgba(58, 124, 230, 0.6)';
+		const fillColor =
+			status === 'congested'
+				? 'rgba(217, 125, 85, 0.12)'
+				: status === 'warning'
+					? 'rgba(255, 197, 15, 0.08)'
+					: 'rgba(58, 124, 230, 0.08)';
+		const glowColor =
+			status === 'congested'
+				? 'rgba(217, 125, 85, 0.4)'
+				: status === 'warning'
+					? 'rgba(255, 197, 15, 0.25)'
+					: 'rgba(58, 124, 230, 0.2)';
 
 		// Outer glow
 		ctx.shadowColor = glowColor;
@@ -102,7 +113,7 @@
 		ctx.lineTo(60, 100);
 		ctx.lineTo(20, 60);
 		ctx.closePath();
-		
+
 		ctx.fillStyle = fillColor;
 		ctx.fill();
 		ctx.strokeStyle = borderColor;
@@ -117,7 +128,7 @@
 		ctx.moveTo(0, 60);
 		ctx.lineTo(15, 60);
 		ctx.stroke();
-		
+
 		// Arrow head
 		ctx.beginPath();
 		ctx.moveTo(10, 55);
@@ -130,7 +141,7 @@
 		ctx.moveTo(302, 60);
 		ctx.lineTo(320, 60);
 		ctx.stroke();
-		
+
 		// Arrow head
 		ctx.beginPath();
 		ctx.moveTo(315, 55);
@@ -158,10 +169,18 @@
 		drawCapsule(ctx, displayStatus);
 
 		// Colors based on status
-		const baseColor = displayStatus === 'congested' ? [217, 125, 85] : 
-			displayStatus === 'warning' ? [255, 197, 15] : [58, 124, 230];
-		const glowColor = displayStatus === 'congested' ? 'rgba(217, 125, 85,' : 
-			displayStatus === 'warning' ? 'rgba(255, 197, 15,' : 'rgba(58, 124, 230,';
+		const baseColor =
+			displayStatus === 'congested'
+				? [217, 125, 85]
+				: displayStatus === 'warning'
+					? [255, 197, 15]
+					: [58, 124, 230];
+		const glowColor =
+			displayStatus === 'congested'
+				? 'rgba(217, 125, 85,'
+				: displayStatus === 'warning'
+					? 'rgba(255, 197, 15,'
+					: 'rgba(58, 124, 230,';
 
 		// Only animate when simulation is active
 		if (isSimulationActive) {
@@ -203,7 +222,6 @@
 
 		// Draw all particles (static or animated)
 		for (const p of particles) {
-
 			// Draw glow
 			const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
 			gradient.addColorStop(0, `${glowColor}${p.opacity * 0.8})`);

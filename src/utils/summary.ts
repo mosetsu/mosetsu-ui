@@ -62,7 +62,8 @@ export const computeSummary = (nodes: Node[], edges: Edge[]): SystemSummary => {
 	const ingressRps = nodes
 		.filter((n) => !hasInbound.has(n.id))
 		.reduce(
-			(sum, n) => sum + getThroughput(n.type as string, (n.data?.metrics as Record<string, number>) ?? {}),
+			(sum, n) =>
+				sum + getThroughput(n.type as string, (n.data?.metrics as Record<string, number>) ?? {}),
 			0
 		);
 

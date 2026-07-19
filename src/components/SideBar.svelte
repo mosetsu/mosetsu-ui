@@ -111,7 +111,9 @@
 	}
 </script>
 
-<section class="border-dark-border bg-dark-surface flex h-full min-h-0 w-full flex-col overflow-hidden border-l">
+<section
+	class="border-dark-border bg-dark-surface flex h-full min-h-0 w-full flex-col overflow-hidden border-l"
+>
 	<div class="border-dark-border flex h-16 flex-shrink-0 items-center gap-2.5 border-b p-4">
 		<span class="ic-primary-logo text-accent-primary"></span>
 		<div class="flex flex-col">
@@ -134,7 +136,7 @@
 						>Selected</span
 					>
 				</div>
-				{#each getMetricFields(block.type, block.metrics) as { key, value, label, unit }}
+				{#each getMetricFields(block.type, block.metrics) as { key, value, label, unit } (key)}
 					<div class="mb-2 flex flex-col gap-1">
 						<span class="text-text-subtle font-mono text-xs">{label}</span>
 						<label
@@ -167,15 +169,19 @@
 					<div class="bg-dark-border h-px flex-1"></div>
 				</div>
 
-				{#each connectedBlocks as connBlock}
-					<div class="border-dark-border-strong/40 bg-dark-highlight/70 rounded-xl border p-3 shadow-md">
+				{#each connectedBlocks as connBlock (connBlock.id + connBlock.direction)}
+					<div
+						class="border-dark-border-strong/40 bg-dark-highlight/70 rounded-xl border p-3 shadow-md"
+					>
 						<div class="mb-3 flex items-center gap-2">
 							<span
 								class={blockIcon(connBlock.type)}
 								style="color: {getModule(connBlock.type)?.accent}"
 							></span>
 							<div class="flex flex-col">
-								<span class="text-text-primary text-sm font-medium">{blockTitle(connBlock.type)}</span>
+								<span class="text-text-primary text-sm font-medium"
+									>{blockTitle(connBlock.type)}</span
+								>
 								<span class="text-text-subtle font-mono text-xs">{connBlock.id}</span>
 							</div>
 							<span
@@ -186,7 +192,7 @@
 								{connBlock.direction === 'inbound' ? '← In' : '→ Out'}
 							</span>
 						</div>
-						{#each getMetricFields(connBlock.type, connBlock.metrics) as { key, value, label, unit }}
+						{#each getMetricFields(connBlock.type, connBlock.metrics) as { key, value, label, unit } (connBlock.id + key)}
 							<div class="mb-2 flex flex-col gap-1">
 								<span class="text-text-subtle font-mono text-xs">{label}</span>
 								<label
@@ -221,7 +227,7 @@
 				<span class="text-text-subtle text-sm">⌕</span>
 				<input
 					type="text"
-					class="text-text-primary min-w-0 flex-1 border-none bg-transparent text-sm outline-none placeholder:text-text-faint"
+					class="text-text-primary placeholder:text-text-faint min-w-0 flex-1 border-none bg-transparent text-sm outline-none"
 					placeholder="Search modules…"
 					bind:value={paletteSearch}
 				/>
@@ -235,24 +241,33 @@
 					class="border-dark-border-strong/40 bg-dark-highlight/70 hover:border-dark-border-strong hover:bg-dark-highlight flex w-full cursor-pointer items-center gap-2.5 rounded-xl border p-2.5 text-left transition-all focus:outline-none"
 					onclick={() => selectPlacedNode(node)}
 				>
-					<span class="node-icon flex items-center rounded-lg px-1.5 py-1" style="--accent: {blockAccent(node.type)}">
+					<span
+						class="node-icon flex items-center rounded-lg px-1.5 py-1"
+						style="--accent: {blockAccent(node.type)}"
+					>
 						<span class={blockIcon(node.type)} style="color: {blockAccent(node.type)}"></span>
 					</span>
 					<div class="flex min-w-0 flex-col">
-						<span class="text-text-primary truncate text-sm font-medium">{blockTitle(node.type)}</span>
+						<span class="text-text-primary truncate text-sm font-medium"
+							>{blockTitle(node.type)}</span
+						>
 						<span class="text-text-subtle truncate font-mono text-xs">{node.id}</span>
 					</div>
 				</button>
 			{/each}
 
 			{#if filteredNodes.length === 0}
-				<div class="text-text-subtle py-6 text-center text-xs">No modules match “{paletteSearch}”</div>
+				<div class="text-text-subtle py-6 text-center text-xs">
+					No modules match “{paletteSearch}”
+				</div>
 			{/if}
 		{:else}
 			<div class="flex flex-1 flex-col items-center justify-center gap-2 py-10 text-center">
 				<span class="ic-base-module text-text-faint scale-150"></span>
 				<span class="text-text-secondary text-sm font-medium">No modules yet</span>
-				<span class="text-text-subtle text-xs">Add components from the dock below,<br />then select one to tune its metrics.</span>
+				<span class="text-text-subtle text-xs"
+					>Add components from the dock below,<br />then select one to tune its metrics.</span
+				>
 			</div>
 		{/if}
 	</section>

@@ -4,7 +4,7 @@
 	import { CONGESTION_COLORS } from '$utils/congestion';
 
 	let summary = $derived(computeSummary(drawState.nodes, drawState.edges));
-	let collapsed = $state(false);
+	let collapsed = $state(true);
 
 	const fmt = (n: number): string => {
 		if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -61,7 +61,7 @@
 
 		{#if !collapsed}
 			<div class="mt-2.5 grid grid-cols-2 gap-2">
-				{#each stats as stat}
+				{#each stats as stat (stat.label)}
 					<div class="border-dark-border/60 bg-dark-base/40 rounded-lg border px-2.5 py-1.5">
 						<div class="text-text-subtle text-[10px] tracking-wide uppercase">{stat.label}</div>
 						<div class="text-text-primary font-mono text-sm font-semibold">

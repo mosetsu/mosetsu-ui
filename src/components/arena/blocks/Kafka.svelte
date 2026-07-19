@@ -57,7 +57,7 @@
 		}
 	};
 
-	const drawTube = (ctx: CanvasRenderingContext2D, congestionPoint: number) => {
+	const drawTube = (ctx: CanvasRenderingContext2D) => {
 		const tubeY = 25;
 		const tubeHeight = 50;
 		const centerY = tubeY + tubeHeight / 2;
@@ -125,7 +125,7 @@
 		// Tube border - healthy side
 		ctx.strokeStyle = 'rgba(58, 124, 230, 0.5)';
 		ctx.lineWidth = 2;
-		
+
 		// Top and bottom lines (healthy portion)
 		const healthyEndX = congestionRatio > 0 ? congestionX : TUBE_END;
 		ctx.beginPath();
@@ -198,7 +198,7 @@
 
 		// Draw tube with congestion visualization
 		const congestionX = TUBE_START + TUBE_WIDTH * (1 - congestionRatio / 100);
-		drawTube(ctx, congestionX);
+		drawTube(ctx);
 
 		if (!isSimulationActive) {
 			// Draw static messages when not running
@@ -206,14 +206,14 @@
 			for (const msg of messages) {
 				const isInCongestion = msg.x > congestionX && congestionRatio > 0;
 				const color = isInCongestion ? 'rgba(217, 125, 85, 0.6)' : 'rgba(58, 124, 230, 0.6)';
-				
+
 				ctx.fillStyle = color;
 				const halfSize = msg.size / 2;
 				ctx.beginPath();
 				ctx.roundRect(msg.x - halfSize, centerY - halfSize, msg.size, msg.size, 3);
 				ctx.fill();
 			}
-			
+
 			animationId = requestAnimationFrame(animate);
 			return;
 		}
@@ -226,7 +226,7 @@
 		for (const msg of messages) {
 			// Determine if message is in congested zone
 			const isInCongestion = msg.x > congestionX && congestionRatio > 0;
-			
+
 			// Speed varies based on position
 			let speed = baseSpeed * speedMultiplier;
 			if (isInCongestion) {
@@ -242,8 +242,8 @@
 			}
 
 			// Draw message block
-			const color = isInCongestion 
-				? [217, 125, 85] 
+			const color = isInCongestion
+				? [217, 125, 85]
 				: status === 'warning' && msg.x > congestionX - 50
 					? [255, 197, 15]
 					: [58, 124, 230];

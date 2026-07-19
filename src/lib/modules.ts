@@ -276,10 +276,7 @@ export const MODULES: Record<string, ModuleDef> = {
 		category: 'infra',
 		throughputField: 'metricsPerSec',
 		costPerMonth: 70,
-		metrics: [
-			m('metricsPerSec', 'Ingest Rate', 'evt/s'),
-			m('retentionDays', 'Retention', 'd')
-		],
+		metrics: [m('metricsPerSec', 'Ingest Rate', 'evt/s'), m('retentionDays', 'Retention', 'd')],
 		handles: FLOW
 	}
 };
@@ -294,7 +291,13 @@ const SEED: Record<string, Record<string, number>> = {
 	'api-gateway': { requestsPerSec: 800, rateLimitPerSec: 1000, routes: 24 },
 	server: { requestsPerSec: 100, responseTimeMs: 50 },
 	cache: { opsPerSec: 5000, hitRatio: 90, memoryMb: 4096 },
-	db: { queriesPerSec: 200, readLatencyMs: 5, writeLatencyMs: 10, replicas: 2, maxConnections: 100 },
+	db: {
+		queriesPerSec: 200,
+		readLatencyMs: 5,
+		writeLatencyMs: 10,
+		replicas: 2,
+		maxConnections: 100
+	},
 	nosql: { opsPerSec: 400, readLatencyMs: 8, shards: 3, replicas: 2 },
 	search: { queriesPerSec: 300, indexSizeGb: 50, shards: 5 },
 	s3: { requestsPerSec: 50, bandwidthMbps: 100, storageSizeGb: 500 },
@@ -316,13 +319,7 @@ export const getThroughput = (type: string, metrics: Record<string, number>): nu
 };
 
 /** Ordered list for the toolbar dock, grouped by category. */
-export const CATEGORY_ORDER: ModuleCategory[] = [
-	'edge',
-	'compute',
-	'data',
-	'messaging',
-	'infra'
-];
+export const CATEGORY_ORDER: ModuleCategory[] = ['edge', 'compute', 'data', 'messaging', 'infra'];
 
 export const dockGroups = (): { category: ModuleCategory; modules: ModuleDef[] }[] =>
 	CATEGORY_ORDER.map((category) => ({

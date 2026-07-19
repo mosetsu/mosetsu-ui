@@ -18,7 +18,7 @@
 			class="text-text-faint mb-2 text-xs font-medium tracking-wider uppercase">{title}</span
 		>
 	{/if}
-	{#each menus as { label, iconClass = '' }}
+	{#each menus as { label, iconClass = '' } (label)}
 		<span
 			class={`relative mb-0.5 flex cursor-pointer items-center rounded-lg p-2 text-sm transition-all duration-150 ${getLabelClass(label)}`}
 		>

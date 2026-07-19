@@ -6,14 +6,36 @@
 	import { drawState } from '$components/arena/helper/draw.svelte.ts';
 	import ToolbarAction from '$components/arena/helper/toolbarAction';
 	import ZoomPanel from '$components/arena/ZoomPanel.svelte';
+	import { zoomControl } from '$components/arena/helper/zoom.svelte';
 
 	let container = $state<HTMLDivElement | null>(null);
+
+	// One discrete zoom step per wheel notch (mouse) / accumulated delta (trackpad),
+	// matching the +/- buttons exactly.
+	const WHEEL_THRESHOLD = 50;
+	let wheelAccum = 0;
+
+	const handleWheel = (event: WheelEvent) => {
+		event.preventDefault();
+		wheelAccum += event.deltaY;
+		if (Math.abs(wheelAccum) < WHEEL_THRESHOLD) {
+			return;
+		}
+		if (wheelAccum < 0) {
+			zoomControl.zoomIn(80);
+		} else {
+			zoomControl.zoomOut(80);
+		}
+		wheelAccum = 0;
+	};
 
 	onMount(() => {
 		let tearDown: (() => void)[] = [];
 		if (container) {
 			drawState.setContainer(container);
 			tearDown.push(ToolbarAction());
+			container.addEventListener('wheel', handleWheel, { passive: false });
+			tearDown.push(() => container?.removeEventListener('wheel', handleWheel));
 		}
 
 		return () => {
@@ -23,7 +45,7 @@
 	});
 </script>
 
-<div bind:this={container} class="arena-container h-full w-full">
+<div bind:this={container} class="arena-container bg-dark-base h-full w-full">
 	<SvelteFlow
 		bind:nodes={drawState.nodes}
 		bind:edges={drawState.edges}
@@ -34,7 +56,8 @@
 		maxZoom={4}
 		panOnDrag={drawState.panEnabled}
 		selectionOnDrag={false}
-		zoomOnScroll={true}
+		zoomOnScroll={false}
+		zoomOnDoubleClick={false}
 		preventScrolling={false}
 		proOptions={{ hideAttribution: true }}
 	>
