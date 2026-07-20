@@ -2,6 +2,7 @@
 	import { type NodeProps } from '@xyflow/svelte';
 	import { selectBlock } from '$components/arena/canvas-state/selectBlock';
 	import ConnectedHandle from './ConnectedHandle.svelte';
+	import QueueFlow from './QueueFlow.svelte';
 	import { getModule } from '$lib/modules';
 	import { openTooling } from '$stores/panels';
 	import type { BlockMetrics, BlockType } from '$stores/selection';
@@ -61,6 +62,13 @@
 					</div>
 				{/each}
 			</div>
+
+			{#if def.category === 'messaging'}
+				<!-- Animated message-flow lane for queues / streams. -->
+				<div class="mt-2.5">
+					<QueueFlow nodeId={id} />
+				</div>
+			{/if}
 		</div>
 	</div>
 

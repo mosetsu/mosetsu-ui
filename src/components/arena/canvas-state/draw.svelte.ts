@@ -1,8 +1,7 @@
 import BlockNode from '$components/arena/blocks/BlockNode.svelte';
-import Kafka from '$components/arena/blocks/Kafka.svelte';
-import RabbitMQ from '$components/arena/blocks/RabbitMQ.svelte';
 import AnimatedEdge from '$components/arena/edges/AnimatedEdge.svelte';
 import { MODULES, getDefaultMetrics } from '$lib/modules';
+import type { LayoutDef } from '$lib/design/layouts';
 
 import type { Component } from 'svelte';
 import type { Edge, Node } from '@xyflow/svelte';
@@ -11,15 +10,10 @@ import type { NodeProps, EdgeProps } from '@xyflow/svelte';
 type NodeTypes = Record<string, Component<NodeProps>>;
 type EdgeTypes = Record<string, Component<EdgeProps>>;
 
-// Bespoke components override the generic BlockNode for a given type.
-const BESPOKE: Record<string, Component<NodeProps>> = {
-	kafka: Kafka,
-	rabbitmq: RabbitMQ
-};
-
+// Every module renders through the generic, registry-driven BlockNode.
 const buildNodeTypes = (): NodeTypes =>
 	Object.keys(MODULES).reduce((acc, type) => {
-		acc[type] = BESPOKE[type] ?? BlockNode;
+		acc[type] = BlockNode;
 		return acc;
 	}, {} as NodeTypes);
 
@@ -55,6 +49,17 @@ export class DrawStateClass {
 			if (m) max = Math.max(max, Number(m[1]));
 		}
 		this.nodeSeq = max + 1;
+	};
+
+	/** Re-position the current graph with the given layout and re-orient edges. */
+	applyLayout = (def: LayoutDef) => {
+		const positions = def.layout(this.nodes, this.edges);
+		this.nodes = this.nodes.map((n) => ({ ...n, position: positions.get(n.id) ?? n.position }));
+		this.edges = this.edges.map((e) => ({
+			...e,
+			sourceHandle: def.sourceHandle,
+			targetHandle: def.targetHandle
+		}));
 	};
 
 	/** Clear the canvas. */

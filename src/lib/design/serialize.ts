@@ -1,6 +1,6 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import { getDefaultMetrics, MODULES } from '$lib/modules';
-import { autoLayout } from '$lib/design/layout';
+import { getLayout, DEFAULT_LAYOUT } from '$lib/design/layouts';
 import { DESIGN_VERSION, type DesignNode, type SystemDesign } from '$lib/design/schema';
 
 /**
@@ -62,8 +62,17 @@ export function serializeDesign(nodes: Node[], edges: Edge[], meta: DesignMeta =
 	};
 }
 
-/** Portable document → canvas nodes/edges. Fills ids, defaults, and layout. */
-export function hydrateDesign(design: SystemDesign): { nodes: Node[]; edges: Edge[] } {
+/**
+ * Portable document → canvas nodes/edges. Fills ids, defaults, and — when any
+ * position is missing — runs the chosen layout (default: vertical). The layout
+ * also decides the default edge-handle direction.
+ */
+export function hydrateDesign(
+	design: SystemDesign,
+	layoutId: string = DEFAULT_LAYOUT
+): { nodes: Node[]; edges: Edge[] } {
+	const def = getLayout(layoutId);
+
 	// Assign ids to any node missing one (keeps type-prefixed, unique).
 	const typeCounts: Record<string, number> = {};
 	const withIds = design.nodes
@@ -73,9 +82,9 @@ export function hydrateDesign(design: SystemDesign): { nodes: Node[]; edges: Edg
 			return { ...n, id };
 		});
 
-	// Auto-layout when any position is missing (AI-authored configs).
+	// Lay out when any position is missing (AI-authored configs).
 	const needsLayout = withIds.some((n) => !n.position);
-	const layout = needsLayout ? autoLayout(withIds, design.edges) : null;
+	const layout = needsLayout ? def.layout(withIds, design.edges) : null;
 
 	const nodes: Node[] = withIds.map((n) => ({
 		id: n.id,
@@ -92,8 +101,10 @@ export function hydrateDesign(design: SystemDesign): { nodes: Node[]; edges: Edg
 			type: 'default',
 			source: e.source,
 			target: e.target,
-			...(e.sourceHandle ? { sourceHandle: e.sourceHandle } : {}),
-			...(e.targetHandle ? { targetHandle: e.targetHandle } : {})
+			// Default to real ports from the layout when handles are omitted, so
+			// edges attach to actual handles and pick up connected styling.
+			sourceHandle: e.sourceHandle ?? def.sourceHandle,
+			targetHandle: e.targetHandle ?? def.targetHandle
 		}));
 
 	return { nodes, edges };

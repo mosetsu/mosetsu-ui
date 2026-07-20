@@ -24,8 +24,6 @@ export type ModuleDef = {
 	costPerMonth: number;
 	metrics: MetricDef[];
 	handles: HandleDef[];
-	/** rendered by a custom Svelte component instead of the generic BlockNode */
-	bespoke?: boolean;
 };
 
 // Handle presets ---------------------------------------------------------
@@ -247,8 +245,7 @@ export const MODULES: Record<string, ModuleDef> = {
 			m('partitions', 'Partitions', ''),
 			m('consumerLag', 'Consumer Lag', 'msg')
 		],
-		handles: FLOW,
-		bespoke: true
+		handles: FLOW
 	},
 	rabbitmq: {
 		type: 'rabbitmq',
@@ -264,8 +261,7 @@ export const MODULES: Record<string, ModuleDef> = {
 			m('queueDepth', 'Queue Depth', 'msg'),
 			m('consumerCount', 'Consumers', '')
 		],
-		handles: FLOW,
-		bespoke: true
+		handles: FLOW
 	},
 	monitoring: {
 		type: 'monitoring',

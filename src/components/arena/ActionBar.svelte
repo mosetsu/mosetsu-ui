@@ -3,6 +3,8 @@
 	import ShareMenu from '$components/arena/controls/ShareMenu.svelte';
 	import SpecControls from '$components/arena/controls/SpecControls.svelte';
 	import ZoomControls from '$components/arena/controls/ZoomControls.svelte';
+	import UploadControls from '$components/arena/controls/UploadControls.svelte';
+	import LayoutToggle from '$components/arena/controls/LayoutToggle.svelte';
 
 	let { toolbarVisible, onModuleBtnClick } = $props();
 
@@ -17,6 +19,7 @@
 		<div class="flex flex-1 items-center justify-start gap-2">
 			<SpecControls />
 			<ShareMenu />
+			<UploadControls />
 		</div>
 
 		<!-- Center: primary action -->
@@ -45,6 +48,7 @@
 						: 'border-dark-border bg-dark-elevated/60 text-text-secondary hover:border-dark-border-strong hover:text-text-primary')}
 				onclick={onModuleBtnClick}>Modules</button
 			>
+			<LayoutToggle />
 			<ZoomControls />
 		</div>
 	</div>
