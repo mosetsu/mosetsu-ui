@@ -37,8 +37,8 @@
 }
 
 .svelte-flow__handle {
-	width: 10px;
-	height: 10px;
+	width: 8px;
+	height: 8px;
 	border-radius: 50%;
 	border: 2px solid var(--color-dark-border-strong);
 	background: var(--color-dark-highlight);

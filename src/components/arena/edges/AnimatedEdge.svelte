@@ -55,7 +55,11 @@
 	{id}
 	{path}
 	class="transition-colors duration-500"
-	style="stroke-width: 2; stroke: {selected ? '#888888' : pathColor};"
+	style="stroke-width: 2; stroke: {selected
+		? '#f0562b'
+		: isSimulationActive
+			? pathColor
+			: 'var(--color-idle-edge)'};"
 />
 
 {#if isSimulationActive}

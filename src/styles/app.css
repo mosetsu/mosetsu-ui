@@ -28,6 +28,8 @@
 	--color-accent: #f0562b;
 	--color-accent-amber: #ff9a4d;
 	--color-accent-glow: #ff7326;
+	/* neutral, on-theme edge colour used when the simulation is idle */
+	--color-idle-edge: rgba(255, 138, 61, 0.4);
 
 	/* Fonts */
 	--font-sans: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
