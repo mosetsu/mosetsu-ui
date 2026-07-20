@@ -1,21 +1,20 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import toolbarStore, { type ToolbarSelection } from '$stores/toolbar';
+	import { toolbarStore, type ToolbarSelection } from '$stores/toolbar';
 	import { dockGroups } from '$lib/modules';
 
 	let { toolbarVisible }: { toolbarVisible: boolean } = $props();
 
 	const groups = dockGroups();
+	let selected = $derived($toolbarStore);
 
-	const handleOnMenuClick = (type: ToolbarSelection) => {
+	const toggleModule = (type: ToolbarSelection) => {
 		if (selected === type) {
 			toolbarStore.reset();
-			return;
+		} else {
+			toolbarStore.select(type);
 		}
-		toolbarStore.select(type);
 	};
-
-	let selected = $derived($toolbarStore);
 </script>
 
 {#if toolbarVisible}
@@ -33,7 +32,7 @@
 					class="dock-item flex cursor-pointer items-center justify-center rounded-xl p-1.5 transition-all duration-150"
 					class:active={selected === def.type}
 					style="--accent: {def.accent}"
-					onclick={() => handleOnMenuClick(def.type)}
+					onclick={() => toggleModule(def.type)}
 					role="button"
 					tabindex="0"
 					aria-label={def.title}

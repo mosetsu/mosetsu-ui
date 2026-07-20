@@ -5,16 +5,10 @@ import { writable } from 'svelte/store';
 export type ToolbarSelection = string;
 export const TOOLBAR_NONE: ToolbarSelection = '';
 
-const createToolbarStore = () => {
-	const { subscribe, set } = writable<ToolbarSelection>(TOOLBAR_NONE);
+const selected = writable<ToolbarSelection>(TOOLBAR_NONE);
 
-	return {
-		subscribe,
-		select: (type: ToolbarSelection) => set(type),
-		reset: () => set(TOOLBAR_NONE)
-	};
+export const toolbarStore = {
+	subscribe: selected.subscribe,
+	select: (type: ToolbarSelection) => selected.set(type),
+	reset: () => selected.set(TOOLBAR_NONE)
 };
-
-const toolbarStore = createToolbarStore();
-
-export default toolbarStore;

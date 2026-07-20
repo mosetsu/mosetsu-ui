@@ -6,19 +6,8 @@
 	const flowApi = useSvelteFlow();
 
 	onMount(() => {
-		zoomControl.init(flowApi);
+		const cleanup = zoomControl.init(flowApi);
 		zoomControl.setInitialZoom();
+		return cleanup;
 	});
-
-	export function handleZoomIn() {
-		zoomControl.zoomIn();
-	}
-
-	export function handleZoomOut() {
-		zoomControl.zoomOut();
-	}
-
-	export function getZoomLevel() {
-		return zoomControl.getZoomLevel();
-	}
 </script>

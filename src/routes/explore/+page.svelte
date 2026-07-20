@@ -27,10 +27,16 @@
 	const fmtWhen = (t: number) => {
 		const diff = Date.now() - t;
 		const min = Math.round(diff / 60000);
-		if (min < 1) return 'just now';
-		if (min < 60) return `${min}m ago`;
+		if (min < 1) {
+			return 'just now';
+		}
+		if (min < 60) {
+			return `${min}m ago`;
+		}
 		const hr = Math.round(min / 60);
-		if (hr < 24) return `${hr}h ago`;
+		if (hr < 24) {
+			return `${hr}h ago`;
+		}
 		return new Date(t).toLocaleDateString();
 	};
 
@@ -39,8 +45,12 @@
 		const seen: string[] = [];
 		for (const n of spec.design.nodes) {
 			const def = getModule(n.type);
-			if (def && !seen.includes(def.type)) seen.push(def.type);
-			if (seen.length >= 5) break;
+			if (def && !seen.includes(def.type)) {
+				seen.push(def.type);
+			}
+			if (seen.length >= 5) {
+				break;
+			}
 		}
 		return seen.map((t) => getModule(t)!);
 	};

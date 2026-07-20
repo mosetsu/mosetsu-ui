@@ -4,9 +4,9 @@
 	import { onMount } from 'svelte';
 	import { SvelteFlow, Background, BackgroundVariant } from '@xyflow/svelte';
 	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
-	import ToolbarAction from '$components/arena/canvas-state/toolbarAction';
+	import { bindToolbarPlacement } from '$components/arena/canvas-state/toolbarPlacement';
 	import ZoomPanel from '$components/arena/ZoomPanel.svelte';
-	import { zoomControl } from '$components/arena/canvas-state/zoom.svelte';
+	import { zoomControl, MIN_ZOOM, MAX_ZOOM } from '$components/arena/canvas-state/zoom.svelte';
 
 	let container = $state<HTMLDivElement | null>(null);
 
@@ -30,16 +30,18 @@
 	};
 
 	onMount(() => {
-		let tearDown: (() => void)[] = [];
-		if (container) {
-			drawState.setContainer(container);
-			tearDown.push(ToolbarAction());
-			container.addEventListener('wheel', handleWheel, { passive: false });
-			tearDown.push(() => container?.removeEventListener('wheel', handleWheel));
+		const el = container;
+		if (!el) {
+			return;
 		}
 
+		drawState.container = el;
+		const unbindToolbar = bindToolbarPlacement();
+		el.addEventListener('wheel', handleWheel, { passive: false });
+
 		return () => {
-			tearDown.forEach((_) => _());
+			unbindToolbar();
+			el.removeEventListener('wheel', handleWheel);
 			drawState.destroy();
 		};
 	});
@@ -52,8 +54,8 @@
 		nodeTypes={drawState.nodeTypes}
 		edgeTypes={drawState.edgeTypes}
 		deleteKey="Delete"
-		minZoom={0.1}
-		maxZoom={4}
+		minZoom={MIN_ZOOM}
+		maxZoom={MAX_ZOOM}
 		panOnDrag={drawState.panEnabled}
 		selectionOnDrag={false}
 		zoomOnScroll={false}

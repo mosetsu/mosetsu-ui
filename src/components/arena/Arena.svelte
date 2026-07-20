@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Footer from '$components/arena/ActionBar.svelte';
-	import Toolbar from '$components/arena/ModuleDock.svelte';
-	import FlowDraw from '$components/arena/Canvas.svelte';
+	import ActionBar from '$components/arena/ActionBar.svelte';
+	import ModuleDock from '$components/arena/ModuleDock.svelte';
+	import Canvas from '$components/arena/Canvas.svelte';
 	import DesignSync from '$components/arena/DesignSync.svelte';
 
 	let toolbarVisible = $state(true);
@@ -16,10 +16,10 @@
 >
 	<!-- Canvas fills the whole stage; everything else floats over it -->
 	<div class="absolute inset-0">
-		<FlowDraw />
+		<Canvas />
 	</div>
 	<div class="ambient-bloom"></div>
-	<Toolbar {toolbarVisible} />
-	<Footer {toolbarVisible} {onModuleBtnClick} />
+	<ModuleDock {toolbarVisible} />
+	<ActionBar {toolbarVisible} {onModuleBtnClick} />
 	<DesignSync />
 </section>

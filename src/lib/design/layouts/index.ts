@@ -18,7 +18,7 @@ export type LayoutDef = {
 	sourceHandle: string;
 	targetHandle: string;
 	layout: (
-		nodes: { id?: string }[],
+		nodes: { id?: string; width?: number; height?: number }[],
 		edges: { source: string; target: string }[]
 	) => Map<string, { x: number; y: number }>;
 };

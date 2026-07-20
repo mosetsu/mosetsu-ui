@@ -17,7 +17,9 @@ const LATENCY_KEYS = ['responseTimeMs', 'readLatencyMs', 'resolveTimeMs'];
 const nodeLatency = (node: Node): number => {
 	const metrics = (node.data?.metrics as Record<string, number> | undefined) ?? {};
 	for (const key of LATENCY_KEYS) {
-		if (key in metrics) return metrics[key];
+		if (key in metrics) {
+			return metrics[key];
+		}
 	}
 	return 0;
 };
@@ -28,15 +30,21 @@ const estimateLatency = (nodes: Node[], edges: Edge[]): number => {
 	const out = new Map<string, string[]>();
 	nodes.forEach((n) => out.set(n.id, []));
 	edges.forEach((e) => {
-		if (out.has(e.source)) out.get(e.source)!.push(e.target);
+		if (out.has(e.source)) {
+			out.get(e.source)!.push(e.target);
+		}
 	});
 
 	const memo = new Map<string, number>();
 	const visiting = new Set<string>();
 
 	const dfs = (id: string): number => {
-		if (memo.has(id)) return memo.get(id)!;
-		if (visiting.has(id)) return 0; // break cycles
+		if (memo.has(id)) {
+			return memo.get(id)!;
+		}
+		if (visiting.has(id)) {
+			return 0;
+		} // break cycles
 		visiting.add(id);
 		const node = byId.get(id);
 		const base = node ? nodeLatency(node) : 0;
@@ -76,9 +84,13 @@ export const computeSummary = (nodes: Node[], edges: Edge[]): SystemSummary => {
 	let bottleneck: SystemSummary['bottleneck'] = null;
 	let redCount = 0;
 	for (const node of nodes) {
-		if (!hasInbound.has(node.id)) continue;
+		if (!hasInbound.has(node.id)) {
+			continue;
+		}
 		const c = calculateNodeCongestion(node.id, nodes, edges);
-		if (c.status === 'red') redCount++;
+		if (c.status === 'red') {
+			redCount++;
+		}
 		if (!bottleneck || c.ratio > bottleneck.ratio) {
 			bottleneck = {
 				title: getModule(node.type as string)?.title ?? (node.type as string),

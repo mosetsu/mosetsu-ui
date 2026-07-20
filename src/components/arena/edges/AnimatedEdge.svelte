@@ -1,17 +1,14 @@
 <script lang="ts">
 	import { BaseEdge, getBezierPath, type EdgeProps, useSvelteFlow } from '@xyflow/svelte';
-	import simulationStore from '$stores/simulation';
+	import { simulationStore } from '$stores/simulation';
 	import {
-		getEdgeCongestion,
+		calculateNodeCongestion,
 		CONGESTION_COLORS,
 		getAnimationDelays
 	} from '$lib/simulation/congestion';
 
-	type Props = EdgeProps;
-
 	let {
 		id,
-		source,
 		target,
 		sourceX,
 		sourceY,
@@ -20,26 +17,17 @@
 		sourcePosition,
 		targetPosition,
 		selected = false
-	}: Props = $props();
+	}: EdgeProps = $props();
 
-	let isSimulationActive = $derived($simulationStore.isSimulationActive);
+	let isSimulationActive = $derived($simulationStore);
 	const { getNodes, getEdges } = useSvelteFlow();
 
 	let path = $derived(
-		getBezierPath({
-			sourceX,
-			sourceY: sourceY,
-			sourcePosition,
-			targetX,
-			targetY: targetY,
-			targetPosition
-		})[0]
+		getBezierPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition })[0]
 	);
 
 	const { pathColor, send, recv } = $derived.by(() => {
-		const nodes = getNodes();
-		const edges = getEdges();
-		const congestion = getEdgeCongestion(source, target, nodes, edges);
+		const congestion = calculateNodeCongestion(target, getNodes(), getEdges());
 		const colors = CONGESTION_COLORS[congestion.status];
 		const delays = getAnimationDelays(congestion.status);
 

@@ -310,7 +310,9 @@ export const getDefaultMetrics = (type: string): Record<string, number> => ({
 
 export const getThroughput = (type: string, metrics: Record<string, number>): number => {
 	const def = MODULES[type];
-	if (!def) return 0;
+	if (!def) {
+		return 0;
+	}
 	return metrics?.[def.throughputField] ?? 0;
 };
 

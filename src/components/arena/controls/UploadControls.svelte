@@ -1,12 +1,7 @@
 <script lang="ts">
-	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
-	import { zoomControl } from '$components/arena/canvas-state/zoom.svelte';
-	import { selectionStore } from '$stores/selection';
-	import { setSpec, DEFAULT_SPEC_NAME } from '$stores/spec';
-	import { hydrateDesign } from '$lib/design/serialize';
+	import { applyDesign } from '$components/arena/canvas-state/applyDesign';
 	import type { SystemDesign } from '$lib/design/schema';
 	import type { LayoutId } from '$lib/design/layouts';
-	import { layoutStore } from '$stores/layout';
 	import UploadDialog from '$components/dialogs/UploadDialog.svelte';
 	import ConfirmDialog from '$components/dialogs/ConfirmDialog.svelte';
 
@@ -22,15 +17,11 @@
 	}
 
 	function applyUpload() {
-		if (!pending) return;
-		const { design, layout } = pending;
-		const { nodes, edges } = hydrateDesign(design, layout);
-		drawState.loadGraph(nodes, edges);
-		selectionStore.clear();
-		layoutStore.set(layout);
+		if (!pending) {
+			return;
+		}
 		// Opens as a NEW unsaved draft — existing saved specs are untouched.
-		setSpec({ id: null, name: (design.name ?? '').trim() || DEFAULT_SPEC_NAME });
-		zoomControl.fit(150);
+		applyDesign(pending.design, { layoutId: pending.layout });
 		pending = null;
 		showConfirm = false;
 	}

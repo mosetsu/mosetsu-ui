@@ -6,15 +6,10 @@
 	let width = $state(browser ? window.innerWidth : MIN_WIDTH);
 	let dismissed = $state(false);
 
-	$effect(() => {
-		const onResize = () => (width = window.innerWidth);
-		window.addEventListener('resize', onResize);
-		onResize();
-		return () => window.removeEventListener('resize', onResize);
-	});
-
 	let show = $derived(width < MIN_WIDTH && !dismissed);
 </script>
+
+<svelte:window bind:innerWidth={width} />
 
 {#if show}
 	<div

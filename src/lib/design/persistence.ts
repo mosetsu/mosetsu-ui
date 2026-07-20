@@ -33,7 +33,9 @@ function openDb(): Promise<IDBDatabase> {
 	if (!browser || !('indexedDB' in globalThis)) {
 		return Promise.reject(new Error('IndexedDB unavailable'));
 	}
-	if (dbPromise) return dbPromise;
+	if (dbPromise) {
+		return dbPromise;
+	}
 	dbPromise = new Promise((resolve, reject) => {
 		const req = indexedDB.open(DB_NAME, DB_VERSION);
 		req.onupgradeneeded = () => {
@@ -112,7 +114,9 @@ export const clearDraft = () => del(DRAFT_KEY);
 
 // ---- Specs (explicit named saves) -------------------------------------
 export const saveSpec = (design: SystemDesign) => {
-	if (!design.id) throw new Error('saveSpec requires design.id');
+	if (!design.id) {
+		throw new Error('saveSpec requires design.id');
+	}
 	return put(SPEC_PREFIX + design.id, design);
 };
 export const loadSpec = (id: string) => get(SPEC_PREFIX + id);
@@ -134,8 +138,11 @@ export async function listSpecs(): Promise<SavedSpec[]> {
 
 // ---- Idle-scheduled, debounced draft autosaver ------------------------
 const onIdle = (cb: () => void) => {
-	if (typeof requestIdleCallback === 'function') requestIdleCallback(cb, { timeout: 1000 });
-	else setTimeout(cb, 0);
+	if (typeof requestIdleCallback === 'function') {
+		requestIdleCallback(cb, { timeout: 1000 });
+	} else {
+		setTimeout(cb, 0);
+	}
 };
 
 /** Debounced draft autosaver — saves are async and scheduled during idle. */
@@ -144,13 +151,21 @@ export function createAutosaver(getDesign: () => SystemDesign, delay = 600) {
 	const persist = () => void saveDraft(getDesign()).catch(() => {});
 	return {
 		schedule() {
-			if (!browser) return;
-			if (timer) clearTimeout(timer);
+			if (!browser) {
+				return;
+			}
+			if (timer) {
+				clearTimeout(timer);
+			}
 			timer = setTimeout(() => onIdle(persist), delay);
 		},
 		flush() {
-			if (!browser) return;
-			if (timer) clearTimeout(timer);
+			if (!browser) {
+				return;
+			}
+			if (timer) {
+				clearTimeout(timer);
+			}
 			persist();
 		}
 	};

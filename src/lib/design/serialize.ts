@@ -16,11 +16,15 @@ const minimalMetrics = (
 	type: string,
 	metrics: Record<string, number> | undefined
 ): Record<string, number> | undefined => {
-	if (!metrics) return undefined;
+	if (!metrics) {
+		return undefined;
+	}
 	const defaults = getDefaultMetrics(type);
 	const out: Record<string, number> = {};
 	for (const [k, v] of Object.entries(metrics)) {
-		if (v !== defaults[k]) out[k] = v;
+		if (v !== defaults[k]) {
+			out[k] = v;
+		}
 	}
 	return Object.keys(out).length ? out : undefined;
 };
@@ -49,7 +53,9 @@ export function serializeDesign(nodes: Node[], edges: Edge[], meta: DesignMeta =
 				position: { x: round(n.position.x), y: round(n.position.y) }
 			};
 			const metrics = minimalMetrics(n.type as string, n.data?.metrics as Record<string, number>);
-			if (metrics) dn.metrics = metrics;
+			if (metrics) {
+				dn.metrics = metrics;
+			}
 			return dn;
 		}),
 		edges: edges.map((e) => ({

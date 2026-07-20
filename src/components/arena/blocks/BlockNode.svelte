@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { type NodeProps } from '@xyflow/svelte';
-	import { selectBlock } from '$components/arena/canvas-state/selectBlock';
 	import ConnectedHandle from './ConnectedHandle.svelte';
 	import QueueFlow from './QueueFlow.svelte';
 	import { getModule } from '$lib/modules';
 	import { openTooling } from '$stores/panels';
-	import type { BlockMetrics, BlockType } from '$stores/selection';
+	import { selectionStore, type BlockMetrics } from '$stores/selection';
 
 	let { id, type, data }: NodeProps = $props();
 
@@ -13,18 +12,24 @@
 	let metrics = $derived((data?.metrics ?? {}) as BlockMetrics);
 
 	const handleClick = () => {
-		if (def) selectBlock(id, type as BlockType, metrics);
+		if (def) {
+			selectionStore.select({ id, type: type as string, metrics });
+		}
 	};
 
 	// Double-click a module opens the tooling panel (if closed) to edit metrics.
 	const handleDblClick = () => {
-		if (!def) return;
-		selectBlock(id, type as BlockType, metrics);
+		if (!def) {
+			return;
+		}
+		handleClick();
 		openTooling();
 	};
 
 	const fmt = (value: number, unit: string): string => {
-		if (!unit) return `${value}`;
+		if (!unit) {
+			return `${value}`;
+		}
 		return /^[a-zA-Z]/.test(unit) ? `${value} ${unit}` : `${value}${unit}`;
 	};
 </script>

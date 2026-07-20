@@ -12,12 +12,9 @@ type EdgeTypes = Record<string, Component<EdgeProps>>;
 
 // Every module renders through the generic, registry-driven BlockNode.
 const buildNodeTypes = (): NodeTypes =>
-	Object.keys(MODULES).reduce((acc, type) => {
-		acc[type] = BlockNode;
-		return acc;
-	}, {} as NodeTypes);
+	Object.fromEntries(Object.keys(MODULES).map((type) => [type, BlockNode]));
 
-export class DrawStateClass {
+export class DrawState {
 	container: HTMLDivElement | null = null;
 	nodes = $state.raw<Node[]>([]);
 	edges = $state.raw<Edge[]>([]);
@@ -25,18 +22,7 @@ export class DrawStateClass {
 	private nodeSeq = 0;
 
 	nodeTypes: NodeTypes = buildNodeTypes();
-
-	edgeTypes: EdgeTypes = {
-		default: AnimatedEdge
-	};
-
-	setContainer = (container: HTMLDivElement) => {
-		this.container = container;
-	};
-
-	getContainer = () => {
-		return this.container;
-	};
+	edgeTypes: EdgeTypes = { default: AnimatedEdge };
 
 	/** Replace the whole graph (used when restoring / loading a design). */
 	loadGraph = (nodes: Node[], edges: Edge[]) => {
@@ -46,14 +32,23 @@ export class DrawStateClass {
 		let max = -1;
 		for (const n of nodes) {
 			const m = /-(\d+)$/.exec(n.id);
-			if (m) max = Math.max(max, Number(m[1]));
+			if (m) {
+				max = Math.max(max, Number(m[1]));
+			}
 		}
 		this.nodeSeq = max + 1;
 	};
 
 	/** Re-position the current graph with the given layout and re-orient edges. */
 	applyLayout = (def: LayoutDef) => {
-		const positions = def.layout(this.nodes, this.edges);
+		const positions = def.layout(
+			this.nodes.map((n) => ({
+				id: n.id,
+				width: n.measured?.width ?? n.width,
+				height: n.measured?.height ?? n.height
+			})),
+			this.edges
+		);
 		this.nodes = this.nodes.map((n) => ({ ...n, position: positions.get(n.id) ?? n.position }));
 		this.edges = this.edges.map((e) => ({
 			...e,
@@ -62,7 +57,6 @@ export class DrawStateClass {
 		}));
 	};
 
-	/** Clear the canvas. */
 	clearGraph = () => {
 		this.nodes = [];
 		this.edges = [];
@@ -96,4 +90,4 @@ export class DrawStateClass {
 	};
 }
 
-export const drawState = new DrawStateClass();
+export const drawState = new DrawState();

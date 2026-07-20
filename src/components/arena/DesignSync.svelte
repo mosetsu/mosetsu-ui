@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
-	import { hydrateDesign, serializeDesign } from '$lib/design/serialize';
+	import { applyDesign } from '$components/arena/canvas-state/applyDesign';
+	import { serializeDesign } from '$lib/design/serialize';
 	import { createAutosaver, loadDraft } from '$lib/design/persistence';
 	import { readDesignFromHash, clearHash } from '$lib/design/share';
-	import { zoomControl } from '$components/arena/canvas-state/zoom.svelte';
-	import { specStore, setSpec, DEFAULT_SPEC_NAME } from '$stores/spec';
+	import { specStore, DEFAULT_SPEC_NAME } from '$stores/spec';
 
 	let ready = $state(false);
 
@@ -28,22 +28,20 @@
 			// A shared link (URL hash) wins; it opens as a NEW unsaved spec so the
 			// viewer can save their own copy. Otherwise resume the local draft.
 			let design = await readDesignFromHash();
-			let fromShare = false;
-			if (design) {
-				fromShare = true;
+			const fromShare = design !== null;
+			if (fromShare) {
 				clearHash();
 			} else {
 				design = await loadDraft();
 			}
 
 			if (!disposed && design && design.nodes.length > 0) {
-				const { nodes, edges } = hydrateDesign(design);
-				drawState.loadGraph(nodes, edges);
-				setSpec({
-					id: fromShare ? null : (design.id ?? null),
-					name: design.name ?? DEFAULT_SPEC_NAME
+				applyDesign(design, {
+					spec: {
+						id: fromShare ? null : (design.id ?? null),
+						name: design.name ?? DEFAULT_SPEC_NAME
+					}
 				});
-				zoomControl.fit(200);
 			}
 			ready = true;
 		})();
@@ -63,7 +61,9 @@
 		void drawState.nodes;
 		void drawState.edges;
 		void $specStore;
-		if (!ready) return;
+		if (!ready) {
+			return;
+		}
 		autosaver.schedule();
 	});
 </script>

@@ -70,15 +70,6 @@ export const calculateNodeCongestion = (
 	return { status, ratio, inboundTotal, capacity };
 };
 
-export const getEdgeCongestion = (
-	sourceId: string,
-	targetId: string,
-	nodes: Node[],
-	edges: Edge[]
-): CongestionResult => {
-	return calculateNodeCongestion(targetId, nodes, edges);
-};
-
 export const CONGESTION_COLORS = {
 	green: { solid: '#4CAF50', light: '#4CAF5066' },
 	yellow: { solid: '#FFC50F', light: '#FFC50F66' },

@@ -1,25 +1,22 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
+	import { get } from 'svelte/store';
 	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
-	import { serializeDesign, hydrateDesign } from '$lib/design/serialize';
+	import { applyDesign } from '$components/arena/canvas-state/applyDesign';
+	import { serializeDesign } from '$lib/design/serialize';
 	import { buildShareUrl, exportDesignFile, importDesignFile } from '$lib/design/share';
+	import { specStore } from '$stores/spec';
+	import { createToast } from '$lib/toast.svelte';
 	import Toast from '$components/ui/Toast.svelte';
 
 	let open = $state(false);
-	let toast = $state('');
-	let toastTimer: ReturnType<typeof setTimeout> | null = null;
+	const toast = createToast();
 
 	const currentDesign = () =>
 		serializeDesign(drawState.nodes, drawState.edges, {
-			name: 'Custom Spec',
+			name: get(specStore).name,
 			updatedAt: Date.now()
 		});
-
-	const flash = (msg: string) => {
-		toast = msg;
-		if (toastTimer) clearTimeout(toastTimer);
-		toastTimer = setTimeout(() => (toast = ''), 2000);
-	};
 
 	const copy = async (text: string) => {
 		try {
@@ -32,13 +29,13 @@
 
 	async function shareLink() {
 		const url = await buildShareUrl(currentDesign());
-		flash((await copy(url)) ? 'Share link copied' : 'Copy failed');
+		toast.show((await copy(url)) ? 'Share link copied' : 'Copy failed');
 		open = false;
 	}
 
 	async function copyConfig() {
 		const json = JSON.stringify(currentDesign(), null, 2);
-		flash((await copy(json)) ? 'Config JSON copied' : 'Copy failed');
+		toast.show((await copy(json)) ? 'Config JSON copied' : 'Copy failed');
 		open = false;
 	}
 
@@ -50,12 +47,10 @@
 	async function importJson() {
 		open = false;
 		try {
-			const design = await importDesignFile();
-			const { nodes, edges } = hydrateDesign(design);
-			drawState.loadGraph(nodes, edges);
-			flash('Design imported');
+			applyDesign(await importDesignFile());
+			toast.show('Design imported');
 		} catch (e) {
-			flash(e instanceof Error ? e.message : 'Import failed');
+			toast.show(e instanceof Error ? e.message : 'Import failed');
 		}
 	}
 
@@ -111,5 +106,5 @@
 		</div>
 	{/if}
 
-	<Toast message={toast} class="absolute bottom-full left-0 mb-2" />
+	<Toast message={toast.message} class="absolute bottom-full left-0 mb-2" />
 </div>

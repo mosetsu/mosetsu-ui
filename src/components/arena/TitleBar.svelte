@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import simulationStore from '$stores/simulation';
+	import { simulationStore } from '$stores/simulation';
 	import { specStore, setSpec, DEFAULT_SPEC_NAME } from '$stores/spec';
 	import { drawState } from '$components/arena/canvas-state/draw.svelte.ts';
 	import { serializeDesign } from '$lib/design/serialize';
 	import { saveSpec } from '$lib/design/persistence';
 
-	let simulationActive = $derived($simulationStore.isSimulationActive);
+	let simulationActive = $derived($simulationStore);
 
 	let editing = $state(false);
 	let draftName = $state('');
@@ -18,7 +18,9 @@
 	}
 
 	function commit() {
-		if (!editing) return;
+		if (!editing) {
+			return;
+		}
 		editing = false;
 		const name = draftName.trim() || DEFAULT_SPEC_NAME;
 		const spec = get(specStore);
@@ -69,8 +71,11 @@
 			bind:value={draftName}
 			class="border-dark-border bg-dark-surface text-text-primary focus:border-accent-primary/60 w-44 rounded-md border px-2 py-0.5 text-sm font-semibold outline-none"
 			onkeydown={(e) => {
-				if (e.key === 'Enter') commit();
-				else if (e.key === 'Escape') cancel();
+				if (e.key === 'Enter') {
+					commit();
+				} else if (e.key === 'Escape') {
+					cancel();
+				}
 			}}
 			onblur={commit}
 		/>

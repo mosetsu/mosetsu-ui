@@ -1,5 +1,5 @@
 <script lang="ts">
-	import simulationStore from '$stores/simulation';
+	import { simulationStore } from '$stores/simulation';
 	import ShareMenu from '$components/arena/controls/ShareMenu.svelte';
 	import SpecControls from '$components/arena/controls/SpecControls.svelte';
 	import ZoomControls from '$components/arena/controls/ZoomControls.svelte';
@@ -8,7 +8,7 @@
 
 	let { toolbarVisible, onModuleBtnClick } = $props();
 
-	let simulationActive = $derived($simulationStore.isSimulationActive);
+	let simulationActive = $derived($simulationStore);
 </script>
 
 <footer
@@ -29,7 +29,7 @@
 					(simulationActive
 						? 'bg-accent-primary glow-accent hover:bg-accent-hover border-transparent text-white'
 						: 'border-accent-primary/50 bg-accent-primary/10 text-accent-hover glow-soft hover:bg-accent-primary hover:text-white')}
-				onclick={() => simulationStore.toggleSimulation()}
+				onclick={simulationStore.toggle}
 			>
 				<span
 					class={`inline-block h-2 w-2 rounded-full transition-all ` +

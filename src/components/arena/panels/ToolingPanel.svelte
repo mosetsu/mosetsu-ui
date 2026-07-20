@@ -4,7 +4,9 @@
 	import { getInboundConnections, getOutboundConnections } from '$lib/simulation/congestion';
 	import { getModule } from '$lib/modules';
 	import { toolingCollapsed, toggleTooling } from '$stores/panels';
-	import type { Node } from '@xyflow/svelte';
+
+	type PlacedBlock = { id: string; type: BlockType; metrics: BlockMetrics };
+	type ConnectedBlock = PlacedBlock & { direction: 'inbound' | 'outbound' };
 
 	const blockTitle = (type: BlockType) => getModule(type)?.title ?? type;
 	const blockIcon = (type: BlockType) => getModule(type)?.icon ?? 'ic-base-module';
@@ -12,18 +14,26 @@
 
 	let block = $derived($selectionStore);
 
+	// Open/closed is shared so nodes can open it on double-click; it never
+	// auto-opens on plain selection.
+	let collapsed = $derived($toolingCollapsed);
+
 	// Searchable list of all placed modules (shown when nothing is selected).
 	let paletteSearch = $state('');
 	let placedNodes = $derived(
-		drawState.nodes.map((n) => ({
-			id: n.id,
-			type: n.type as BlockType,
-			metrics: (n.data?.metrics ?? {}) as BlockMetrics
-		}))
+		drawState.nodes.map(
+			(n): PlacedBlock => ({
+				id: n.id,
+				type: n.type as BlockType,
+				metrics: (n.data?.metrics ?? {}) as BlockMetrics
+			})
+		)
 	);
 	let filteredNodes = $derived.by(() => {
 		const q = paletteSearch.trim().toLowerCase();
-		if (!q) return placedNodes;
+		if (!q) {
+			return placedNodes;
+		}
 		return placedNodes.filter(
 			(n) =>
 				blockTitle(n.type).toLowerCase().includes(q) ||
@@ -31,90 +41,81 @@
 				n.type.toLowerCase().includes(q)
 		);
 	});
-	const selectPlacedNode = (n: { id: string; type: BlockType; metrics: BlockMetrics }) => {
-		selectionStore.select({ id: n.id, type: n.type, metrics: n.metrics });
-	};
 
-	type ConnectedBlock = {
-		id: string;
-		type: BlockType;
-		metrics: BlockMetrics;
-		direction: 'inbound' | 'outbound';
-	};
-
-	let connectedBlocks = $derived.by(() => {
+	let connectedBlocks = $derived.by((): ConnectedBlock[] => {
 		if (!block) {
 			return [];
 		}
-
-		const edges = drawState.edges;
-		const nodes = drawState.nodes;
-
-		const inboundIds = getInboundConnections(block.id, edges);
-		const outboundIds = getOutboundConnections(block.id, edges);
-
-		const getBlockFromNode = (node: Node, direction: 'inbound' | 'outbound'): ConnectedBlock => ({
-			id: node.id,
-			type: node.type as BlockType,
-			metrics: node.data?.metrics as BlockMetrics,
-			direction
-		});
-
-		const inbound = nodes
-			.filter((n) => inboundIds.includes(n.id))
-			.map((n) => getBlockFromNode(n, 'inbound'));
-		const outbound = nodes
-			.filter((n) => outboundIds.includes(n.id))
-			.map((n) => getBlockFromNode(n, 'outbound'));
-
-		return [...inbound, ...outbound];
+		const byId = new Map(placedNodes.map((n) => [n.id, n]));
+		const pick = (ids: string[], direction: ConnectedBlock['direction']) =>
+			ids.flatMap((id) => {
+				const n = byId.get(id);
+				return n ? [{ ...n, direction }] : [];
+			});
+		return [
+			...pick(getInboundConnections(block.id, drawState.edges), 'inbound'),
+			...pick(getOutboundConnections(block.id, drawState.edges), 'outbound')
+		];
 	});
 
-	function handleMetricChange(
-		blockId: string,
-		blockType: BlockType,
-		currentMetrics: BlockMetrics,
-		field: string,
-		event: Event
-	) {
-		const target = event.target as HTMLInputElement;
-		const newValue = parseInt(target.value) || 0;
-		const updatedMetrics = { ...currentMetrics, [field]: newValue };
-
+	function updateMetric(blockId: string, metrics: BlockMetrics, field: string, event: Event) {
+		const value = parseFloat((event.target as HTMLInputElement).value) || 0;
+		const updated = { ...metrics, [field]: value };
 		drawState.nodes = drawState.nodes.map((node) =>
-			node.id === blockId ? { ...node, data: { ...node.data, metrics: updatedMetrics } } : node
+			node.id === blockId ? { ...node, data: { ...node.data, metrics: updated } } : node
 		);
-
-		if (block && blockId === block.id) {
-			selectionStore.updateMetricField(field, newValue);
+		if (blockId === block?.id) {
+			selectionStore.updateMetricField(field, value);
 		}
 	}
 
-	function getMetricFields(
-		type: BlockType,
-		metrics: BlockMetrics
-	): Array<{ key: string; value: number; label: string; unit: string }> {
+	function metricFields(type: BlockType, metrics: BlockMetrics) {
 		const def = getModule(type);
 		if (!def) {
-			return Object.entries(metrics).map(([key, value]) => ({
-				key,
-				value: value as number,
-				label: key,
-				unit: ''
-			}));
+			return Object.entries(metrics).map(([key, value]) => ({ key, value, label: key, unit: '' }));
 		}
-		return def.metrics.map((metric) => ({
-			key: metric.key,
-			value: metrics[metric.key] ?? 0,
-			label: metric.label,
-			unit: metric.unit
+		return def.metrics.map((m) => ({
+			key: m.key,
+			value: metrics[m.key] ?? 0,
+			label: m.label,
+			unit: m.unit
 		}));
 	}
-
-	// Open/closed is shared so nodes can open it on double-click; it never
-	// auto-opens on plain selection.
-	let collapsed = $derived($toolingCollapsed);
 </script>
+
+{#snippet blockHeader(b: PlacedBlock)}
+	<span class={blockIcon(b.type)} style="color: {blockAccent(b.type)}"></span>
+	<div class="flex flex-col">
+		<span class="text-text-primary text-sm font-medium">{blockTitle(b.type)}</span>
+		<span class="text-text-subtle font-mono text-xs">{b.id}</span>
+	</div>
+{/snippet}
+
+{#snippet metricEditor(b: PlacedBlock)}
+	{#each metricFields(b.type, b.metrics) as { key, value, label, unit } (b.id + key)}
+		<div class="mb-2 flex flex-col gap-1">
+			<span class="text-text-subtle font-mono text-xs">{label}</span>
+			<label
+				class="border-dark-border bg-dark-surface focus-within:border-accent-primary/60 focus-within:bg-dark-elevated flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors"
+			>
+				<input
+					type="number"
+					class="text-text-primary min-w-0 flex-1 border-none bg-transparent font-mono text-sm outline-none"
+					{value}
+					oninput={(e) => updateMetric(b.id, b.metrics, key, e)}
+					placeholder="0"
+					min="0"
+				/>
+				{#if unit}
+					<span
+						class="bg-dark-highlight text-text-muted flex-shrink-0 rounded-md px-2 py-1 text-[10px]"
+						>{unit}</span
+					>
+				{/if}
+			</label>
+		</div>
+	{/each}
+{/snippet}
 
 <aside
 	class="glass-elevated border-dark-border-strong/40 flex min-h-0 flex-1 overflow-hidden rounded-2xl border shadow-xl transition-[width] duration-300"
@@ -151,46 +152,17 @@
 
 		<section class="no-scrollbar flex flex-1 flex-col gap-4 overflow-y-auto p-4">
 			{#if block}
-				<!-- Selected Block -->
 				<div class="border-dark-border-strong/50 bg-dark-highlight rounded-xl border p-3 shadow-lg">
 					<div class="mb-3 flex items-center gap-2">
-						<span class={blockIcon(block.type)} style="color: {getModule(block.type)?.accent}"
-						></span>
-						<div class="flex flex-col">
-							<span class="text-text-primary text-sm font-medium">{blockTitle(block.type)}</span>
-							<span class="text-text-subtle font-mono text-xs">{block.id}</span>
-						</div>
+						{@render blockHeader(block)}
 						<span
 							class="bg-accent-primary/20 text-accent-primary ml-auto rounded px-2 py-0.5 text-xs"
 							>Selected</span
 						>
 					</div>
-					{#each getMetricFields(block.type, block.metrics) as { key, value, label, unit } (key)}
-						<div class="mb-2 flex flex-col gap-1">
-							<span class="text-text-subtle font-mono text-xs">{label}</span>
-							<label
-								class="border-dark-border bg-dark-surface focus-within:border-accent-primary/60 focus-within:bg-dark-elevated flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors"
-							>
-								<input
-									type="number"
-									class="text-text-primary min-w-0 flex-1 border-none bg-transparent font-mono text-sm outline-none"
-									{value}
-									oninput={(e) => handleMetricChange(block.id, block.type, block.metrics, key, e)}
-									placeholder="0"
-									min="0"
-								/>
-								{#if unit}
-									<span
-										class="bg-dark-highlight text-text-muted flex-shrink-0 rounded-md px-2 py-1 text-[10px]"
-										>{unit}</span
-									>
-								{/if}
-							</label>
-						</div>
-					{/each}
+					{@render metricEditor(block)}
 				</div>
 
-				<!-- Connected Blocks -->
 				{#if connectedBlocks.length > 0}
 					<div class="text-text-subtle mt-2 flex items-center gap-2 text-xs">
 						<div class="bg-dark-border h-px flex-1"></div>
@@ -203,16 +175,7 @@
 							class="border-dark-border-strong/40 bg-dark-highlight/70 rounded-xl border p-3 shadow-md"
 						>
 							<div class="mb-3 flex items-center gap-2">
-								<span
-									class={blockIcon(connBlock.type)}
-									style="color: {getModule(connBlock.type)?.accent}"
-								></span>
-								<div class="flex flex-col">
-									<span class="text-text-primary text-sm font-medium"
-										>{blockTitle(connBlock.type)}</span
-									>
-									<span class="text-text-subtle font-mono text-xs">{connBlock.id}</span>
-								</div>
+								{@render blockHeader(connBlock)}
 								<span
 									class="ml-auto rounded px-2 py-0.5 text-xs {connBlock.direction === 'inbound'
 										? 'bg-green-500/20 text-green-400'
@@ -221,30 +184,7 @@
 									{connBlock.direction === 'inbound' ? '← In' : '→ Out'}
 								</span>
 							</div>
-							{#each getMetricFields(connBlock.type, connBlock.metrics) as { key, value, label, unit } (connBlock.id + key)}
-								<div class="mb-2 flex flex-col gap-1">
-									<span class="text-text-subtle font-mono text-xs">{label}</span>
-									<label
-										class="border-dark-border bg-dark-surface focus-within:border-accent-primary/60 focus-within:bg-dark-elevated flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors"
-									>
-										<input
-											type="number"
-											class="text-text-primary min-w-0 flex-1 border-none bg-transparent font-mono text-sm outline-none"
-											{value}
-											oninput={(e) =>
-												handleMetricChange(connBlock.id, connBlock.type, connBlock.metrics, key, e)}
-											placeholder="0"
-											min="0"
-										/>
-										{#if unit}
-											<span
-												class="bg-dark-highlight text-text-muted flex-shrink-0 rounded-md px-2 py-1 text-[10px]"
-												>{unit}</span
-											>
-										{/if}
-									</label>
-								</div>
-							{/each}
+							{@render metricEditor(connBlock)}
 						</div>
 					{/each}
 				{/if}
@@ -268,7 +208,7 @@
 				{#each filteredNodes as node (node.id)}
 					<button
 						class="border-dark-border-strong/40 bg-dark-highlight/70 hover:border-dark-border-strong hover:bg-dark-highlight flex w-full cursor-pointer items-center gap-2.5 rounded-xl border p-2.5 text-left transition-all focus:outline-none"
-						onclick={() => selectPlacedNode(node)}
+						onclick={() => selectionStore.select(node)}
 					>
 						<span
 							class="node-icon flex items-center rounded-lg px-1.5 py-1"

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { useSvelteFlow } from '@xyflow/svelte';
-	import simulationStore from '$stores/simulation';
+	import { simulationStore } from '$stores/simulation';
 
 	// A compact "queue lane" — glowing packets tinted by the node's --accent.
 	// They only FLOW while the simulation is running and the node is wired into
@@ -9,7 +9,7 @@
 
 	const { getEdges } = useSvelteFlow();
 
-	let live = $derived($simulationStore.isSimulationActive);
+	let live = $derived($simulationStore);
 	let connected = $derived.by(() =>
 		getEdges().some((e) => e.source === nodeId || e.target === nodeId)
 	);

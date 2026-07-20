@@ -65,11 +65,15 @@ const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFin
  * Returns a precise error string on failure (surfaced to imports / MCP).
  */
 export function parseDesign(input: unknown): ParseResult {
-	if (!isObj(input)) return { ok: false, error: 'Design must be an object.' };
+	if (!isObj(input)) {
+		return { ok: false, error: 'Design must be an object.' };
+	}
 	if (input.version !== undefined && !isNum(input.version)) {
 		return { ok: false, error: '`version` must be a number.' };
 	}
-	if (!Array.isArray(input.nodes)) return { ok: false, error: '`nodes` must be an array.' };
+	if (!Array.isArray(input.nodes)) {
+		return { ok: false, error: '`nodes` must be an array.' };
+	}
 	if (input.edges !== undefined && !Array.isArray(input.edges)) {
 		return { ok: false, error: '`edges` must be an array.' };
 	}
@@ -79,8 +83,12 @@ export function parseDesign(input: unknown): ParseResult {
 
 	for (let i = 0; i < input.nodes.length; i++) {
 		const n = input.nodes[i];
-		if (!isObj(n)) return { ok: false, error: `nodes[${i}] must be an object.` };
-		if (typeof n.type !== 'string') return { ok: false, error: `nodes[${i}].type is required.` };
+		if (!isObj(n)) {
+			return { ok: false, error: `nodes[${i}] must be an object.` };
+		}
+		if (typeof n.type !== 'string') {
+			return { ok: false, error: `nodes[${i}].type is required.` };
+		}
 		if (!MODULES[n.type]) {
 			return {
 				ok: false,
@@ -91,7 +99,9 @@ export function parseDesign(input: unknown): ParseResult {
 			return { ok: false, error: `nodes[${i}].id must be a string.` };
 		}
 		if (n.id) {
-			if (ids.has(n.id)) return { ok: false, error: `Duplicate node id "${n.id}".` };
+			if (ids.has(n.id)) {
+				return { ok: false, error: `Duplicate node id "${n.id}".` };
+			}
 			ids.add(n.id);
 		}
 		let position: DesignNode['position'];
@@ -103,10 +113,14 @@ export function parseDesign(input: unknown): ParseResult {
 		}
 		let metrics: Record<string, number> | undefined;
 		if (n.metrics !== undefined) {
-			if (!isObj(n.metrics)) return { ok: false, error: `nodes[${i}].metrics must be an object.` };
+			if (!isObj(n.metrics)) {
+				return { ok: false, error: `nodes[${i}].metrics must be an object.` };
+			}
 			metrics = {};
 			for (const [k, v] of Object.entries(n.metrics)) {
-				if (!isNum(v)) return { ok: false, error: `nodes[${i}].metrics.${k} must be a number.` };
+				if (!isNum(v)) {
+					return { ok: false, error: `nodes[${i}].metrics.${k} must be a number.` };
+				}
 				metrics[k] = v;
 			}
 		}
@@ -123,16 +137,20 @@ export function parseDesign(input: unknown): ParseResult {
 	const rawEdges = (input.edges as unknown[]) ?? [];
 	for (let i = 0; i < rawEdges.length; i++) {
 		const e = rawEdges[i];
-		if (!isObj(e)) return { ok: false, error: `edges[${i}] must be an object.` };
+		if (!isObj(e)) {
+			return { ok: false, error: `edges[${i}] must be an object.` };
+		}
 		if (typeof e.source !== 'string' || typeof e.target !== 'string') {
 			return { ok: false, error: `edges[${i}] needs string source and target.` };
 		}
 		// Referential integrity only enforced when node ids were explicit.
 		if (ids.size > 0) {
-			if (!ids.has(e.source))
+			if (!ids.has(e.source)) {
 				return { ok: false, error: `edges[${i}].source "${e.source}" has no matching node.` };
-			if (!ids.has(e.target))
+			}
+			if (!ids.has(e.target)) {
 				return { ok: false, error: `edges[${i}].target "${e.target}" has no matching node.` };
+			}
 		}
 		edges.push({
 			id: typeof e.id === 'string' ? e.id : undefined,

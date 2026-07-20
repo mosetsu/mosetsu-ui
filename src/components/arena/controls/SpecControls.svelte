@@ -7,19 +7,13 @@
 	import { saveSpec, clearDraft } from '$lib/design/persistence';
 	import SaveSpecDialog from '$components/dialogs/SaveSpecDialog.svelte';
 	import ConfirmDialog from '$components/dialogs/ConfirmDialog.svelte';
+	import { createToast } from '$lib/toast.svelte';
 	import Toast from '$components/ui/Toast.svelte';
 
 	let showSave = $state(false);
 	let showNew = $state(false);
 	let saveInitial = $state('');
-	let toast = $state('');
-	let toastTimer: ReturnType<typeof setTimeout> | null = null;
-
-	const flash = (msg: string) => {
-		toast = msg;
-		if (toastTimer) clearTimeout(toastTimer);
-		toastTimer = setTimeout(() => (toast = ''), 1800);
-	};
+	const toast = createToast(1800);
 
 	const buildDesign = (id: string, name: string) =>
 		serializeDesign(drawState.nodes, drawState.edges, { id, name, updatedAt: Date.now() });
@@ -33,7 +27,7 @@
 		} else {
 			// Existing spec → silently override.
 			void saveSpec(buildDesign(spec.id, spec.name));
-			flash('Saved');
+			toast.show('Saved');
 		}
 	}
 
@@ -44,12 +38,15 @@
 		setSpec({ id, name: finalName });
 		void saveSpec(buildDesign(id, finalName));
 		showSave = false;
-		flash(`Saved “${finalName}”`);
+		toast.show(`Saved “${finalName}”`);
 	}
 
 	function onNewClick() {
-		if (drawState.nodes.length === 0) doNew();
-		else showNew = true;
+		if (drawState.nodes.length === 0) {
+			doNew();
+		} else {
+			showNew = true;
+		}
 	}
 
 	function doNew() {
@@ -100,7 +97,7 @@
 	New
 </button>
 
-<Toast message={toast} class="absolute -top-11 left-1/2 -translate-x-1/2" />
+<Toast message={toast.message} class="absolute -top-11 left-1/2 -translate-x-1/2" />
 
 <SaveSpecDialog
 	open={showSave}

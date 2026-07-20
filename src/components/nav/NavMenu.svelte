@@ -1,12 +1,20 @@
 <script lang="ts">
-	export let title: string = '';
-	export let className: string = '';
-	export let activeMenu: string = '';
-	export let collapsed: boolean = false;
-	export let menus: Array<{ href: string; label: string; iconClass: string }> = [];
+	type MenuItem = { href: string; label: string; iconClass: string };
+
+	let {
+		title = '',
+		activeMenu = '',
+		collapsed = false,
+		menus = []
+	}: {
+		title?: string;
+		activeMenu?: string;
+		collapsed?: boolean;
+		menus?: MenuItem[];
+	} = $props();
 </script>
 
-<nav class={`flex flex-col px-1 py-1 ${className}`}>
+<nav class="flex flex-col px-1 py-1">
 	{#if title && !collapsed}
 		<span
 			aria-hidden="true"
@@ -14,7 +22,7 @@
 			>{title}</span
 		>
 	{/if}
-	{#each menus as { label, href = '/', iconClass = '' } (label)}
+	{#each menus as { label, href, iconClass } (label)}
 		<a
 			{href}
 			class={`relative mb-0.5 flex cursor-pointer items-center rounded-lg p-2 text-sm no-underline transition-all duration-150 ${collapsed ? 'justify-center' : ''} ${

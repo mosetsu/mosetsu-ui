@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Handle, useSvelteFlow, type HandleProps } from '@xyflow/svelte';
-	import simulationStore from '$stores/simulation';
+	import { simulationStore } from '$stores/simulation';
 
 	type Props = HandleProps & {
 		nodeId: string;
@@ -10,7 +10,7 @@
 	let { nodeId, handleId, type, position, ...restProps }: Props = $props();
 
 	const { getEdges } = useSvelteFlow();
-	let live = $derived($simulationStore.isSimulationActive);
+	let live = $derived($simulationStore);
 
 	let isConnected = $derived.by(() => {
 		const edges = getEdges();

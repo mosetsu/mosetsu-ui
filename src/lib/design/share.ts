@@ -12,7 +12,9 @@ const HASH_KEY = 'd';
 // ---- base64url ---------------------------------------------------------
 const toB64url = (bytes: Uint8Array): string => {
 	let bin = '';
-	for (const b of bytes) bin += String.fromCharCode(b);
+	for (const b of bytes) {
+		bin += String.fromCharCode(b);
+	}
 	return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
 
@@ -20,7 +22,9 @@ const fromB64url = (str: string): Uint8Array => {
 	const b64 = str.replace(/-/g, '+').replace(/_/g, '/');
 	const bin = atob(b64);
 	const out = new Uint8Array(bin.length);
-	for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+	for (let i = 0; i < bin.length; i++) {
+		out[i] = bin.charCodeAt(i);
+	}
 	return out;
 };
 
@@ -45,7 +49,9 @@ async function inflate(bytes: Uint8Array): Promise<string> {
 /** Encode a design into a compact token (prefix: `c` compressed, `u` plain). */
 export async function encodeDesign(design: SystemDesign): Promise<string> {
 	const json = JSON.stringify(design);
-	if (hasCompression()) return 'c' + toB64url(await deflate(json));
+	if (hasCompression()) {
+		return 'c' + toB64url(await deflate(json));
+	}
 	return 'u' + toB64url(new TextEncoder().encode(json));
 }
 
@@ -54,11 +60,17 @@ export async function decodeDesign(token: string): Promise<SystemDesign> {
 	const tag = token[0];
 	const body = token.slice(1);
 	let json: string;
-	if (tag === 'c') json = await inflate(fromB64url(body));
-	else if (tag === 'u') json = new TextDecoder().decode(fromB64url(body));
-	else json = new TextDecoder().decode(fromB64url(token)); // legacy/no-tag
+	if (tag === 'c') {
+		json = await inflate(fromB64url(body));
+	} else if (tag === 'u') {
+		json = new TextDecoder().decode(fromB64url(body));
+	} else {
+		json = new TextDecoder().decode(fromB64url(token));
+	} // legacy/no-tag
 	const parsed = parseDesign(JSON.parse(json));
-	if (!parsed.ok) throw new Error(parsed.error);
+	if (!parsed.ok) {
+		throw new Error(parsed.error);
+	}
 	return parsed.design;
 }
 
@@ -74,7 +86,9 @@ export async function readDesignFromHash(): Promise<SystemDesign | null> {
 	const hash = window.location.hash.replace(/^#/, '');
 	const params = new URLSearchParams(hash);
 	const token = params.get(HASH_KEY);
-	if (!token) return null;
+	if (!token) {
+		return null;
+	}
 	try {
 		return await decodeDesign(token);
 	} catch {
@@ -105,10 +119,14 @@ export function importDesignFile(): Promise<SystemDesign> {
 		input.accept = 'application/json,.json';
 		input.onchange = async () => {
 			const file = input.files?.[0];
-			if (!file) return reject(new Error('No file selected'));
+			if (!file) {
+				return reject(new Error('No file selected'));
+			}
 			try {
 				const parsed = parseDesign(JSON.parse(await file.text()));
-				if (!parsed.ok) return reject(new Error(parsed.error));
+				if (!parsed.ok) {
+					return reject(new Error(parsed.error));
+				}
 				resolve(parsed.design);
 			} catch (e) {
 				reject(e instanceof Error ? e : new Error('Invalid JSON'));
