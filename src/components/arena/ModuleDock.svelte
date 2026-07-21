@@ -15,6 +15,18 @@
 			toolbarStore.select(type);
 		}
 	};
+
+	// Native drag-and-drop: carry the module type in the drag payload so the
+	// canvas can place it wherever the user drops. Canvas.svelte reads MODULE_DRAG_MIME.
+	const onDragStart = (event: DragEvent, type: string) => {
+		if (!event.dataTransfer) {
+			return;
+		}
+		// A pending click-to-place selection would conflict with a drop, so clear it.
+		toolbarStore.reset();
+		event.dataTransfer.setData('application/x-module-type', type);
+		event.dataTransfer.effectAllowed = 'copy';
+	};
 </script>
 
 {#if toolbarVisible}
@@ -29,9 +41,11 @@
 			{#each group.modules as def (def.type)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<div
-					class="dock-item flex cursor-pointer items-center justify-center rounded-xl p-1.5 transition-all duration-150"
+					class="dock-item flex cursor-grab items-center justify-center rounded-xl p-1.5 transition-all duration-150 active:cursor-grabbing"
 					class:active={selected === def.type}
 					style="--accent: {def.accent}"
+					draggable="true"
+					ondragstart={(e) => onDragStart(e, def.type)}
 					onclick={() => toggleModule(def.type)}
 					role="button"
 					tabindex="0"

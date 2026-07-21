@@ -15,6 +15,34 @@
 	const WHEEL_THRESHOLD = 50;
 	let wheelAccum = 0;
 
+	// Native drag-and-drop from ModuleDock: allow the drop, then place the node
+	// at the exact flow position under the cursor (reusing the addNode factory).
+	const onDragOver = (event: DragEvent) => {
+		event.preventDefault();
+		if (event.dataTransfer) {
+			event.dataTransfer.dropEffect = 'copy';
+		}
+	};
+
+	const onDrop = (event: DragEvent) => {
+		const type = event.dataTransfer?.getData('application/x-module-type');
+		if (!type) {
+			return;
+		}
+		event.preventDefault();
+		const el = container;
+		if (!el) {
+			return;
+		}
+		const point = { x: event.clientX, y: event.clientY };
+		const rect = el.getBoundingClientRect();
+		const position = zoomControl.screenToFlow(point) ?? {
+			x: point.x - rect.left,
+			y: point.y - rect.top
+		};
+		drawState.addNode(type, position.x, position.y);
+	};
+
 	const handleWheel = (event: WheelEvent) => {
 		event.preventDefault();
 		wheelAccum += event.deltaY;
@@ -47,12 +75,20 @@
 	});
 </script>
 
-<div bind:this={container} class="arena-container bg-dark-base h-full w-full">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	bind:this={container}
+	class="arena-container bg-dark-base h-full w-full"
+	role="application"
+	ondragover={onDragOver}
+	ondrop={onDrop}
+>
 	<SvelteFlow
 		bind:nodes={drawState.nodes}
 		bind:edges={drawState.edges}
 		nodeTypes={drawState.nodeTypes}
 		edgeTypes={drawState.edgeTypes}
+		nodeOrigin={[0.5, 0.5]}
 		deleteKey="Delete"
 		minZoom={MIN_ZOOM}
 		maxZoom={MAX_ZOOM}

@@ -24,7 +24,10 @@
 	});
 
 	// Idle: amber joint. Live: hidden, so the flowing traffic reads clean.
-	let handleClass = $derived(isConnected ? (live ? 'connected connected-live' : 'connected') : '');
+	// Unconnected joints are hidden entirely while the simulation runs.
+	let handleClass = $derived(
+		isConnected ? (live ? 'connected connected-live' : 'connected') : live ? 'unconnected-live' : ''
+	);
 </script>
 
 <Handle id={handleId} {type} {position} class={handleClass} {...restProps} />
@@ -41,6 +44,13 @@
 
 	/* Live: hide the joints so the flowing, congestion-coloured traffic reads clean. */
 	:global(.connected-live) {
+		background: transparent;
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	/* Live: hide unconnected joints so only active traffic is visible. */
+	:global(.unconnected-live) {
 		background: transparent;
 		border-color: transparent;
 		box-shadow: none;
