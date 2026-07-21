@@ -1,5 +1,6 @@
 import skillMd from '$lib/design/mcp-skill.md?raw';
 import { MODULES, getDefaultMetrics } from '$lib/modules';
+import { SHAPE_LIST } from '$lib/shapes';
 
 /**
  * The AI skill text shown in the Upload dialog. The narrative lives in
@@ -26,6 +27,11 @@ function moduleReference(): string {
 		.join('\n\n');
 }
 
+/** Blank shapes carry no metrics — just a kind and a default label. */
+function shapeReference(): string {
+	return SHAPE_LIST.map((s) => `◆ ${s.type} — ${s.label}  [${s.kind}]`).join('\n');
+}
+
 export function buildSkillText(): string {
-	return skillMd.replace('{{MODULES}}', moduleReference());
+	return skillMd.replace('{{MODULES}}', moduleReference()).replace('{{SHAPES}}', shapeReference());
 }

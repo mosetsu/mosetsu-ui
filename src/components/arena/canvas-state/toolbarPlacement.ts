@@ -22,7 +22,7 @@ export function bindToolbarPlacement(): () => void {
 			x: point.x - rect.left,
 			y: point.y - rect.top
 		};
-		drawState.addNode(activeType, position.x, position.y);
+		drawState.create(activeType, position.x, position.y);
 
 		toolbarStore.reset();
 	};

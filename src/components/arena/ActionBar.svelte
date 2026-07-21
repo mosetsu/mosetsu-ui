@@ -6,9 +6,15 @@
 	import UploadControls from '$components/arena/controls/UploadControls.svelte';
 	import LayoutToggle from '$components/arena/controls/LayoutToggle.svelte';
 
-	let { toolbarVisible, onModuleBtnClick } = $props();
+	let { activeTray, onModuleBtnClick, onBlankBtnClick } = $props();
 
 	let simulationActive = $derived($simulationStore);
+
+	const trayBtnClass = (open: boolean) =>
+		`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all focus:outline-none ` +
+		(open
+			? 'border-accent-primary/40 bg-accent-primary/15 text-accent-hover'
+			: 'border-dark-border bg-dark-elevated/60 text-text-secondary hover:border-dark-border-strong hover:text-text-primary');
 </script>
 
 <footer
@@ -41,13 +47,12 @@
 
 		<!-- Right group: canvas controls -->
 		<div class="flex flex-1 items-center justify-end gap-2">
-			<button
-				class={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all focus:outline-none ` +
-					(toolbarVisible
-						? 'border-accent-primary/40 bg-accent-primary/15 text-accent-hover'
-						: 'border-dark-border bg-dark-elevated/60 text-text-secondary hover:border-dark-border-strong hover:text-text-primary')}
-				onclick={onModuleBtnClick}>Modules</button
-			>
+			<button class={trayBtnClass(activeTray === 'modules')} onclick={onModuleBtnClick}>
+				Modules
+			</button>
+			<button class={trayBtnClass(activeTray === 'blanks')} onclick={onBlankBtnClick}>
+				Blanks
+			</button>
 			<LayoutToggle />
 			<ZoomControls />
 		</div>

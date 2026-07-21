@@ -1,5 +1,6 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import { getDefaultMetrics, MODULES } from '$lib/modules';
+import { SHAPES } from '$lib/shapes';
 import { getLayout, DEFAULT_LAYOUT } from '$lib/design/layouts';
 import { DESIGN_VERSION, type DesignNode, type SystemDesign } from '$lib/design/schema';
 
@@ -52,9 +53,17 @@ export function serializeDesign(nodes: Node[], edges: Edge[], meta: DesignMeta =
 				type: n.type as string,
 				position: { x: round(n.position.x), y: round(n.position.y) }
 			};
-			const metrics = minimalMetrics(n.type as string, n.data?.metrics as Record<string, number>);
-			if (metrics) {
-				dn.metrics = metrics;
+			if (SHAPES[n.type as string]) {
+				// Blank shapes carry a free-text label instead of metrics.
+				const label = (n.data?.label as string | undefined)?.trim();
+				if (label) {
+					dn.label = label;
+				}
+			} else {
+				const metrics = minimalMetrics(n.type as string, n.data?.metrics as Record<string, number>);
+				if (metrics) {
+					dn.metrics = metrics;
+				}
 			}
 			return dn;
 		}),
@@ -82,7 +91,7 @@ export function hydrateDesign(
 	// Assign ids to any node missing one (keeps type-prefixed, unique).
 	const typeCounts: Record<string, number> = {};
 	const withIds = design.nodes
-		.filter((n) => MODULES[n.type])
+		.filter((n) => MODULES[n.type] || SHAPES[n.type])
 		.map((n) => {
 			const id = n.id ?? `${n.type}-${(typeCounts[n.type] = (typeCounts[n.type] ?? 0) + 1)}`;
 			return { ...n, id };
@@ -96,7 +105,9 @@ export function hydrateDesign(
 		id: n.id,
 		type: n.type,
 		position: n.position ?? layout?.get(n.id) ?? { x: 0, y: 0 },
-		data: { metrics: { ...getDefaultMetrics(n.type), ...(n.metrics ?? {}) } }
+		data: SHAPES[n.type]
+			? { label: n.label ?? SHAPES[n.type].label }
+			: { metrics: { ...getDefaultMetrics(n.type), ...(n.metrics ?? {}) } }
 	}));
 
 	const idSet = new Set(nodes.map((n) => n.id));

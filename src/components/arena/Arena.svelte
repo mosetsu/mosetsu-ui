@@ -1,13 +1,19 @@
 <script lang="ts">
 	import ActionBar from '$components/arena/ActionBar.svelte';
 	import ModuleDock from '$components/arena/ModuleDock.svelte';
+	import ShapeDock from '$components/arena/ShapeDock.svelte';
 	import Canvas from '$components/arena/Canvas.svelte';
 	import DesignSync from '$components/arena/DesignSync.svelte';
+	import { toolbarStore } from '$stores/toolbar';
 
-	let toolbarVisible = $state(true);
+	// Exactly one palette tray is open at a time (or none).
+	type Tray = 'modules' | 'blanks' | null;
+	let activeTray = $state<Tray>('modules');
 
-	const onModuleBtnClick = () => {
-		toolbarVisible = !toolbarVisible;
+	const toggleTray = (tray: Exclude<Tray, null>) => {
+		activeTray = activeTray === tray ? null : tray;
+		// Switching / closing a tray clears any armed click-to-place selection.
+		toolbarStore.reset();
 	};
 </script>
 
@@ -19,7 +25,12 @@
 		<Canvas />
 	</div>
 	<div class="ambient-bloom"></div>
-	<ModuleDock {toolbarVisible} />
-	<ActionBar {toolbarVisible} {onModuleBtnClick} />
+	<ModuleDock visible={activeTray === 'modules'} />
+	<ShapeDock visible={activeTray === 'blanks'} />
+	<ActionBar
+		{activeTray}
+		onModuleBtnClick={() => toggleTray('modules')}
+		onBlankBtnClick={() => toggleTray('blanks')}
+	/>
 	<DesignSync />
 </section>

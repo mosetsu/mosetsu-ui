@@ -40,7 +40,7 @@
 			x: point.x - rect.left,
 			y: point.y - rect.top
 		};
-		drawState.addNode(type, position.x, position.y);
+		drawState.create(type, position.x, position.y);
 	};
 
 	const handleWheel = (event: WheelEvent) => {
@@ -75,7 +75,6 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	bind:this={container}
 	class="arena-container bg-dark-base h-full w-full"

@@ -1,4 +1,5 @@
 import { MODULES } from '$lib/modules';
+import { SHAPES } from '$lib/shapes';
 
 /**
  * SystemSage design document — the portable, declarative representation of a
@@ -20,7 +21,8 @@ export const DESIGN_VERSION = 1 as const;
 export type DesignNode = {
 	/** Stable id. If omitted by an author, one is generated on hydrate. */
 	id?: string;
-	/** Module type — a key of the module registry (client, server, db, cache, …). */
+	/** Node type — a module registry key (client, server, db, …) or a blank
+	 *  shape key (shape-rectangle, shape-diamond, …). */
 	type: string;
 	/** Canvas position. Omit to let the layout engine place it. */
 	position?: { x: number; y: number };
@@ -89,10 +91,10 @@ export function parseDesign(input: unknown): ParseResult {
 		if (typeof n.type !== 'string') {
 			return { ok: false, error: `nodes[${i}].type is required.` };
 		}
-		if (!MODULES[n.type]) {
+		if (!MODULES[n.type] && !SHAPES[n.type]) {
 			return {
 				ok: false,
-				error: `nodes[${i}].type "${n.type}" is not a known module. Valid types: ${Object.keys(MODULES).join(', ')}.`
+				error: `nodes[${i}].type "${n.type}" is not a known module. Valid types: ${[...Object.keys(MODULES), ...Object.keys(SHAPES)].join(', ')}.`
 			};
 		}
 		if (n.id !== undefined && typeof n.id !== 'string') {

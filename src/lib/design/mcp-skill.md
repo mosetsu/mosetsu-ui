@@ -14,7 +14,8 @@ format below — no prose, no markdown fences.
   "version": 1,
   "name": "<short title>",
   "nodes": [
-    { "id": "<unique-id>", "type": "<module-type>", "metrics": { "<key>": <number> } }
+    { "id": "<unique-id>", "type": "<module-type>", "metrics": { "<key>": <number> } },
+    { "id": "<unique-id>", "type": "<shape-type>", "label": "<text>" }
   ],
   "edges": [
     { "source": "<node-id>", "target": "<node-id>" }
@@ -24,11 +25,19 @@ format below — no prose, no markdown fences.
 
 Rules:
 
-- `type` must be one of the module types listed under **Available modules**.
+- A node is either a **module** (a real infrastructure component that carries
+  metrics and is simulated) or a **blank shape** (an annotation — decision,
+  process, state, etc. — that carries a text `label` and is _not_ simulated).
+- `type` must be one of the module types under **Available modules** or one of
+  the shape types under **Available blank shapes**.
 - `id` is any unique string; reference the same id in `edges`.
-- `metrics` is **optional** — omit it to use the defaults shown below, or
-  include only the values you want to override. Every value is a **number**,
-  and keys must be from that module's metric list (never invent metric keys).
+- `metrics` is **optional** and applies to **modules only** — omit it to use the
+  defaults shown below, or include only the values you want to override. Every
+  value is a **number**, and keys must be from that module's metric list (never
+  invent metric keys). Shapes ignore `metrics`.
+- `label` is **optional** and applies to **shapes only** — the short text shown
+  in the middle of the shape (e.g. `"Cache hit?"`). Omit it to use the shape's
+  default label. Modules ignore `label`.
 - `position` is **optional** — omit it. SystemSage auto-lays out the graph
   left → right based on the edges.
 - Model a realistic flow: client → edge (CDN / gateway / load balancer) →
@@ -57,6 +66,18 @@ Format — `● type — subtitle [category]` then its metrics as
 `key: Label — unit (default N)`; `← capacity` marks the throughput metric.
 
 {{MODULES}}
+
+## Available blank shapes
+
+Geometry-only annotation nodes — no metrics, no cost, no throughput. Use them to
+sketch control flow and logic alongside the infrastructure: a `shape-diamond`
+for a branch/decision, `shape-rectangle` for a step, `shape-rounded` for a
+start/end, etc. Give each a short `label`. They connect with edges like any
+other node but do not affect the simulation.
+
+Format — `◆ type — default label  [kind]`.
+
+{{SHAPES}}
 
 ## Example — URL shortener
 
